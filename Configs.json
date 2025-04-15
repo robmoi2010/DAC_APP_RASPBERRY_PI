@@ -1,0 +1,39 @@
+{
+    "DAC": {
+        "ADDR": {
+            "I2C_ADDR": "0x90",
+            "DAC_MODE_ADDR": "0x02",
+            "DAC_TDM_VALID_EDGE_ADDR": "0x60",
+            "DAC_PCM_MASTER_MODE_ADDR": "0x10",
+            "DAC_ENABLE_SPDIF_DECODE_ADDR": "0xB9",
+            "DAC_AUTO_INPUT_SEL_ADDR": "0x41",
+            "DAC_SPDIF_SEL_ADDR": "0x64",
+            "DAC_GPIO4_SDB_ADDR": "0x08",
+            "DAC_AUTO_CH_DETECT_ADDR": "0x80",
+            "DAC_TDM_CH1_SEL_ADDR": "0x02",
+            "DAC_TDM_CH2_SEL_ADDR": "0x03",
+            "DAC_SYNC_MODE_ADDR": "0xF1",
+            "DAC_VOL_UP_RATE": "0x52",
+            "DAC_VOL_DOWN_RATE": "0x53",
+            "DAC_MUTE": "0x56",
+            "DAC_FILTER_SHAPE": "0x58",
+            "VOLUME_CH1": "0x4A",
+            "VOLUME_CH2": "0x4B",
+            "GPIO__READ": "0xF0"
+        },
+        "STORAGE": {
+            "CURR_VOL_ADDR": "123",
+            "DISABLE_VOL_ADDR": ""
+        },
+        "VOLUME": {
+            "VOLUME_STEPS": 0.5
+        }
+    },
+    "GPIO": {
+        "PIN_MAP": {
+            "ROTARY_PIN_A": 12,
+            "ROTARY_PIN_B": 13,
+            "ROTARY_BUTTON_PIN": 20
+        }
+    }
+}
