@@ -1,16 +1,18 @@
 import Storage
 import AppConfig
 import Communication
-from gpiozero import RotaryEncoder, Button
+from gpiozero import RotaryEncoder, Button, Device
+from gpiozero.pins.mock import MockFactory
+
+Device.pin_factory = MockFactory()
 
 DAC_MIN_VOL = 255
 DAC_MAX_VOL = 0
 LOG_CURVE = 6
 config = AppConfig.getConfig()
 addrConfig = config["DAC"]["ADDR"]
-storageConfig = config["DAC"]["STORAGE"]
 pinMapConfig = config["GPIO"]["PIN_MAP"]
-
+print(pinMapConfig["ROTARY_PIN_A"])
 encoder = RotaryEncoder(
     pinMapConfig["ROTARY_PIN_A"], pinMapConfig["ROTARY_PIN_B"], max_steps=0
 )
@@ -27,13 +29,16 @@ def getCurrentVolume():
 
 
 def persistVolume(volume):
-    Storage.write(storageConfig["CURR_VOL_ADDR"], volume)
+    Storage.write("CURRENT_VOLUME", volume)
 
 
 def setVolume(volume):
-    # add logic for channels hold before volume change
-    Communication.write(addrConfig["DAC_I2C_ADDR"], addrConfig["VOLUME_CH1"], volume)
-    Communication.write(addrConfig["DAC_I2C_ADDR"], addrConfig["VOLUME_CH2"], volume)
+    # hold both channels
+    # Communication.write(addrConfig["I2C_ADDR"], addrConfig["VOLUME_HOLD"], 1)
+    # update volume of both channels
+    Communication.write(addrConfig["I2C_ADDR"], addrConfig["VOLUME_CH1"], volume)
+    Communication.write(addrConfig["I2C_ADDR"], addrConfig["VOLUME_CH2"], volume)
+    # release hold on both channels
 
 
 def updateVolume(direction):
@@ -51,30 +56,62 @@ def updateVolume(direction):
     setVolume(currVol)
     persistVolume(currVol)
 
+    # update volume on UI
+
+
+def isVolumeDisabled():
+    disabled = Storage.read("DISABLE_VOLUME")
+    if disabled==1:
+        print("ds")
+    else:
+        print("en")
+    return disabled
+
 
 def disableEnableVolume():
-    curr = Storage.read(storageConfig["DISABLE_VOL_ADDR"])
+    curr = Storage.read("DISABLE_VOLUME")
+    print(curr)
     if curr == 0:
         setVolume(DAC_MAX_VOL)  # disable volume
-        Storage.write(storageConfig["DISABLE_VOL_ADDR"], 1)
+        Storage.write("DISABLE_VOLUME", 1)
         return 0  # disabled
     else:
         setVolume(getCurrentVolume())
-        Storage.write(storageConfig["DISABLE_VOL_ADDR"], 0)
+        Storage.write("DISABLE_VOLUME", 0)
         return 1  # enabled
 
 
 def onRotate():
-    steps = encoder.steps
-    encoder.steps = 0
-    if steps > 0:  # volume up
-        updateVolume("up")
-    if steps < 0:  # volume down
-        updateVolume("down")
+    disabled = isVolumeDisabled()
+    if disabled == False:  # process is volume is not disabled, else ignore
+        steps = encoder.steps
+        encoder.steps = 0
+        if steps > 0:  # volume up
+            updateVolume("up")
+        if steps < 0:  # volume down
+            updateVolume("down")
 
 
-def rotaryButtonPressed():  #
-    pass
+def muteDac():
+    Communication.write(addrConfig["I2C_ADDR"], addrConfig["DAC_MUTE"], 3)
+
+
+def unmuteDac():
+    Communication.write(addrConfig["I2C_ADDR"], addrConfig["DAC_MUTE"], 0)
+
+
+def rotaryButtonPressed():  # Either mute of disable volume
+    knobButtonSetting = Storage.read("KNOB_BUTTON_MODE")
+    if knobButtonSetting == 0:  # for mute
+        muted = Storage.read("DAC_MUTED")
+        if muted == 1:
+            unmuteDac()
+            Storage.write("DAC_MUTED", 0)
+        else:
+            muteDac()
+            Storage.write("DAC_MUTED", 1)
+    else:  # for disable volume
+        disableEnableVolume()
 
 
 def getPercentageVolume(volume):
@@ -83,6 +120,10 @@ def getPercentageVolume(volume):
 
 def map_value(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
+
+def setRotaryButtonMode(mode):  # 0 for mute 1 for disable volume
+    Storage.write("KNOB_BUTTON_MODE", mode)
 
 
 encoder.when_rotated = onRotate

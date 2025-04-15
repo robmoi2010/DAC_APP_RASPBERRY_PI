@@ -19,11 +19,8 @@
             "DAC_FILTER_SHAPE": "0x58",
             "VOLUME_CH1": "0x4A",
             "VOLUME_CH2": "0x4B",
-            "GPIO__READ": "0xF0"
-        },
-        "STORAGE": {
-            "CURR_VOL_ADDR": "123",
-            "DISABLE_VOL_ADDR": ""
+            "GPIO__READ": "0xF0",
+            "VOLUME_HOLD": "0x59"
         },
         "VOLUME": {
             "VOLUME_STEPS": 0.5

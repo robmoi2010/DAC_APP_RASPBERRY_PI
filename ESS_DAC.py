@@ -1,8 +1,9 @@
 import Communication
 import AppConfig
+import Storage
 
 config = AppConfig.getConfig()["DAC"]["ADDR"]
-DAC_I2C_ADDR = config["DAC_I2C_ADDR"]
+DAC_I2C_ADDR = config["I2C_ADDR"]
 
 
 def setI2sSlaveMode():
@@ -22,7 +23,7 @@ def setI2sMasterMode():
 def setSPDIFMode():
     Communication.write(DAC_I2C_ADDR, config["DAC_ENABLE_SPDIF_DECODE_ADDR"], 1)
     Communication.write(DAC_I2C_ADDR, config["DAC_AUTO_INPUT_SEL_ADDR"], 1)
-    Communication.write(DAC_I2C_ADDR, config["DAC_SPDIF_SEL_ADDR"], 6) # GPIO4
+    Communication.write(DAC_I2C_ADDR, config["DAC_SPDIF_SEL_ADDR"], 6)  # GPIO4
     Communication.write(DAC_I2C_ADDR, config["DAC_GPIO4_SDB_ADDR"], 1)
     Communication.write(DAC_I2C_ADDR, config["DAC_MODE_ADDR"], 1)
 
@@ -50,24 +51,32 @@ def initializeDAC():
 def setDacMode(
     mode,
 ):  # 0 I2S Slave mode, 1 LJ Slave mode, 2 I2S Master mode, 3 SPDIF mode, 4 TDM I2S Slave mode Async, 5 TDM I2S Slave mode Sync
+    print(mode)
     if mode == 0:
         setI2sSlaveMode()
+        Storage.write("CURRENT_DAC_MODE", mode)
         return
     elif mode == 1:
         setLjSlaveMode()
+        Storage.write("CURRENT_DAC_MODE", mode)
         return
     elif mode == 2:
         setI2sMasterMode()
+        Storage.write("CURRENT_DAC_MODE", mode)
         return
     elif mode == 3:
         setSPDIFMode()
+        Storage.write("CURRENT_DAC_MODE", mode)
         return
     elif mode == 4:
         setTDMI2SSlaveModeAsync()
+        Storage.write("CURRENT_DAC_MODE", mode)
         return
     elif mode == 5:
         setTDMI2SSlaveModeSync()
+        Storage.write("CURRENT_DAC_MODE", mode)
         return
     else:
         setSPDIFMode()
+        Storage.write("CURRENT_DAC_MODE", mode)
         return

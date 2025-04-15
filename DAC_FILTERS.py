@@ -10,12 +10,15 @@ import Communication
 # 5 Minimum phase fast roll-off
 # 6 Minimum phase slow roll-off
 # 7 Minimum phase slow roll-off low dispersion
-config = AppConfig.getConfig("DAC")
+config = AppConfig.getConfig()["DAC"]
 
 
 def updateFilter(filter):
-    Communication.write(config["DAC_I2C_ADDR"], config["DAC_FILTER_SHAPE"], filter)
-    Storage.write(config["CURR_FILTER_ADDR"], filter)
+    print(filter)
+    Communication.write(
+        config["ADDR"]["I2C_ADDR"], config["ADDR"]["DAC_FILTER_SHAPE"], filter
+    )
+    Storage.write("CURRENT_FILTER", filter)
 
 
 def getFilterName(filter, initials):
