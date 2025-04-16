@@ -21,6 +21,10 @@ def updateFilter(filter):
     Storage.write("CURRENT_FILTER", filter)
 
 
+def getCurrentFilter():
+    return Storage.read("CURRENT_FILTER")
+
+
 def getFilterName(filter, initials):
     if initials == 0:
         if filter == 0:

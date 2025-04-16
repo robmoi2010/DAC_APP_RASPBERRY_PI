@@ -80,3 +80,7 @@ def setDacMode(
         setSPDIFMode()
         Storage.write("CURRENT_DAC_MODE", mode)
         return
+
+
+def getCurrentDacMode():
+    return Storage.read("CURRENT_DAC_MODE")

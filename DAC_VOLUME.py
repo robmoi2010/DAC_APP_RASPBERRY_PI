@@ -24,8 +24,7 @@ def getLogarithmicVolumeLevel(vol):
 
 
 def getCurrentVolume():
-    return 0
-    # return Storage.read(storageConfig["CURR_VOL_ADDR"])
+    return Storage.read("CURRENT_VOLUME")
 
 
 def persistVolume(volume):
@@ -61,7 +60,7 @@ def updateVolume(direction):
 
 def isVolumeDisabled():
     disabled = Storage.read("DISABLE_VOLUME")
-    if disabled==1:
+    if disabled == 1:
         print("ds")
     else:
         print("en")
@@ -101,7 +100,7 @@ def unmuteDac():
 
 
 def rotaryButtonPressed():  # Either mute of disable volume
-    knobButtonSetting = Storage.read("KNOB_BUTTON_MODE")
+    knobButtonSetting = getButtonKnobMode()
     if knobButtonSetting == 0:  # for mute
         muted = Storage.read("DAC_MUTED")
         if muted == 1:
@@ -114,8 +113,13 @@ def rotaryButtonPressed():  # Either mute of disable volume
         disableEnableVolume()
 
 
+def getButtonKnobMode():
+    return Storage.read("KNOB_BUTTON_MODE")
+
+
 def getPercentageVolume(volume):
-    return map_value(volume, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
+    return volume
+    # return map_value(volume, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
 
 
 def map_value(x, in_min, in_max, out_min, out_max):
