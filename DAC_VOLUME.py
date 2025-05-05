@@ -55,16 +55,9 @@ def updateVolume(direction):
     setVolume(currVol)
     persistVolume(currVol)
 
-    # update volume on UI
-
 
 def isVolumeDisabled():
-    disabled = Storage.read("DISABLE_VOLUME")
-    if disabled == 1:
-        print("ds")
-    else:
-        print("en")
-    return disabled
+    return Storage.read("DISABLE_VOLUME")
 
 
 def disableEnableVolume():
@@ -82,7 +75,7 @@ def disableEnableVolume():
 
 def onRotate():
     disabled = isVolumeDisabled()
-    if disabled == False:  # process is volume is not disabled, else ignore
+    if disabled == False:  # process if volume is not disabled, else ignore
         steps = encoder.steps
         encoder.steps = 0
         if steps > 0:  # volume up
@@ -118,12 +111,12 @@ def getButtonKnobMode():
 
 
 def getPercentageVolume(volume):
-    return volume
-    # return map_value(volume, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
+    val = map_value(volume, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
+    return int(val)
 
 
 def map_value(x, in_min, in_max, out_min, out_max):
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+    return ((x - in_min) * (out_max - out_min)) / ((in_max - in_min) + out_min)
 
 
 def setRotaryButtonMode(mode):  # 0 for mute 1 for disable volume

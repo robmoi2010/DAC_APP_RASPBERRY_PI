@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import DAC_VOLUME
+import AppConfig
 from Styles import (
     RELIEF,
     BUTTON_BG,
@@ -12,7 +13,8 @@ from Styles import (
     BUTTON_FONT_STYLE,
 )
 
-VOLUME_POLL_DURATION = 100
+VOLUME_POLL_DURATION = AppConfig.getConfig()["DAC"]["VOLUME"]["VOLUME_UI_POLL_DURATION"]
+
 
 font = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 

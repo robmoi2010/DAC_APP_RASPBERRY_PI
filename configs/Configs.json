@@ -23,7 +23,8 @@
             "VOLUME_HOLD": "0x59"
         },
         "VOLUME": {
-            "VOLUME_STEPS": 0.5
+            "VOLUME_STEPS": 0.5,
+            "VOLUME_UI_POLL_DURATION": 10
         }
     },
     "GPIO": {
