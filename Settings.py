@@ -1,7 +1,7 @@
 import tkinter as tk
-import DAC_VOLUME
+import dac_volume
 from tkinter import messagebox
-from Styles import (
+from styles import (
     RELIEF,
     BUTTON_BG,
     BUTTON_HEIGHT,
@@ -20,7 +20,7 @@ DISABLE_VOL_TEXT = "Disable Volume"
 
 class Settings(tk.Frame):
     def volumeDisableEnableOnclick(frame):
-        if DAC_VOLUME.isVolumeDisabled() == 1:
+        if dac_volume.isVolumeDisabled() == 1:
             selection = "Enable"
             text = ENABLE_VOL_TEXT
         else:
@@ -30,13 +30,13 @@ class Settings(tk.Frame):
             "Confirmation", "Are you sure you want to select " + selection
         )
         if answer:
-            DAC_VOLUME.disableEnableVolume()
+            dac_volume.disableEnableVolume()
             frame.volBtn.config(text=text)
 
     def __init__(self, parent, controller):
         super().__init__(parent)
         tk.Label(self, text="Settings", font=("Arial", 16)).pack(pady=20)
-        disabled = DAC_VOLUME.isVolumeDisabled()
+        disabled = dac_volume.isVolumeDisabled()
         if disabled == 1:
             text = ENABLE_VOL_TEXT
         else:

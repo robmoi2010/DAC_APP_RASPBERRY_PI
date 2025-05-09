@@ -1,7 +1,7 @@
 import tkinter as tk
-import ESS_DAC
+import ess_dac
 from tkinter import messagebox
-from Styles import (
+from styles import (
     RELIEF,
     BUTTON_BG,
     BUTTON_HEIGHT,
@@ -24,7 +24,7 @@ class DacModes(
             "Confirmation", "Are you sure you want to select " + selection
         )
         if answer:
-            ESS_DAC.setDacMode(type)
+            ess_dac.setDacMode(type)
             if type == 0:
                 frame.mode0Btn.config(fg=SELECTED_COLOR)
                 frame.mode1Btn.config(fg=UNSELECTED_COLOR)
@@ -71,7 +71,7 @@ class DacModes(
     def __init__(self, parent, controller):
         super().__init__(parent)
         tk.Label(self, text="Select Dac Modes", font=("Arial", 16)).pack(pady=20)
-        currentMode = ESS_DAC.getCurrentDacMode()
+        currentMode = ess_dac.getCurrentDacMode()
 
         self.mode0Btn = tk.Button(
             self,

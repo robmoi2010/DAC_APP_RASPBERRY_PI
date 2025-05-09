@@ -31,7 +31,33 @@
         "PIN_MAP": {
             "ROTARY_PIN_A": 12,
             "ROTARY_PIN_B": 13,
-            "ROTARY_BUTTON_PIN": 20
+            "ROTARY_BUTTON_PIN": 20,
+            "IR_SENSOR": 23
         }
+    },
+    "IR_REMOTE": {
+        "BUTTON_HASH": {
+            "VOL_UP": [
+                "FF629D",
+                "FF689D"
+            ],
+            "VOL_DOWN": [
+                "FFE21D",
+                "FFE31D"
+            ],
+            "POWER": [
+                "FFA25D",
+                "FFA45D"
+            ],
+            "MUTE": [
+                "FFC33D",
+                "FFC23D"
+            ]
+        }
+    },
+    "MONGODB": {
+        "URL": "localhost:27017",
+        "USERNAME": "",
+        "PASSWORD": ""
     }
 }

@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-import DAC_VOLUME
-import AppConfig
-from Styles import (
+import dac_volume
+from dac_volume import VOL_DIRECTION
+import app_config
+from styles import (
     RELIEF,
     BUTTON_BG,
     BUTTON_HEIGHT,
@@ -13,19 +14,21 @@ from Styles import (
     BUTTON_FONT_STYLE,
 )
 
-VOLUME_POLL_DURATION = AppConfig.getConfig()["DAC"]["VOLUME"]["VOLUME_UI_POLL_DURATION"]
+VOLUME_POLL_DURATION = app_config.getConfig()["DAC"]["VOLUME"][
+    "VOLUME_UI_POLL_DURATION"
+]
 
 
 font = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 
 
 class Home(tk.Frame):
-    #Volume rotary encoder mock
+    # Volume rotary encoder mock
     def on_key_press(self, event):
         if event.keysym == "Right":
-            DAC_VOLUME.updateVolume("up")
+            dac_volume.updateVolume(VOL_DIRECTION.UP)
         if event.keysym == "Left":
-            DAC_VOLUME.updateVolume("down")
+            dac_volume.updateVolume(VOL_DIRECTION.DOWN)
 
     def on_key_release(self, event):
         pass
@@ -33,7 +36,7 @@ class Home(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         # get current volume from storage
-        currVolume = DAC_VOLUME.getPercentageVolume(DAC_VOLUME.getCurrentVolume())
+        currVolume = dac_volume.getPercentageVolume(dac_volume.getCurrentVolume())
         tk.Label(self, text="Home", font=("Arial", 16)).pack(pady=20)
         # canvas = tk.Canvas(self, width=200, height=30)
         # canvas.pack(expand=True)
@@ -67,7 +70,7 @@ class Home(tk.Frame):
         ).pack()
 
         def poll_volume():
-            currVolume = DAC_VOLUME.getPercentageVolume(DAC_VOLUME.getCurrentVolume())
+            currVolume = dac_volume.getPercentageVolume(dac_volume.getCurrentVolume())
             volume_bar["value"] = currVolume
             label.config(text=currVolume)
             self.after(VOLUME_POLL_DURATION, poll_volume)

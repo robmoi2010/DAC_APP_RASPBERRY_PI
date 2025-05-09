@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
-import DAC_VOLUME
-from Styles import (
+
+import volume_encoder
+from styles import (
     RELIEF,
     BUTTON_BG,
     BUTTON_HEIGHT,
@@ -22,7 +23,7 @@ class VolumeMode(tk.Frame):
             "Confirmation", "Are you sure you want to select " + selection
         )
         if answer:
-            DAC_VOLUME.setRotaryButtonMode(type)
+            volume_encoder.setRotaryButtonMode(type)
             if type == 0:
                 frame.muteBtn.config(fg=SELECTED_COLOR)
                 frame.dVolBtn.config(fg=UNSELECTED_COLOR)
@@ -35,7 +36,7 @@ class VolumeMode(tk.Frame):
         tk.Label(
             self, text="Select volume knob press functionality", font=("Arial", 16)
         ).pack(pady=20)
-        selected = DAC_VOLUME.getButtonKnobMode()
+        selected = volume_encoder.getButtonKnobMode()
         print(selected)
         self.muteBtn = tk.Button(
             self,

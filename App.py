@@ -1,9 +1,9 @@
 import tkinter as tk
-from Settings import Settings
-from Home import Home
-from Filters import Filters
-from VolumeMode import VolumeMode
-from DacModes import DacModes
+from settings import Settings
+from home import Home
+from filters import Filters
+from volume_modes import VolumeMode
+from dac_modes import DacModes
 
 
 class App(tk.Tk):

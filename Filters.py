@@ -1,7 +1,7 @@
 import tkinter as tk
-import DAC_FILTERS
+import dac_filters
 from tkinter import messagebox
-from Styles import (
+from styles import (
     RELIEF,
     BUTTON_BG,
     BUTTON_HEIGHT,
@@ -30,7 +30,7 @@ class Filters(tk.Frame):
             "Confirmation", "Are you sure you want to select " + selection
         )
         if answer:
-            DAC_FILTERS.updateFilter(type)
+            dac_filters.updateFilter(type)
             if type == 0:
                 frame.f0Btn.config(fg=SELECTED_COLOR)
                 frame.f1Btn.config(fg=UNSELECTED_COLOR)
@@ -106,7 +106,7 @@ class Filters(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        curr = DAC_FILTERS.getCurrentFilter()
+        curr = dac_filters.getCurrentFilter()
         tk.Label(self, text="Select DAC Filter", font=("Arial", 16)).pack(pady=20)
 
         self.f0Btn = tk.Button(
