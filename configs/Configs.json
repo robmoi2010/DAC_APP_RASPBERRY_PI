@@ -52,6 +52,26 @@
             "MUTE": [
                 "FFC33D",
                 "FFC23D"
+            ],
+            "UP": [
+                "FFC33D",
+                "FFC23D"
+            ],
+            "DOWN": [
+                "FFC33D",
+                "FFC23D"
+            ],
+            "LEFT": [
+                "FFC33D",
+                "FFC23D"
+            ],
+            "RIGHT": [
+                "FFC33D",
+                "FFC23D"
+            ],
+            "OK": [
+                "FFC33D",
+                "FFC23D"
             ]
         }
     },
@@ -59,5 +79,16 @@
         "URL": "localhost:27017",
         "USERNAME": "",
         "PASSWORD": ""
-    }
+    },
+    "SCR4392": {
+        "ADDR": {
+            "I2C_ADDR": "1110000",
+            "POWER_DOWN_AND_RESET": "0x01",
+            "PORT_A_CONTROL": "0x03",
+            "PORT_A_CONTROL2": "0x04",
+            "PORT_B_CONTROL": "0x05",
+            "PORT_B_CONTROL2": "0x06"
+        }
+    },
+    "ADAU1452": {}
 }
