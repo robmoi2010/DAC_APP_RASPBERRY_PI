@@ -15,7 +15,7 @@ from util.styles import (
 btnFont = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 
 
-class DigitalReceiverSettings(tk.Frame):
+class DspSettings(tk.Frame):
     def on_focus_in(self, event):
         event.widget.config(bg=BUTTON_ONFOCUS_BG)
 
@@ -24,8 +24,9 @@ class DigitalReceiverSettings(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        tk.Label(self, text="SRC4392 Settings", font=("Arial", 16)).pack(pady=20)
-        self.btn1 = tk.Button(
+        tk.Label(self, text="Dsp Settings", font=("Arial", 16)).pack(pady=20)
+
+        self.volBtn = tk.Button(
             self,
             relief=RELIEF,
             font=btnFont,
@@ -33,13 +34,13 @@ class DigitalReceiverSettings(tk.Frame):
             height=BUTTON_HEIGHT,
             bg=BUTTON_BG,
             fg=UNSELECTED_COLOR,
-            text="DIT",
-            command=lambda: controller.show_frame("DitSettings"),
+            text="Select Input",
+            command=lambda: controller.show_frame("Input"),
         )
-        self.btn1.bind("<FocusIn>", self.on_focus_in)
-        self.btn1.bind("<FocusOut>", self.on_focus_out)
-        self.btn1.pack()
-        self.btn2 = tk.Button(
+        self.volBtn.bind("<FocusIn>", self.on_focus_in)
+        self.volBtn.bind("<FocusOut>", self.on_focus_out)
+        self.volBtn.pack()
+        self.mode1Btn = tk.Button(
             self,
             relief=RELIEF,
             font=btnFont,
@@ -47,13 +48,13 @@ class DigitalReceiverSettings(tk.Frame):
             height=BUTTON_HEIGHT,
             bg=BUTTON_BG,
             fg=UNSELECTED_COLOR,
-            text="DIR",
-            command=lambda: controller.show_frame("DirSettings"),
+            text="Select Mains Output",
+            command=lambda: controller.show_frame("MainOutput"),
         )
-        self.btn2.bind("<FocusIn>", self.on_focus_in)
-        self.btn2.bind("<FocusOut>", self.on_focus_out)
-        self.btn2.pack()
-        self.btn3 = tk.Button(
+        self.mode1Btn.bind("<FocusIn>", self.on_focus_in)
+        self.mode1Btn.bind("<FocusOut>", self.on_focus_out)
+        self.mode1Btn.pack()
+        self.mode2Btn = tk.Button(
             self,
             relief=RELIEF,
             font=btnFont,
@@ -61,13 +62,13 @@ class DigitalReceiverSettings(tk.Frame):
             height=BUTTON_HEIGHT,
             bg=BUTTON_BG,
             fg=UNSELECTED_COLOR,
-            text="SRC",
-            command=lambda: controller.show_frame("SrcSettings"),
+            text="Select Subwoofer Output",
+            command=lambda: controller.show_frame("SubwooferOutput"),
         )
-        self.btn3.bind("<FocusIn>", self.on_focus_in)
-        self.btn3.bind("<FocusOut>", self.on_focus_out)
-        self.btn3.pack()
-        self.btn4 = tk.Button(
+        self.mode2Btn.bind("<FocusIn>", self.on_focus_in)
+        self.mode2Btn.bind("<FocusOut>", self.on_focus_out)
+        self.mode2Btn.pack()
+        self.mode4Btn = tk.Button(
             self,
             relief=RELIEF,
             font=btnFont,
@@ -78,6 +79,6 @@ class DigitalReceiverSettings(tk.Frame):
             text="Back",
             command=lambda: controller.show_frame("MainSettings"),
         )
-        self.btn4.bind("<FocusIn>", self.on_focus_in)
-        self.btn4.bind("<FocusOut>", self.on_focus_out)
-        self.btn4.pack()
+        self.mode4Btn.bind("<FocusIn>", self.on_focus_in)
+        self.mode4Btn.bind("<FocusOut>", self.on_focus_out)
+        self.mode4Btn.pack()

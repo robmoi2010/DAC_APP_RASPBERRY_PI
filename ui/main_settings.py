@@ -1,5 +1,4 @@
 import tkinter as tk
-import dac.dac_volume
 from util.styles import (
     RELIEF,
     BUTTON_BG,
@@ -60,20 +59,6 @@ class MainSettings(tk.Frame):
         btn5.bind("<FocusIn>", self.on_focus_in)
         btn5.bind("<FocusOut>", self.on_focus_out)
         btn5.pack()
-        btn1 = tk.Button(
-            self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Digital Receiver",
-            command=lambda: controller.show_frame("DigitalReceiverSettings"),
-        )
-        btn1.bind("<FocusIn>", self.on_focus_in)
-        btn1.bind("<FocusOut>", self.on_focus_out)
-        btn1.pack()
         btn2 = tk.Button(
             self,
             relief=RELIEF,
@@ -83,7 +68,7 @@ class MainSettings(tk.Frame):
             bg=BUTTON_BG,
             fg=UNSELECTED_COLOR,
             text="DSP",
-            command=lambda: controller.show_frame(""),
+            command=lambda: controller.show_frame("DspSettings"),
         )
         btn2.bind("<FocusIn>", self.on_focus_in)
         btn2.bind("<FocusOut>", self.on_focus_out)

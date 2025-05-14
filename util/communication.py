@@ -7,4 +7,10 @@ def read(devAddr, addr):
   #return bus.read_byte_data(devAddr, addr)
 def write(devAddr, addr, value):
   return "0"
-  #bus.write_byte_data(devAddr, addr, value)cl
+  #bus.write_byte_data(devAddr, addr, value)
+def write_bulk(deAddr, addr, values):
+  for v in values:
+    #bus.write_byte_data(devAddr, addr, v)
+    pass
+  
+    

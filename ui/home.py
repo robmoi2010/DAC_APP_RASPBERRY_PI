@@ -3,7 +3,6 @@ from tkinter import ttk
 import dac.dac_volume as dac_volume
 
 # from dac.dac_volume import VOL_DIRECTION
-import configs.app_config as app_config
 from util.styles import (
     RELIEF,
     BUTTON_BG,

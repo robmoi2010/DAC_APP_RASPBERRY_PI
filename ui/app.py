@@ -5,10 +5,10 @@ from ui.dac.filters import Filters
 from ui.dac.volume_modes import VolumeMode
 from ui.dac.dac_modes import DacModes
 from ui.main_settings import MainSettings
-from ui.dair.digital_receiver_settings import DigitalReceiverSettings
-from ui.dair.dir_settings import DirSettings
-from ui.dair.dit_settings import DitSettings
-from ui.dair.src_settings import SrcSettings
+from ui.dsp.dsp_settings import DspSettings
+from ui.dsp.input import Input
+from ui.dsp.main_output import MainOutput
+from ui.dsp.subwoofer_output import SubwooferOutput
 
 current_visible_frame = None
 prev_frame = None
@@ -26,20 +26,19 @@ class App(tk.Tk):
             Home,
             DacSettings,
             Filters,
-            DigitalReceiverSettings,
             VolumeMode,
             DacModes,
             VolumeMode,
             MainSettings,
-            DirSettings,
-            DitSettings,
-            SrcSettings,
+            DspSettings,
+            Input,
+            MainOutput,
+            SubwooferOutput,
         ):
             page_name = F.__name__
             frame = F(parent=self, controller=self)
             self.frames[page_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
-
         self.show_frame("Home")
 
     def show_frame(self, page_name):
