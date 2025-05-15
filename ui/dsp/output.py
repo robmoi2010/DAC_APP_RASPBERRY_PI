@@ -15,7 +15,7 @@ from util.styles import (
 btnFont = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 
 
-class DspSettings(tk.Frame):
+class Output(tk.Frame):
     def on_focus_in(self, event):
         event.widget.config(bg=BUTTON_ONFOCUS_BG)
 
@@ -24,22 +24,7 @@ class DspSettings(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        tk.Label(self, text="Dsp Settings", font=("Arial", 16)).pack(pady=20)
-
-        self.btn1 = tk.Button(
-            self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Input",
-            command=lambda: controller.show_frame("Input"),
-        )
-        self.btn1.bind("<FocusIn>", self.on_focus_in)
-        self.btn1.bind("<FocusOut>", self.on_focus_out)
-        self.btn1.pack()
+        tk.Label(self, text="Outputs", font=("Arial", 16)).pack(pady=20)
         self.btn2 = tk.Button(
             self,
             relief=RELIEF,
@@ -48,13 +33,13 @@ class DspSettings(tk.Frame):
             height=BUTTON_HEIGHT,
             bg=BUTTON_BG,
             fg=UNSELECTED_COLOR,
-            text="Output",
-            command=lambda: controller.show_frame("Output"),
+            text="Mains Output",
+            command=lambda: controller.show_frame("MainOutput"),
         )
         self.btn2.bind("<FocusIn>", self.on_focus_in)
         self.btn2.bind("<FocusOut>", self.on_focus_out)
         self.btn2.pack()
-        self.btn3 = tk.Button(
+        self.btn2 = tk.Button(
             self,
             relief=RELIEF,
             font=btnFont,
@@ -62,12 +47,12 @@ class DspSettings(tk.Frame):
             height=BUTTON_HEIGHT,
             bg=BUTTON_BG,
             fg=UNSELECTED_COLOR,
-            text="Source Routing",
-            command=lambda: controller.show_frame("SourceRouting"),
+            text="Subwoofer Output",
+            command=lambda: controller.show_frame("SubwooferOutput"),
         )
-        self.btn3.bind("<FocusIn>", self.on_focus_in)
-        self.btn3.bind("<FocusOut>", self.on_focus_out)
-        self.btn3.pack()
+        self.btn2.bind("<FocusIn>", self.on_focus_in)
+        self.btn2.bind("<FocusOut>", self.on_focus_out)
+        self.btn2.pack()
         self.btn4 = tk.Button(
             self,
             relief=RELIEF,
@@ -77,7 +62,7 @@ class DspSettings(tk.Frame):
             bg=BUTTON_BG,
             fg=UNSELECTED_COLOR,
             text="Back",
-            command=lambda: controller.show_frame("MainSettings"),
+            command=lambda: controller.show_frame("DspSettings"),
         )
         self.btn4.bind("<FocusIn>", self.on_focus_in)
         self.btn4.bind("<FocusOut>", self.on_focus_out)

@@ -9,6 +9,12 @@ from ui.dsp.dsp_settings import DspSettings
 from ui.dsp.input import Input
 from ui.dsp.main_output import MainOutput
 from ui.dsp.subwoofer_output import SubwooferOutput
+from ui.dsp.output import Output
+from ui.dsp.source_routing import SourceRouting
+from ui.dsp.mains_input_routing import MainsInputRouting
+from ui.dsp.subwoofer_input_routing import SubwooferInputRouting
+from ui.dsp.mains_output_routing import MainsOutputRouting
+from ui.dsp.subwoofer_output_routing import SubwooferOutputRouting
 
 current_visible_frame = None
 prev_frame = None
@@ -34,6 +40,12 @@ class App(tk.Tk):
             Input,
             MainOutput,
             SubwooferOutput,
+            Output,
+            SourceRouting,
+            MainsInputRouting,
+            SubwooferInputRouting,
+            MainsOutputRouting,
+            SubwooferOutputRouting
         ):
             page_name = F.__name__
             frame = F(parent=self, controller=self)

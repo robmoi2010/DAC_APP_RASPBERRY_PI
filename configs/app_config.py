@@ -1,6 +1,5 @@
 import json
 import logging
-from pathlib import Path
 
 
 FILE_NAME = "configs/Configs.json"

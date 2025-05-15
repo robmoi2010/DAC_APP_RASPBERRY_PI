@@ -4,7 +4,6 @@ import ui.home
 import util.communication as communication
 from enum import Enum
 
-currentIndex = 0
 
 
 class VOL_DIRECTION(Enum):
