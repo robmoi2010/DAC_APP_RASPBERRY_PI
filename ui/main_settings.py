@@ -82,7 +82,7 @@ class MainSettings(tk.Frame):
             bg=BUTTON_BG,
             fg=UNSELECTED_COLOR,
             text="General",
-            command=lambda: controller.show_frame(""),
+            command=lambda: controller.show_frame("GeneralSettings"),
         )
         btn3.bind("<FocusIn>", self.on_focus_in)
         btn3.bind("<FocusOut>", self.on_focus_out)

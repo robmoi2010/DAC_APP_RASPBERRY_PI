@@ -15,6 +15,8 @@ from ui.dsp.mains_input_routing import MainsInputRouting
 from ui.dsp.subwoofer_input_routing import SubwooferInputRouting
 from ui.dsp.mains_output_routing import MainsOutputRouting
 from ui.dsp.subwoofer_output_routing import SubwooferOutputRouting
+from ui.general.sound_modes import SoundModes
+from ui.general.general_settings import GeneralSettings
 
 current_visible_frame = None
 prev_frame = None
@@ -45,7 +47,9 @@ class App(tk.Tk):
             MainsInputRouting,
             SubwooferInputRouting,
             MainsOutputRouting,
-            SubwooferOutputRouting
+            SubwooferOutputRouting,
+            SoundModes,
+            GeneralSettings,
         ):
             page_name = F.__name__
             frame = F(parent=self, controller=self)

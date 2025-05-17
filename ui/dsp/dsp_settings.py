@@ -68,6 +68,7 @@ class DspSettings(tk.Frame):
         self.btn3.bind("<FocusIn>", self.on_focus_in)
         self.btn3.bind("<FocusOut>", self.on_focus_out)
         self.btn3.pack()
+
         self.btn4 = tk.Button(
             self,
             relief=RELIEF,
