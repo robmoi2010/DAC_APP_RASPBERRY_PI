@@ -89,7 +89,11 @@
             "START_CORE": "0xF402",
             "PLL_LOCK": "0xF004",
             "SOFT_RESET": "0xF890",
-            "SOUT_SOURCE0": "0xF180"
+            "SOUT_SOURCE0": "0xF180",
+            "SOUT_SOURCE1": "0xF181",
+            "SOUT_SOURCE2": "0xF182",
+            "SOUT_SOURCE3": "0xF183",
+            "SOUT_SOURCE4": "0xF184"
         }
     }
 }

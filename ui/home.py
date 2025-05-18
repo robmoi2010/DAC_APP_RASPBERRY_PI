@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import dac.dac_volume as dac_volume
+import general.sound_modes as sound_modes
 
-# from dac.dac_volume import VOL_DIRECTION
 from util.styles import (
     RELIEF,
     BUTTON_BG,
@@ -35,6 +35,7 @@ class Home(tk.Frame):
     volume_bar = None
     volume_label = None
 
+    mode_label = None
     # def on_key_release(self, event):
     #     pass
 
@@ -42,11 +43,15 @@ class Home(tk.Frame):
         super().__init__(parent)
         # get current volume from storage
         currVolume = dac_volume.getPercentageVolume(dac_volume.getCurrentVolume())
+        sound_mode = sound_modes.get_sound_mode_name(
+            sound_modes.get_current_sound_mode()
+        )
         tk.Label(self, text="Home", font=("Arial", 16)).pack(pady=20)
-        # canvas = tk.Canvas(self, width=200, height=30)
-        # canvas.pack(expand=True)
-        # canvas.create_rectangle(0, 0, currVolume * 2, 30, outline="red", fill="green")
-        # canvas.create_text(100, 15, text=currVolume, font=("Arial", 25), fill="red")
+        global mode_label
+        mode_label = tk.Label(
+            self, text="Current Mode: " + sound_mode, font=("Arial", 16)
+        )
+        mode_label.pack(pady=20)
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Thick.Horizontal.TProgressbar", thickness=200)
@@ -67,7 +72,7 @@ class Home(tk.Frame):
             self, text=currVolume, fg="black", font=("Arial", 50, "bold")
         )
         volume_label.place(relx=0.5, rely=0.5, anchor="center")
-        btn1=tk.Button(
+        btn1 = tk.Button(
             self,
             relief=RELIEF,
             width=BUTTON_WIDTH,
@@ -94,3 +99,8 @@ def updateVolume(currVolume):
     volume_bar["value"] = currVolume
     global volume_label
     volume_label.config(text=currVolume)
+
+
+def update_sound_mode(mode):
+    global mode_label
+    mode_label.config(text="Current Mode: "+mode)

@@ -104,6 +104,20 @@ class DacSettings(tk.Frame):
         self.mode3Btn.bind("<FocusIn>", self.on_focus_in)
         self.mode3Btn.bind("<FocusOut>", self.on_focus_out)
         self.mode3Btn.pack()
+        self.mode5Btn=tk.Button(
+            self,
+            relief=RELIEF,
+            font=btnFont,
+            width=BUTTON_WIDTH,
+            height=BUTTON_HEIGHT,
+            bg=BUTTON_BG,
+            fg=UNSELECTED_COLOR,
+            text="THD Compensation",
+            command=lambda: controller.show_frame(""),
+        )
+        self.mode5Btn.bind("<FocusIn>", self.on_focus_in)
+        self.mode5Btn.bind("<FocusOut>", self.on_focus_out)
+        self.mode5Btn.pack()
         self.mode4Btn=tk.Button(
             self,
             relief=RELIEF,

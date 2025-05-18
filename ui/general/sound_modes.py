@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox
-import dsp.io as output
 import general.sound_modes
 from util.styles import (
     RELIEF,

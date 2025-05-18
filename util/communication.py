@@ -3,7 +3,7 @@
 #from .smbus2 import SMBus
 #bus=SMBus(1)
 def read(devAddr, addr):
-  pass
+  return 00000000000000000
   #return bus.read_byte_data(devAddr, addr)
 def write(devAddr, addr, value):
   return "0"
