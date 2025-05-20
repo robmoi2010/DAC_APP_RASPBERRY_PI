@@ -1,20 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
 import dsp.io as input
-from util.styles import (
-    RELIEF,
-    BUTTON_BG,
-    BUTTON_HEIGHT,
-    BUTTON_WIDTH,
-    UNSELECTED_COLOR,
-    BUTTON_FONT_SIZE,
-    BUTTON_FONT,
-    BUTTON_FONT_STYLE,
-    BUTTON_ONFOCUS_BG,
-    SELECTED_COLOR,
-)
-
-btnFont = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
+from util.styles import UNSELECTED_COLOR, SELECTED_COLOR
+from ui.generics.general_button import GeneralButton
+from ui.generics.back_button import BackButton
 
 
 class Input(tk.Frame):
@@ -65,97 +54,42 @@ class Input(tk.Frame):
         super().__init__(parent)
         tk.Label(self, text="Select Input", font=("Arial", 16)).pack(pady=20)
         current_input = input.get_current_input()
-        self.btn1 = tk.Button(
+        self.btn1 = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="TOSLINK",
+            "TOSLINK",
+            selected=current_input == 0,
             command=lambda: self.inputOnclick("TOSLINK", 0),
         )
-        self.btn1.bind("<FocusIn>", self.on_focus_in)
-        self.btn1.bind("<FocusOut>", self.on_focus_out)
-        if current_input == 0:
-            self.btn1.config(fg=SELECTED_COLOR)
         self.btn1.pack()
-        self.btn2 = tk.Button(
+        self.btn2 = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="I2S_0",
+            "I2S_0",
+            selected=current_input == 1,
             command=lambda: self.inputOnclick("I2S_0", 1),
         )
-        self.btn2.bind("<FocusIn>", self.on_focus_in)
-        self.btn2.bind("<FocusOut>", self.on_focus_out)
-        if current_input == 1:
-            self.btn2.config(fg=SELECTED_COLOR)
         self.btn2.pack()
-        self.btn3 = tk.Button(
+        self.btn3 = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="I2S_1",
+            "I2S_1",
+            selected=current_input == 2,
             command=lambda: self.inputOnclick("I2S_1", 2),
         )
-        self.btn3.bind("<FocusIn>", self.on_focus_in)
-        self.btn3.bind("<FocusOut>", self.on_focus_out)
-        if current_input == 2:
-            self.btn3.config(fg=SELECTED_COLOR)
         self.btn3.pack()
-        self.btn4 = tk.Button(
+        self.btn4 = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="I2S_2",
+            "I2S_2",
+            selected=current_input == 3,
             command=lambda: self.inputOnclick("I2S_2", 3),
         )
-        self.btn4.bind("<FocusIn>", self.on_focus_in)
-        self.btn4.bind("<FocusOut>", self.on_focus_out)
-        if current_input == 3:
-            self.btn4.config(fg=SELECTED_COLOR)
         self.btn4.pack()
-        self.btn5 = tk.Button(
+        self.btn5 = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="I2S_3",
+            "I2S_3",
+            selected=current_input == 4,
             command=lambda: self.inputOnclick("I2S_3", 4),
         )
-        self.btn5.bind("<FocusIn>", self.on_focus_in)
-        self.btn5.bind("<FocusOut>", self.on_focus_out)
-        if current_input == 4:
-            self.btn5.config(fg=SELECTED_COLOR)
         self.btn5.pack()
-        self.btn6 = tk.Button(
-            self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Back",
-            command=lambda: controller.show_frame("DspSettings"),
+        self.btn6 = BackButton(
+            self, command=lambda: controller.show_frame("DspSettings")
         )
-        self.btn6.bind("<FocusIn>", self.on_focus_in)
-        self.btn6.bind("<FocusOut>", self.on_focus_out)
         self.btn6.pack()

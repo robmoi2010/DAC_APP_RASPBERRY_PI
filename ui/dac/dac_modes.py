@@ -1,29 +1,12 @@
 import tkinter as tk
 import dac.ess_dac as ess_dac
 from tkinter import messagebox
-from util.styles import (
-    RELIEF,
-    BUTTON_BG,
-    BUTTON_HEIGHT,
-    BUTTON_WIDTH,
-    SELECTED_COLOR,
-    UNSELECTED_COLOR,
-    BUTTON_FONT_SIZE,
-    BUTTON_FONT,
-    BUTTON_FONT_STYLE,
-    BUTTON_ONFOCUS_BG
-)
-
-btnFont = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
+from ui.generics.general_button import GeneralButton
+from ui.generics.back_button import BackButton
+from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
 
 class DacModes(tk.Frame):
-    def on_focus_in(self, event):
-        event.widget.config(bg=BUTTON_ONFOCUS_BG)
-
-    def on_focus_out(self, event):
-        event.widget.config(bg=BUTTON_BG)
-
     # 0 I2S Slave mode, 1 LJ Slave mode, 2 I2S Master mode, 3 SPDIF mode, 4 TDM I2S Slave mode Async, 5 TDM I2S Slave mode Sync
     def dacModesOnclick(frame, selection, type):
         answer = messagebox.askyesno(
@@ -79,113 +62,51 @@ class DacModes(tk.Frame):
         tk.Label(self, text="Select Dac Modes", font=("Arial", 16)).pack(pady=20)
         currentMode = ess_dac.getCurrentDacMode()
 
-        self.mode0Btn = tk.Button(
+        self.mode0Btn = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="I2S Slave mode",
+            "I2S Slave mode",
+            selected=currentMode == 0,
             command=lambda: self.dacModesOnclick("I2S Slave mode", 0),
         )
-        self.mode0Btn.bind("<FocusIn>", self.on_focus_in)
-        self.mode0Btn.bind("<FocusOut>", self.on_focus_out)
         self.mode0Btn.pack()
-        if currentMode == 0:
-            self.mode0Btn.config(fg=SELECTED_COLOR)
-        self.mode1Btn = tk.Button(
+        self.mode1Btn = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="LJ Slave mode",
+            "LJ Slave mode",
+            selected=currentMode == 1,
             command=lambda: self.dacModesOnclick("LJ Slave mode", 1),
         )
-        self.mode1Btn.bind("<FocusIn>", self.on_focus_in)
-        self.mode1Btn.bind("<FocusOut>", self.on_focus_out)
         self.mode1Btn.pack()
-        if currentMode == 1:
-            self.mode1Btn.config(fg=SELECTED_COLOR)
-        self.mode2Btn = tk.Button(
+        self.mode2Btn = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="I2S Master mode",
+            "I2S Master mode",
+            selected=currentMode == 2,
             command=lambda: self.dacModesOnclick("I2S Master mode", 2),
         )
-        self.mode2Btn.bind("<FocusIn>", self.on_focus_in)
-        self.mode2Btn.bind("<FocusOut>", self.on_focus_out)
         self.mode2Btn.pack()
-        if currentMode == 2:
-            self.mode2Btn.config(fg=SELECTED_COLOR)
-        self.mode3Btn = tk.Button(
+
+        self.mode3Btn = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="SPDIF mode",
+            "SPDIF mode",
+            selected=currentMode == 3,
             command=lambda: self.dacModesOnclick("SPDIF mode", 3),
         )
-        self.mode3Btn.bind("<FocusIn>", self.on_focus_in)
-        self.mode3Btn.bind("<FocusOut>", self.on_focus_out)
         self.mode3Btn.pack()
-        if currentMode == 3:
-            self.mode3Btn.config(fg=SELECTED_COLOR)
-        self.mode4Btn = tk.Button(
+
+        self.mode4Btn = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="TDM I2S Slave mode Async",
+            "TDM I2S Slave mode Async",
+            selected=currentMode == 4,
             command=lambda: self.dacModesOnclick("TDM I2S Slave mode Async", 4),
         )
-        self.mode4Btn.bind("<FocusIn>", self.on_focus_in)
-        self.mode4Btn.bind("<FocusOut>", self.on_focus_out)
         self.mode4Btn.pack()
-        if currentMode == 4:
-            self.mode4Btn.config(fg=SELECTED_COLOR)
-        self.mode5Btn = tk.Button(
+        self.mode5Btn = GeneralButton(
             self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="TDM I2S Slave mode Sync",
+            "TDM I2S Slave mode Sync",
+            selected=currentMode == 5,
             command=lambda: self.dacModesOnclick("TDM I2S Slave mode Sync", 5),
         )
-        self.mode5Btn.bind("<FocusIn>", self.on_focus_in)
-        self.mode5Btn.bind("<FocusOut>", self.on_focus_out)
         self.mode5Btn.pack()
-        if currentMode == 5:
-            self.mode5Btn.config(fg=SELECTED_COLOR)
-        self.mode6Btn=tk.Button(
-            self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Back",
-            command=lambda: controller.show_frame("DacSettings"),
+        self.mode6Btn = BackButton(
+            self, command=lambda: controller.show_frame("DacSettings")
         )
-        self.mode6Btn.bind("<FocusIn>", self.on_focus_in)
-        self.mode6Btn.bind("<FocusOut>", self.on_focus_out)
         self.mode6Btn.pack()

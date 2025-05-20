@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import dac.dac_volume as dac_volume
 import general.sound_modes as sound_modes
+from ui.generics.general_button import GeneralButton
 
 from util.styles import (
     RELIEF,
@@ -19,12 +20,6 @@ font = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 
 
 class Home(tk.Frame):
-    def on_focus_in(self, event):
-        event.widget.config(bg=BUTTON_ONFOCUS_BG)
-
-    def on_focus_out(self, event):
-        event.widget.config(bg=BUTTON_BG)
-
     def on_key_press(self, event):
         if event.keysym == "Right":
             dac_volume.updateVolume(dac_volume.VOL_DIRECTION.UP)
@@ -71,20 +66,10 @@ class Home(tk.Frame):
         volume_label = tk.Label(
             self, text=currVolume, fg="black", font=("Arial", 50, "bold")
         )
-        volume_label.place(relx=0.5, rely=0.5, anchor="center")
-        btn1 = tk.Button(
-            self,
-            relief=RELIEF,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Go to Settings",
-            font=font,
-            command=lambda: controller.show_frame("MainSettings"),
+        volume_label.place(relx=0.5, rely=0.56, anchor="center")
+        btn1 = GeneralButton(
+            self, "Settings", command=lambda: controller.show_frame("MainSettings")
         )
-        btn1.bind("<FocusIn>", self.on_focus_in)
-        btn1.bind("<FocusOut>", self.on_focus_out)
         btn1.pack()
 
         # for mocking volume rotary encoder
@@ -103,4 +88,4 @@ def updateVolume(currVolume):
 
 def update_sound_mode(mode):
     global mode_label
-    mode_label.config(text="Current Mode: "+mode)
+    mode_label.config(text="Current Mode: " + mode)

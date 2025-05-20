@@ -10,11 +10,6 @@ from ui.dsp.input import Input
 from ui.dsp.main_output import MainOutput
 from ui.dsp.subwoofer_output import SubwooferOutput
 from ui.dsp.output import Output
-from ui.dsp.source_routing import SourceRouting
-from ui.dsp.mains_input_routing import MainsInputRouting
-from ui.dsp.subwoofer_input_routing import SubwooferInputRouting
-from ui.dsp.mains_output_routing import MainsOutputRouting
-from ui.dsp.subwoofer_output_routing import SubwooferOutputRouting
 from ui.general.sound_modes import SoundModes
 from ui.general.general_settings import GeneralSettings
 
@@ -43,11 +38,6 @@ class App(tk.Tk):
             MainOutput,
             SubwooferOutput,
             Output,
-            SourceRouting,
-            MainsInputRouting,
-            SubwooferInputRouting,
-            MainsOutputRouting,
-            SubwooferOutputRouting,
             SoundModes,
             GeneralSettings,
         ):

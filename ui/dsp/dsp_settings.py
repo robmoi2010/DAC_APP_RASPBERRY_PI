@@ -1,85 +1,22 @@
 import tkinter as tk
-
-from util.styles import (
-    RELIEF,
-    BUTTON_BG,
-    BUTTON_HEIGHT,
-    BUTTON_WIDTH,
-    UNSELECTED_COLOR,
-    BUTTON_FONT_SIZE,
-    BUTTON_FONT,
-    BUTTON_FONT_STYLE,
-    BUTTON_ONFOCUS_BG,
-)
-
-btnFont = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
+from ui.generics.general_button import GeneralButton
+from ui.generics.back_button import BackButton
 
 
 class DspSettings(tk.Frame):
-    def on_focus_in(self, event):
-        event.widget.config(bg=BUTTON_ONFOCUS_BG)
-
-    def on_focus_out(self, event):
-        event.widget.config(bg=BUTTON_BG)
-
     def __init__(self, parent, controller):
         super().__init__(parent)
         tk.Label(self, text="Dsp Settings", font=("Arial", 16)).pack(pady=20)
 
-        self.btn1 = tk.Button(
-            self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Input",
-            command=lambda: controller.show_frame("Input"),
+        self.btn1 = GeneralButton(
+            self, "Input", command=lambda: controller.show_frame("Input")
         )
-        self.btn1.bind("<FocusIn>", self.on_focus_in)
-        self.btn1.bind("<FocusOut>", self.on_focus_out)
         self.btn1.pack()
-        self.btn2 = tk.Button(
-            self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Output",
-            command=lambda: controller.show_frame("Output"),
+        self.btn2 = GeneralButton(
+            self, "Output", command=lambda: controller.show_frame("Output")
         )
-        self.btn2.bind("<FocusIn>", self.on_focus_in)
-        self.btn2.bind("<FocusOut>", self.on_focus_out)
         self.btn2.pack()
-        self.btn3 = tk.Button(
-            self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Source Routing",
-            command=lambda: controller.show_frame("SourceRouting"),
+        self.btn4 = BackButton(
+            self, command=lambda: controller.show_frame("MainSettings")
         )
-        self.btn3.bind("<FocusIn>", self.on_focus_in)
-        self.btn3.bind("<FocusOut>", self.on_focus_out)
-        self.btn3.pack()
-
-        self.btn4 = tk.Button(
-            self,
-            relief=RELIEF,
-            font=btnFont,
-            width=BUTTON_WIDTH,
-            height=BUTTON_HEIGHT,
-            bg=BUTTON_BG,
-            fg=UNSELECTED_COLOR,
-            text="Back",
-            command=lambda: controller.show_frame("MainSettings"),
-        )
-        self.btn4.bind("<FocusIn>", self.on_focus_in)
-        self.btn4.bind("<FocusOut>", self.on_focus_out)
         self.btn4.pack()

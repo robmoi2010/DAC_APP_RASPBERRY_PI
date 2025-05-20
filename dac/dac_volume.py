@@ -5,7 +5,6 @@ import util.communication as communication
 from enum import Enum
 
 
-
 class VOL_DIRECTION(Enum):
     UP = 0
     DOWN = 1
