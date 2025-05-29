@@ -95,5 +95,23 @@
             "SOUT_SOURCE3": "0xF183",
             "SOUT_SOURCE4": "0xF184"
         }
+    },
+    "MUSES72323": {
+        "MAX_VOLUME": 0,
+        "MIN_VOLUME": -111.75,
+        "STEP": 0.25,
+        "R_VOLUME_ADDR_REGISTER": "0010000",
+        "L_VOLUME_ADDR_REGISTER": "0010100",
+        "MASTER_CHANNEL": "R",
+        "R_CHANNEL_CS_PIN": 1,
+        "L_CHANNEL_CS_PIN": 2,
+        "R_CHANNEL_GAIN": "000",
+        "L_CHANNEL_GAIN": "000",
+        "R/L_LINK":"1",
+        "ZERO_CROSS_DETECTION":"0",
+        "SETTINGS_ADDR":"00001000"
+    },
+    "SYSTEM": {
+        "MASTER_VOLUME_DEVICE": "MUSES"
     }
 }

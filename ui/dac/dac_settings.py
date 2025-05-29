@@ -11,7 +11,7 @@ DISABLE_VOL_TEXT = "Disable Volume"
 
 class DacSettings(tk.Frame):
     def volumeDisableEnableOnclick(frame):
-        if dac_volume.isVolumeDisabled() == 1:
+        if dac_volume.is_volume_disabled() == 1:
             selection = "Enable"
             text = ENABLE_VOL_TEXT
         else:
@@ -21,13 +21,13 @@ class DacSettings(tk.Frame):
             "Confirmation", "Are you sure you want to select " + selection
         )
         if answer:
-            dac_volume.disableEnableVolume()
+            dac_volume.disable_enable_volume()
             frame.volBtn.config(text=text)
 
     def __init__(self, parent, controller):
         super().__init__(parent)
         tk.Label(self, text="Dac Settings", font=("Arial", 16)).pack(pady=20)
-        disabled = dac_volume.isVolumeDisabled()
+        disabled = dac_volume.is_volume_disabled()
         if disabled == 1:
             text = ENABLE_VOL_TEXT
         else:

@@ -32,6 +32,7 @@ def initialize():
         "CURRENT_DAC_MODE": 2,
         "DAC_MUTED": 0,
         "CURRENT_VOLUME": 128.5,
+        "CURRENT_MUSES_VOLUME":-25,
         "CURRENT_INPUT": 4,
         "CURRENT_MAIN_OUTPUT": 3,
         "CURRENT_SUBWOOFER_OUTPUT": 2,

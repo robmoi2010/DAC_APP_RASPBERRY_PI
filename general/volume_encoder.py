@@ -1,7 +1,7 @@
 import repo.storage as storage
 import configs.app_config as app_config
+import volume.system_volume as volume
 import dac.dac_volume as dac_volume
-from dac.dac_volume import VOL_DIRECTION
 from gpiozero import RotaryEncoder, Button, Device
 from gpiozero.pins.mock import MockFactory
 
@@ -23,15 +23,15 @@ def onRotate():
         steps = encoder.steps
         encoder.steps = 0
         if steps > 0:  # volume up
-            dac_volume.updateVolume(VOL_DIRECTION.UP)
+            volume.updateVolume(volume.VOL_DIRECTION.UP)
         if steps < 0:  # volume down
-            dac_volume.updateVolume(VOL_DIRECTION.DOWN)
+            volume.updateVolume(volume.VOL_DIRECTION.DOWN)
 
 
 def rotaryButtonPressed():  # Either mute of disable volume
     knobButtonSetting = getButtonKnobMode()
     if knobButtonSetting == 0:  # for mute
-        dac_volume.muteUnmuteDac()
+        volume.mute()
     else:  # for disable volume
         dac_volume.disableEnableVolume()
 

@@ -1,20 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
-import dac.dac_volume as dac_volume
+import volume.system_volume as volume
 import general.sound_modes as sound_modes
 from ui.generics.general_button import GeneralButton
 
-from util.styles import (
-    RELIEF,
-    BUTTON_BG,
-    BUTTON_HEIGHT,
-    BUTTON_WIDTH,
-    UNSELECTED_COLOR,
-    BUTTON_FONT,
-    BUTTON_FONT_SIZE,
-    BUTTON_FONT_STYLE,
-    BUTTON_ONFOCUS_BG,
-)
+from util.styles import BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE
 
 font = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 
@@ -22,9 +12,9 @@ font = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 class Home(tk.Frame):
     def on_key_press(self, event):
         if event.keysym == "Right":
-            dac_volume.updateVolume(dac_volume.VOL_DIRECTION.UP)
+            volume.update_volume(volume.VOL_DIRECTION.UP)
         if event.keysym == "Left":
-            dac_volume.updateVolume(dac_volume.VOL_DIRECTION.DOWN)
+            volume.update_volume(volume.VOL_DIRECTION.DOWN)
 
     # Volume rotary encoder mock
     volume_bar = None
@@ -37,7 +27,7 @@ class Home(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         # get current volume from storage
-        currVolume = dac_volume.getPercentageVolume(dac_volume.getCurrentVolume())
+        currVolume = volume.get_percentage_volume(volume.get_current_volume())
         sound_mode = sound_modes.get_sound_mode_name(
             sound_modes.get_current_sound_mode()
         )
@@ -78,8 +68,8 @@ class Home(tk.Frame):
         self.focus_set()
 
 
-def updateVolume(currVolume):
-    currVolume = dac_volume.getPercentageVolume(currVolume)
+def update_volume(currVolume):
+    currVolume = volume.get_percentage_volume(currVolume)
     global volume_bar
     volume_bar["value"] = currVolume
     global volume_label
