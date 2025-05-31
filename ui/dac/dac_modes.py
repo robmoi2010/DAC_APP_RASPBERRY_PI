@@ -42,25 +42,11 @@ class DacModes(tk.Frame):
                 frame.mode3Btn.config(fg=SELECTED_COLOR)
                 frame.mode4Btn.config(fg=UNSELECTED_COLOR)
                 frame.mode5Btn.config(fg=UNSELECTED_COLOR)
-            if type == 4:
-                frame.mode0Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode1Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode2Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode3Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode4Btn.config(fg=SELECTED_COLOR)
-                frame.mode5Btn.config(fg=UNSELECTED_COLOR)
-            if type == 5:
-                frame.mode0Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode1Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode2Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode3Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode4Btn.config(fg=UNSELECTED_COLOR)
-                frame.mode5Btn.config(fg=SELECTED_COLOR)
 
     def __init__(self, parent, controller):
         super().__init__(parent)
         tk.Label(self, text="Select Dac Modes", font=("Arial", 16)).pack(pady=20)
-        currentMode = ess_dac.getCurrentDacMode()
+        currentMode = ess_dac.get_current_dac_mode()
 
         self.mode0Btn = GeneralButton(
             self,
@@ -91,21 +77,6 @@ class DacModes(tk.Frame):
             command=lambda: self.dacModesOnclick("SPDIF mode", 3),
         )
         self.mode3Btn.pack()
-
-        self.mode4Btn = GeneralButton(
-            self,
-            "TDM I2S Slave mode Async",
-            selected=currentMode == 4,
-            command=lambda: self.dacModesOnclick("TDM I2S Slave mode Async", 4),
-        )
-        self.mode4Btn.pack()
-        self.mode5Btn = GeneralButton(
-            self,
-            "TDM I2S Slave mode Sync",
-            selected=currentMode == 5,
-            command=lambda: self.dacModesOnclick("TDM I2S Slave mode Sync", 5),
-        )
-        self.mode5Btn.pack()
         self.mode6Btn = BackButton(
             self, command=lambda: controller.show_frame("DacSettings")
         )

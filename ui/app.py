@@ -12,6 +12,10 @@ from ui.dsp.subwoofer_output import SubwooferOutput
 from ui.dsp.output import Output
 from ui.general.sound_modes import SoundModes
 from ui.general.general_settings import GeneralSettings
+from ui.dac.thd_compensation import ThdCompensation
+from ui.dac.second_order_compensation import SecondOrderCompensation
+from ui.dac.third_order_compensation import ThirdOrderCompensation
+from ui.dac.dac_volume_settings import DacVolumeSettings
 
 current_visible_frame = None
 prev_frame = None
@@ -40,6 +44,10 @@ class App(tk.Tk):
             Output,
             SoundModes,
             GeneralSettings,
+            ThdCompensation,
+            SecondOrderCompensation,
+            ThirdOrderCompensation,
+            DacVolumeSettings
         ):
             page_name = F.__name__
             frame = F(parent=self, controller=self)

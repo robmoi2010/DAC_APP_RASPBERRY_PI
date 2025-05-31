@@ -10,30 +10,11 @@ DISABLE_VOL_TEXT = "Disable Volume"
 
 
 class DacSettings(tk.Frame):
-    def volumeDisableEnableOnclick(frame):
-        if dac_volume.is_volume_disabled() == 1:
-            selection = "Enable"
-            text = ENABLE_VOL_TEXT
-        else:
-            selection = "disable"
-            text = DISABLE_VOL_TEXT
-        answer = messagebox.askyesno(
-            "Confirmation", "Are you sure you want to select " + selection
-        )
-        if answer:
-            dac_volume.disable_enable_volume()
-            frame.volBtn.config(text=text)
-
     def __init__(self, parent, controller):
         super().__init__(parent)
         tk.Label(self, text="Dac Settings", font=("Arial", 16)).pack(pady=20)
-        disabled = dac_volume.is_volume_disabled()
-        if disabled == 1:
-            text = ENABLE_VOL_TEXT
-        else:
-            text = DISABLE_VOL_TEXT
         self.volBtn = GeneralButton(
-            self, text, command=lambda: self.volumeDisableEnableOnclick()
+            self, "Volume Settings", command=lambda: controller.show_frame("DacVolumeSettings")
         )
         self.volBtn.pack()
         self.mode1Btn = GeneralButton(
@@ -47,15 +28,13 @@ class DacSettings(tk.Frame):
         )
         self.mode2Btn.pack()
         self.mode3Btn = GeneralButton(
-            self,
-            "Volume Mode",
-            command=lambda: controller.show_frame("VolumeMode")
+            self, "Volume Mode", command=lambda: controller.show_frame("VolumeMode")
         )
         self.mode3Btn.pack()
         self.mode5Btn = GeneralButton(
             self,
             "THD Compensation",
-            command=lambda: controller.show_frame(""),
+            command=lambda: controller.show_frame("ThdCompensation"),
         )
         self.mode5Btn.pack()
         self.mode4Btn = BackButton(

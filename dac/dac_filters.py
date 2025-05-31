@@ -10,15 +10,20 @@ import util.communication as communication
 # 5 Minimum phase fast roll-off
 # 6 Minimum phase slow roll-off
 # 7 Minimum phase slow roll-off low dispersion
-config = app_config.getConfig()["DAC"]
+config = app_config.getConfig()["DAC"]["ADDR"]
+DAC_I2C_ADDR = config["I2C_ADDR"]
 
 
-def updateFilter(filter):
-    print(filter)
-    communication.write(
-        config["ADDR"]["I2C_ADDR"], config["ADDR"]["DAC_FILTER_SHAPE"], filter
-    )
-    storage.write("CURRENT_FILTER", filter)
+def update_filter(filter):
+    filter_shape_addr = config["DAC_FILTER_SHAPE"]
+    gen_mask = 0b00000111
+    msb = "00000"
+    lsb = format(filter, "0b3")
+    filter_mask = int(msb + lsb)
+    data = communication.read(DAC_I2C_ADDR, filter_shape_addr)
+    data = data & ~gen_mask # reset the bits to zero first
+    data = data | filter_mask
+    communication.write(DAC_I2C_ADDR, filter_shape_addr, data)
 
 
 def getCurrentFilter():

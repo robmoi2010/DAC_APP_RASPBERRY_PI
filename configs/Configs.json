@@ -7,8 +7,8 @@
             "DAC_PCM_MASTER_MODE_ADDR": "0x10",
             "DAC_ENABLE_SPDIF_DECODE_ADDR": "0xB9",
             "DAC_AUTO_INPUT_SEL_ADDR": "0x41",
-            "DAC_SPDIF_SEL_ADDR": "0x64",
-            "DAC_GPIO4_SDB_ADDR": "0x08",
+            "DAC_SPDIF_SEL_ADDR": "0x59",
+            "DAC_GPIO_INPUT_ADDR": "0x2A",
             "DAC_AUTO_CH_DETECT_ADDR": "0x80",
             "DAC_TDM_CH1_SEL_ADDR": "0x02",
             "DAC_TDM_CH2_SEL_ADDR": "0x03",
@@ -20,11 +20,27 @@
             "VOLUME_CH1": "0x4A",
             "VOLUME_CH2": "0x4B",
             "GPIO__READ": "0xF0",
-            "VOLUME_HOLD": "0x59"
+            "VOLUME_HOLD": "0x59",
+            "INPUT_SELECTION": "0x39",
+            "SYS_CONFIG": "0x0",
+            "SYS_MODE_CONFIG": "0x1",
+            "TDM_CONFIG_1": "0x3C",
+            "TDM_CONFIG_2": "0x3D",
+            "THD_2ND_ORDER_1": "0x5B",
+            "THD_2ND_ORDER_2": "0x5C",
+            "THD_2ND_ORDER_3": "0x5D",
+            "THD_2ND_ORDER_4": "0x5E",
+            "THD_3RD_ORDER_1": "0x6B",
+            "THD_3RD_ORDER_2": "0x6C",
+            "THD_3RD_ORDER_3": "0x6D",
+            "THD_3RD_ORDER_4": "0x6E"
         },
         "VOLUME": {
             "VOLUME_STEPS": 0.5,
             "VOLUME_UI_POLL_DURATION": 10
+        },
+        "GPIO": {
+            "SPDIF_GPIO_PIN": 3
         }
     },
     "GPIO": {
@@ -107,9 +123,9 @@
         "L_CHANNEL_CS_PIN": 2,
         "R_CHANNEL_GAIN": "000",
         "L_CHANNEL_GAIN": "000",
-        "R/L_LINK":"1",
-        "ZERO_CROSS_DETECTION":"0",
-        "SETTINGS_ADDR":"00001000"
+        "R/L_LINK": "1",
+        "ZERO_CROSS_DETECTION": "0",
+        "SETTINGS_ADDR": "00001000"
     },
     "SYSTEM": {
         "MASTER_VOLUME_DEVICE": "MUSES"

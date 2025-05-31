@@ -10,7 +10,7 @@ LOG_CURVE = 6
 config = app_config.getConfig()
 
 addrConfig = config["DAC"]["ADDR"]
-
+DAC_I2C_ADDR = addrConfig["I2C_ADDR"]
 
 # def onkeyLeft(counter):
 #     from ui.app import current_visible_frame
@@ -40,11 +40,23 @@ addrConfig = config["DAC"]["ADDR"]
 
 def set_volume(volume):
     # hold both channels
-    # communication.write(addrConfig["I2C_ADDR"], addrConfig["VOLUME_HOLD"], 1)
+    hold_addr = addrConfig["DAC_SPDIF_SEL_ADDR"]
+    hold_mask = 0b00001000
+    data = communication.read(DAC_I2C_ADDR, hold_addr)
+    data = data | hold_mask
+    communication.write(DAC_I2C_ADDR, hold_addr, data)
+
     # update volume of both channels
-    communication.write(addrConfig["I2C_ADDR"], addrConfig["VOLUME_CH1"], volume)
-    communication.write(addrConfig["I2C_ADDR"], addrConfig["VOLUME_CH2"], volume)
+    volume_1_addr = addrConfig["VOLUME_CH1"]
+    volume_2_addr = addrConfig["VOLUME_CH2"]
+    print("vol:" + str(volume))
+    volume_data = format(volume, "08b")
+    communication.write(DAC_I2C_ADDR, volume_1_addr, volume_data)
+    communication.write(DAC_I2C_ADDR, volume_2_addr, volume_data)
+
     # release hold on both channels
+    data = data & ~hold_mask
+    communication.write(DAC_I2C_ADDR, hold_addr, data)
 
 
 def update_volume(direction):
@@ -62,7 +74,7 @@ def update_volume(direction):
 
     # currVol = getLogarithmicVolumeLevel(currVol)  # change from linear to logarithmic
     set_volume(currVol)
-    volume.persistVolume(currVol)
+    volume.persist_volume(currVol)
     # update ui with the new volume
     volume.update_ui_volume(currVol)
 
@@ -71,24 +83,34 @@ def is_volume_disabled():
     return storage.read("DISABLE_VOLUME")
 
 
-def disable_enable_volume():
+def disable_enable_volume(selected):
     curr = storage.read("DISABLE_VOLUME")
-    if curr == 0:
+    if (curr == 0 and selected == 0) or (curr == 1 and selected == 1):
+        return
+    if selected == 1:
         set_volume(DAC_MAX_VOL)  # disable volume
         storage.write("DISABLE_VOLUME", 1)
         return 0  # disabled
     else:
-        set_volume(volume.getCurrentVolume())
+        set_volume(volume.get_current_volume())
         storage.write("DISABLE_VOLUME", 0)
         return 1  # enabled
 
 
 def mute_dac():
-    communication.write(addrConfig["I2C_ADDR"], addrConfig["DAC_MUTE"], 3)
+    mute_addr = addrConfig["DAC_MUTE"]
+    mute_mask = 0b00000011
+    data = communication.read(DAC_I2C_ADDR, mute_addr)
+    data = data | mute_mask
+    communication.write(DAC_I2C_ADDR, mute_addr, data)
 
 
 def unmute_dac():
-    communication.write(addrConfig["I2C_ADDR"], addrConfig["DAC_MUTE"], 0)
+    mute_addr = addrConfig["DAC_MUTE"]
+    mute_mask = 0b00000011
+    data = communication.read(DAC_I2C_ADDR, mute_addr)
+    data = data & ~mute_mask
+    communication.write(DAC_I2C_ADDR, mute_addr, data)
 
 
 def mute():
@@ -104,5 +126,3 @@ def mute():
 def get_percentage_volume(volume):
     val = volume.map_value(volume, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
     return int(val)
-
-
