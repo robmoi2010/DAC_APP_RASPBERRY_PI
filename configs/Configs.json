@@ -36,8 +36,7 @@
             "THD_3RD_ORDER_4": "0x6E"
         },
         "VOLUME": {
-            "VOLUME_STEPS": 0.5,
-            "VOLUME_UI_POLL_DURATION": 10
+            "VOLUME_STEPS": 1
         },
         "GPIO": {
             "SPDIF_GPIO_PIN": 3

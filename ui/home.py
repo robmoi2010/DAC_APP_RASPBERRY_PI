@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import volume.system_volume as volume
 import general.sound_modes as sound_modes
+
 from ui.generics.general_button import GeneralButton
 
 from util.styles import BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE
@@ -10,6 +11,11 @@ font = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 
 
 class Home(tk.Frame):
+    def get_current_row(self):
+        ret = self.row_index
+        self.row_index += 1
+        return ret
+
     def on_key_press(self, event):
         if event.keysym == "Right":
             volume.update_volume(volume.VOL_DIRECTION.UP)
@@ -26,17 +32,24 @@ class Home(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
+        self.row_index = 1
         # get current volume from storage
         currVolume = volume.get_percentage_volume(volume.get_current_volume())
         sound_mode = sound_modes.get_sound_mode_name(
             sound_modes.get_current_sound_mode()
         )
-        tk.Label(self, text="Home", font=("Arial", 16)).pack(pady=20)
+        # tk.Label(self, text="Home", font=("Arial", 16)).grid(
+        #     row=self.get_current_row(), column=0, sticky="nsew"
+        # )
         global mode_label
         mode_label = tk.Label(
-            self, text="Current Mode: " + sound_mode, font=("Arial", 16)
+            self, text="Current Mode: " + sound_mode, font=("Arial", 10)
         )
-        mode_label.pack(pady=20)
+        r = self.get_current_row()
+        mode_label.grid(row=r, column=0, sticky="nsew")
+        tk.Label(self, text="sample rate: xyz", font=("Arial", 10)).grid(
+            row=r, column=0, sticky="nsw"
+        )
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Thick.Horizontal.TProgressbar", thickness=200)
@@ -49,7 +62,7 @@ class Home(tk.Frame):
             mode="determinate",
             maximum=100,
         )
-        volume_bar.pack(expand=True)
+        volume_bar.grid(row=self.get_current_row(), column=0, sticky="nsew")
         volume_bar["value"] = currVolume
 
         global volume_label
@@ -60,7 +73,7 @@ class Home(tk.Frame):
         btn1 = GeneralButton(
             self, "Settings", command=lambda: controller.show_frame("MainSettings")
         )
-        btn1.pack()
+        btn1.grid(row=self.get_current_row(), column=0, sticky="nsew")
 
         # for mocking volume rotary encoder
         self.bind("<KeyPress>", self.on_key_press)

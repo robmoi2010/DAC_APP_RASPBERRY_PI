@@ -7,6 +7,11 @@ from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
 
 class SecondOrderCompensation(tk.Frame):
+    def get_current_row(self):
+        ret = self.row_index
+        self.row_index += 1
+        return ret
+
     def enable_disable(self, selected):
         txt = None
         if selected == 0:
@@ -25,23 +30,26 @@ class SecondOrderCompensation(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        tk.Label(self, text="2nd Order Compensation", font=("Arial", 16)).pack(pady=20)
+        self.row_index = 1
+        tk.Label(self, text="2nd Order Compensation", font=("Arial", 16)).grid(
+            row=self.get_current_row(), column=0, sticky="nsew"
+        )
         active = dac.is_second_order_compensation_enabled()
 
         self.btn1 = GeneralButton(
             self, "Enable", selected=active, command=lambda: self.enable_disable(0)
         )
-        self.btn1.pack()
+        self.btn1.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.btn2 = GeneralButton(
             self,
             "Disable",
             selected=not active,
             command=lambda: self.enable_disable(1),
         )
-        self.btn2.pack()
+        self.btn2.grid(row=self.get_current_row(), column=0, sticky="nsew")
 
         self.btn3 = BackButton(
             self,
             command=lambda: controller.show_frame("ThdCompensation"),
         )
-        self.btn3.pack()
+        self.btn3.grid(row=self.get_current_row(), column=0, sticky="nsew")

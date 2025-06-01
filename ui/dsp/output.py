@@ -16,6 +16,11 @@ btnFont = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 
 
 class Output(tk.Frame):
+    def get_current_row(self):
+        ret = self.row_index
+        self.row_index += 1
+        return ret
+
     def on_focus_in(self, event):
         event.widget.config(bg=BUTTON_ONFOCUS_BG)
 
@@ -24,7 +29,10 @@ class Output(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        tk.Label(self, text="Outputs", font=("Arial", 16)).pack(pady=20)
+        self.row_index = 1
+        tk.Label(self, text="Outputs", font=("Arial", 16)).grid(
+            row=self.get_current_row(), column=0, sticky="nsew"
+        )
         self.btn2 = tk.Button(
             self,
             relief=RELIEF,
@@ -38,7 +46,7 @@ class Output(tk.Frame):
         )
         self.btn2.bind("<FocusIn>", self.on_focus_in)
         self.btn2.bind("<FocusOut>", self.on_focus_out)
-        self.btn2.pack()
+        self.btn2.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.btn2 = tk.Button(
             self,
             relief=RELIEF,
@@ -52,7 +60,7 @@ class Output(tk.Frame):
         )
         self.btn2.bind("<FocusIn>", self.on_focus_in)
         self.btn2.bind("<FocusOut>", self.on_focus_out)
-        self.btn2.pack()
+        self.btn2.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.btn4 = tk.Button(
             self,
             relief=RELIEF,
@@ -66,4 +74,4 @@ class Output(tk.Frame):
         )
         self.btn4.bind("<FocusIn>", self.on_focus_in)
         self.btn4.bind("<FocusOut>", self.on_focus_out)
-        self.btn4.pack()
+        self.btn4.grid(row=self.get_current_row(), column=0, sticky="nsew")

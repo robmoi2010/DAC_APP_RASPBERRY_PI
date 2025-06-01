@@ -8,6 +8,11 @@ from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
 
 class VolumeMode(tk.Frame):
+    def get_current_row(self):
+        ret = self.row_index
+        self.row_index += 1
+        return ret
+
     def volumeModeOnclick(frame, selection, type):
         answer = messagebox.askyesno(
             "Confirmation", "Are you sure you want to select " + selection
@@ -23,9 +28,10 @@ class VolumeMode(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
+        self.row_index=1
         tk.Label(
             self, text="Select volume knob press functionality", font=("Arial", 16)
-        ).pack(pady=20)
+        ).grid(row=self.get_current_row(), column=0, sticky="nsew")
         selected = volume_encoder.getButtonKnobMode()
         self.muteBtn = GeneralButton(
             self,
@@ -33,17 +39,17 @@ class VolumeMode(tk.Frame):
             selected=selected == 0,
             command=lambda: self.volumeModeOnclick("Mute", 0),
         )
-        self.muteBtn.pack()
+        self.muteBtn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.dVolBtn = GeneralButton(
             self,
             "Disable/Enable volume",
             selected=selected == 1,
             command=lambda: self.volumeModeOnclick("Disable/Enable volume", 1),
         )
-        self.dVolBtn.pack()
+        self.dVolBtn.grid(row=self.get_current_row(), column=0, sticky="nsew")
 
         self.mode0Btn = BackButton(
             self,
             command=lambda: controller.show_frame("DacSettings"),
         )
-        self.mode0Btn.pack()
+        self.mode0Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")

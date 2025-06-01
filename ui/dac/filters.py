@@ -15,6 +15,11 @@ from ui.generics.back_button import BackButton
 # 6 Minimum phase slow roll-off
 # 7 Minimum phase slow roll-off low dispersion
 class Filters(tk.Frame):
+    def get_current_row(self):
+        ret = self.row_index
+        self.row_index += 1
+        return ret
+
     def filtersOnclick(frame, selection, type):
         answer = messagebox.askyesno(
             "Confirmation", "Are you sure you want to select " + selection
@@ -96,8 +101,11 @@ class Filters(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
+        self.row_index = 1
         curr = dac_filters.getCurrentFilter()
-        tk.Label(self, text="Select DAC Filter", font=("Arial", 16)).pack(pady=20)
+        tk.Label(self, text="Select DAC Filter", font=("Arial", 16)).grid(
+            row=self.get_current_row(), column=0, sticky="nsew"
+        )
 
         self.f0Btn = GeneralButton(
             self,
@@ -105,7 +113,7 @@ class Filters(tk.Frame):
             selected=curr == 0,
             command=lambda: self.filtersOnclick("Minimum phase", 0),
         )
-        self.f0Btn.pack()
+        self.f0Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.f1Btn = GeneralButton(
             self,
             "Linear phase apodizing first roll-off",
@@ -114,14 +122,14 @@ class Filters(tk.Frame):
                 "Linear phase apodizing first roll-off", 1
             ),
         )
-        self.f1Btn.pack()
+        self.f1Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.f2Btn = GeneralButton(
             self,
             "Linear phase fast roll-off",
             selected=curr == 2,
             command=lambda: self.filtersOnclick("Linear phase fast roll-off", 2),
         )
-        self.f2Btn.pack()
+        self.f2Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.f3Btn = GeneralButton(
             self,
             "Linear phase slow roll-off low ripple",
@@ -131,7 +139,7 @@ class Filters(tk.Frame):
             ),
         )
 
-        self.f3Btn.pack()
+        self.f3Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.f4Btn = GeneralButton(
             self,
             "Linear phase slow roll-off",
@@ -140,7 +148,7 @@ class Filters(tk.Frame):
                 "Linear phase slow roll-off low ripple", 4
             ),
         )
-        self.f4Btn.pack()
+        self.f4Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.f5Btn = GeneralButton(
             self,
             "Minimum phase fast roll-off",
@@ -149,7 +157,7 @@ class Filters(tk.Frame):
                 "Linear phase slow roll-off low ripple", 5
             ),
         )
-        self.f5Btn.pack()
+        self.f5Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.f6Btn = GeneralButton(
             self,
             "Minimum phase slow roll-off",
@@ -157,7 +165,7 @@ class Filters(tk.Frame):
             command=lambda: self.filtersOnclick("Minimum phase slow roll-off", 6),
         )
 
-        self.f6Btn.pack()
+        self.f6Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.f7Btn = GeneralButton(
             self,
             "Minimum phase slow roll-off low dispersion",
@@ -166,8 +174,8 @@ class Filters(tk.Frame):
                 "Minimum phase slow roll-off low dispersion", 7
             ),
         )
-        self.f7Btn.pack()
+        self.f7Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.f8Btn = BackButton(
             self, command=lambda: controller.show_frame("DacSettings")
         )
-        self.f8Btn.pack()
+        self.f8Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")

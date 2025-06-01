@@ -7,6 +7,11 @@ from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
 
 class DacModes(tk.Frame):
+    def get_current_row(self):
+        ret = self.row_index
+        self.row_index += 1
+        return ret
+
     # 0 I2S Slave mode, 1 LJ Slave mode, 2 I2S Master mode, 3 SPDIF mode, 4 TDM I2S Slave mode Async, 5 TDM I2S Slave mode Sync
     def dacModesOnclick(frame, selection, type):
         answer = messagebox.askyesno(
@@ -45,7 +50,8 @@ class DacModes(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        tk.Label(self, text="Select Dac Modes", font=("Arial", 16)).pack(pady=20)
+        self.row_index = 1
+        tk.Label(self, text="Select Dac Modes", font=("Arial", 16)).grid(row=self.get_current_row(), column=0, sticky="nsew")
         currentMode = ess_dac.get_current_dac_mode()
 
         self.mode0Btn = GeneralButton(
@@ -54,21 +60,21 @@ class DacModes(tk.Frame):
             selected=currentMode == 0,
             command=lambda: self.dacModesOnclick("I2S Slave mode", 0),
         )
-        self.mode0Btn.pack()
+        self.mode0Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.mode1Btn = GeneralButton(
             self,
             "LJ Slave mode",
             selected=currentMode == 1,
             command=lambda: self.dacModesOnclick("LJ Slave mode", 1),
         )
-        self.mode1Btn.pack()
+        self.mode1Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.mode2Btn = GeneralButton(
             self,
             "I2S Master mode",
             selected=currentMode == 2,
             command=lambda: self.dacModesOnclick("I2S Master mode", 2),
         )
-        self.mode2Btn.pack()
+        self.mode2Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
 
         self.mode3Btn = GeneralButton(
             self,
@@ -76,8 +82,8 @@ class DacModes(tk.Frame):
             selected=currentMode == 3,
             command=lambda: self.dacModesOnclick("SPDIF mode", 3),
         )
-        self.mode3Btn.pack()
+        self.mode3Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")
         self.mode6Btn = BackButton(
             self, command=lambda: controller.show_frame("DacSettings")
         )
-        self.mode6Btn.pack()
+        self.mode6Btn.grid(row=self.get_current_row(), column=0, sticky="nsew")

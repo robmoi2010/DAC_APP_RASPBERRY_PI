@@ -2,34 +2,44 @@ import volume.system_volume as volume
 import configs.app_config as configuration
 import util.communication as comm
 
+
 config = configuration.getConfig()["MUSES72323"]
-MAX_VOLUME = config["MAX_VOLUME"]
-MIN_VOLUME = config["MIN_VOLUME"]
-STEP = config["STEP"]
 
 
 class Muses72323:
     def __init__(self):
-        pass
+        self.MAX_VOLUME = config["MAX_VOLUME"]
+        self.MIN_VOLUME = config["MIN_VOLUME"]
+        self.STEP = config["STEP"]
 
     def update_volume(self, direction):
         curr_volume = volume.get_current_volume()
         if direction == volume.VOL_DIRECTION.UP:  # volume increase
-            if curr_volume >= MAX_VOLUME:  # skip processing if volume is already at Max
+            if (
+                curr_volume >= self.MAX_VOLUME
+            ):  # skip processing if volume is already at Max
                 return
-            curr_volume += STEP
+            curr_volume += self.STEP
         else:
             if (
-                curr_volume <= MIN_VOLUME
+                curr_volume <= self.MIN_VOLUME
             ):  # skip processing if volume is already at Minimum
                 return
-            curr_volume -= STEP
+            curr_volume -= self.STEP
+            print("after step:" + str(curr_volume))
         self.update_chip_volume(curr_volume)
         volume.persist_volume(curr_volume)
         # update ui with the new volume
         volume.update_ui_volume(curr_volume)
 
     def update_chip_volume(self, vol):
+        # if logarithmic is set adjust volume to logarithmic scale
+        if (
+            volume.get_current_volume_algorithm() == volume.VOLUME_ALGORITHM.LOGARITHMIC
+        ):  # fix issue of algorithm returning 0 during implementation
+            vol = volume.get_logarithmic_volume_level(
+                abs(vol), self.MIN_VOLUME, self.MAX_VOLUME
+            )
         print("prev_val:", str(vol))
         vol = self.map_db_to_reg_binary(vol)
         print("new val:" + str(vol))
@@ -82,7 +92,7 @@ class Muses72323:
 
     def get_percentage_volume(self, vol):
         print(vol)
-        p_vol = volume.map_value(vol, MIN_VOLUME, MAX_VOLUME, 0, 100)
+        p_vol = volume.map_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
         print(p_vol)
         return int(p_vol)
 

@@ -2,6 +2,7 @@ import repo.storage as storage
 import configs.app_config as app_config
 import util.communication as communication
 import volume.system_volume as volume
+from volume.system_volume import VOLUME_ALGORITHM
 
 
 DAC_MIN_VOL = 255
@@ -38,7 +39,11 @@ DAC_I2C_ADDR = addrConfig["I2C_ADDR"]
 #     return len(children)
 
 
-def set_volume(volume):
+def set_volume(vol):
+    # if logarithmic is set adjust volume to logarithmic scale
+    if volume.get_current_volume_algorithm() == VOLUME_ALGORITHM.LOGARITHMIC:  
+        vol = volume.get_logarithmic_volume_level(vol, DAC_MIN_VOL, DAC_MAX_VOL)
+        print("vol:" + str(vol))
     # hold both channels
     hold_addr = addrConfig["DAC_SPDIF_SEL_ADDR"]
     hold_mask = 0b00001000
@@ -49,8 +54,7 @@ def set_volume(volume):
     # update volume of both channels
     volume_1_addr = addrConfig["VOLUME_CH1"]
     volume_2_addr = addrConfig["VOLUME_CH2"]
-    print("vol:" + str(volume))
-    volume_data = format(volume, "08b")
+    volume_data = format(vol, "08b")
     communication.write(DAC_I2C_ADDR, volume_1_addr, volume_data)
     communication.write(DAC_I2C_ADDR, volume_2_addr, volume_data)
 
@@ -60,19 +64,16 @@ def set_volume(volume):
 
 
 def update_volume(direction):
-    currVol = volume.getCurrentVolume()
+    currVol = volume.get_current_volume()
     steps = config["DAC"]["VOLUME"]["VOLUME_STEPS"]  # get volume steps from config
     if direction == volume.VOL_DIRECTION.UP:  # volume increase
         if currVol <= DAC_MAX_VOL:  # skip processing if volume is already at Max
             return
         currVol -= steps  # dacs lower value=increase
-
     else:
         if currVol >= DAC_MIN_VOL:  # skip processing if volume is already at Minimum
             return
         currVol += steps  # dacs higher value=decrease
-
-    # currVol = getLogarithmicVolumeLevel(currVol)  # change from linear to logarithmic
     set_volume(currVol)
     volume.persist_volume(currVol)
     # update ui with the new volume
@@ -123,6 +124,6 @@ def mute():
         storage.write("DAC_MUTED", 1)
 
 
-def get_percentage_volume(volume):
-    val = volume.map_value(volume, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
+def get_percentage_volume(vol):
+    val = volume.map_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
     return int(val)
