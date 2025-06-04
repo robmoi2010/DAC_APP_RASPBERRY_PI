@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import volume.system_volume as volume
 import general.sound_modes as sound_modes
+from general.sound_modes import SoundMode
 
 from ui.generics.general_button import GeneralButton
 
@@ -35,15 +36,14 @@ class Home(tk.Frame):
         self.row_index = 1
         # get current volume from storage
         currVolume = volume.get_percentage_volume(volume.get_current_volume())
-        sound_mode = sound_modes.get_sound_mode_name(
-            sound_modes.get_current_sound_mode()
-        )
+        sound_mode: SoundMode = sound_modes.get_current_sound_mode()
+
         # tk.Label(self, text="Home", font=("Arial", 16)).grid(
         #     row=self.get_current_row(), column=0, sticky="nsew"
         # )
         global mode_label
         mode_label = tk.Label(
-            self, text="Current Mode: " + sound_mode, font=("Arial", 10)
+            self, text="Current Mode: " + sound_mode.name, font=("Arial", 10)
         )
         r = self.get_current_row()
         mode_label.grid(row=r, column=0, sticky="nsew")

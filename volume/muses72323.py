@@ -1,20 +1,22 @@
-import volume.system_volume as volume
+from volume.system_volume import Volume
+import volume.system_volume as sys_volume
 import configs.app_config as configuration
 import util.communication as comm
-
+import repo.storage as storage
 
 config = configuration.getConfig()["MUSES72323"]
 
 
-class Muses72323:
+class Muses72323(Volume):
     def __init__(self):
+        super.__init__()
         self.MAX_VOLUME = config["MAX_VOLUME"]
         self.MIN_VOLUME = config["MIN_VOLUME"]
         self.STEP = config["STEP"]
 
     def update_volume(self, direction):
-        curr_volume = volume.get_current_volume()
-        if direction == volume.VOL_DIRECTION.UP:  # volume increase
+        curr_volume = super.get_current_volume()
+        if direction == super.VOL_DIRECTION.UP:  # volume increase
             if (
                 curr_volume >= self.MAX_VOLUME
             ):  # skip processing if volume is already at Max
@@ -28,16 +30,16 @@ class Muses72323:
             curr_volume -= self.STEP
             print("after step:" + str(curr_volume))
         self.update_chip_volume(curr_volume)
-        volume.persist_volume(curr_volume)
+        super.persist_volume(curr_volume)
         # update ui with the new volume
-        volume.update_ui_volume(curr_volume)
+        super.update_ui_volume(curr_volume)
 
     def update_chip_volume(self, vol):
         # if logarithmic is set adjust volume to logarithmic scale
         if (
-            volume.get_current_volume_algorithm() == volume.VOLUME_ALGORITHM.LOGARITHMIC
+            super.get_current_volume_algorithm() == super.VOLUME_ALGORITHM.LOGARITHMIC
         ):  # fix issue of algorithm returning 0 during implementation
-            vol = volume.get_logarithmic_volume_level(
+            vol = super.get_logarithmic_volume_level(
                 abs(vol), self.MIN_VOLUME, self.MAX_VOLUME
             )
         print("prev_val:", str(vol))
@@ -92,7 +94,7 @@ class Muses72323:
 
     def get_percentage_volume(self, vol):
         print(vol)
-        p_vol = volume.map_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
+        p_vol = super.map_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
         print(p_vol)
         return int(p_vol)
 
@@ -100,4 +102,16 @@ class Muses72323:
         vol = abs(vol)
         if vol == 0:  # 0 db corresponds with 32 binary equivalent
             return 32
-        return (vol / STEP) + 32
+        return (vol / self.STEP) + 32
+
+    def set_current_volume_device(self):
+        storage.write(self.CURRENT_DEVICE_ID, sys_volume.VOLUME_DEVICE.MUSES.name)
+
+    def get_current_volume_device(self):
+        sys_volume.VOLUME_DEVICE.MUSES
+
+    def get_current_volume(self):
+        return storage.read(sys_volume.CURRENT_MUSES_VOLUME_ID)
+
+    def persist_volume(self, volume):
+        storage.write(sys_volume.CURRENT_MUSES_VOLUME_ID, volume)

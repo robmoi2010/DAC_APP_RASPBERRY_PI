@@ -19,8 +19,13 @@ class SoundMode(Enum):
 
 
 def get_current_sound_mode():
-    print(storage.read(SOUND_MODE_ID))
-    return storage.read(SOUND_MODE_ID)
+    mode=storage.read(SOUND_MODE_ID)
+    if mode==SoundMode.DSP.value:
+        return SoundMode.DSP
+    elif mode==SoundMode.PURE_DIRECT.value:
+        return SoundMode.PURE_DIRECT
+    elif mode==SoundMode.SEMI_PURE_DIRECT.value:
+        return SoundMode.SEMI_PURE_DIRECT
 
 
 def get_sound_mode_name(mode):

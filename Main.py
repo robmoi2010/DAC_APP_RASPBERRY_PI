@@ -3,6 +3,8 @@ from ui.app import App
 import repo.mongo_repo as mongo_repo
 from volume.muses72323 import Muses72323
 import dac.ess_dac as dac
+import uvicorn
+
 
 app_window = None
 
@@ -28,4 +30,5 @@ def initialize_device():
 
 if __name__ == "__main__":
     initialize_device()
+    uvicorn.run("services.root_service:app", host="127.0.0.1", port=8000, reload=True)
     get_app_window()

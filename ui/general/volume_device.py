@@ -38,7 +38,6 @@ class VolumeDevice(tk.Frame):
             row=self.get_current_row(), column=0, sticky="nsew"
         )
         current = volume.get_current_volume_device()
-        print("crr:" + current)
         self.btn1 = GeneralButton(
             self,
             "DAC",

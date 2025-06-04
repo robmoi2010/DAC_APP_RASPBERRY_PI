@@ -1,7 +1,7 @@
 import repo.storage as storage
 import configs.app_config as app_config
-import volume.system_volume as volume
-import dac.dac_volume as dac_volume
+from factory.system_factory import SYS_OBJECTS
+import factory.system_factory as factory
 from gpiozero import RotaryEncoder, Button, Device
 from gpiozero.pins.mock import MockFactory
 
@@ -15,17 +15,19 @@ encoder = RotaryEncoder(
     pinMapConfig["ROTARY_PIN_A"], pinMapConfig["ROTARY_PIN_B"], max_steps=0
 )
 button = Button(pinMapConfig["ROTARY_BUTTON_PIN"])
+volume = factory.new(SYS_OBJECTS.VOLUME)
+dac_volume = factory.new(SYS_OBJECTS.DAC_VOLUME)
 
 
 def onRotate():
-    disabled = dac_volume.isVolumeDisabled()
+    disabled = dac_volume.is_volume_disabled()
     if not disabled:  # process if volume is not disabled, else ignore
         steps = encoder.steps
         encoder.steps = 0
         if steps > 0:  # volume up
-            volume.updateVolume(volume.VOL_DIRECTION.UP)
+            volume.update_volume(volume.VOL_DIRECTION.UP)
         if steps < 0:  # volume down
-            volume.updateVolume(volume.VOL_DIRECTION.DOWN)
+            volume.update_volume(volume.VOL_DIRECTION.DOWN)
 
 
 def rotaryButtonPressed():  # Either mute of disable volume
@@ -33,7 +35,7 @@ def rotaryButtonPressed():  # Either mute of disable volume
     if knobButtonSetting == 0:  # for mute
         volume.mute()
     else:  # for disable volume
-        dac_volume.disableEnableVolume()
+        dac_volume.disable_enable_volume()
 
 
 def setRotaryButtonMode(mode):  # 0 for mute 1 for disable volume
