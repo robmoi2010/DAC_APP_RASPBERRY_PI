@@ -1,0 +1,4 @@
+{
+    "BASE_URL":"http://127.0.0.1:8000/",
+    "VOLUME_POLL_MILLIS":100
+}

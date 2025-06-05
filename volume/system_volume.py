@@ -1,32 +1,16 @@
 import repo.storage as storage
-import ui.home as home
-from enum import Enum
+
+from volume.volume_util import (
+    VOLUME_ALGORITHM,
+    VOLUME_ALGORITHM_ID,
+    VOLUME_DEVICE,
+    CURRENT_DEVICE_ID,
+)
 import configs.app_config as configuration
 import math
 
 config = configuration.getConfig()
 LOG_CURVE = 0.6
-
-
-class VOL_DIRECTION(Enum):
-    UP = 0
-    DOWN = 1
-
-
-class VOLUME_DEVICE(Enum):
-    DAC = 0
-    MUSES = 1
-
-
-class VOLUME_ALGORITHM(Enum):
-    LINEAR = 0
-    LOGARITHMIC = 1
-
-
-CURRENT_DEVICE_ID = "CURRENT_VOLUME_DEVICE"
-CURRENT_MUSES_VOLUME_ID = "CURRENT_MUSES_VOLUME"
-CURRENT_VOLUME_ID = "CURRENT_VOLUME"
-VOLUME_ALGORITHM_ID = "VOLUME_ALGORITHM"
 
 
 class Volume:
@@ -58,7 +42,8 @@ class Volume:
         return adjusted
 
     def update_ui_volume(self, volume):
-        home.update_volume(volume)
+        # home.update_volume(volume)
+        pass
 
     def map_value(self, x, in_min, in_max, out_min, out_max):
         return ((x - in_min) * (out_max - out_min)) / ((in_max - in_min) + out_min)
@@ -75,8 +60,11 @@ class Volume:
     def set_current_volume_device(self):
         raise NotImplementedError
 
+    def is_volume_disabled():
+        raise NotImplementedError
+
     def get_current_volume_algorithm(self):
-        algo = storage.read(self.VOLUME_ALGORITHM_ID)
+        algo = storage.read(VOLUME_ALGORITHM_ID)
         if algo == VOLUME_ALGORITHM.LINEAR.value:
             return VOLUME_ALGORITHM.LINEAR
         elif algo == VOLUME_ALGORITHM.LOGARITHMIC.value:

@@ -26,11 +26,11 @@ def update_filter(filter):
     communication.write(DAC_I2C_ADDR, filter_shape_addr, data)
 
 
-def getCurrentFilter():
+def get_current_filter():
     return storage.read("CURRENT_FILTER")
 
 
-def getFilterName(filter, initials):
+def get_filter_name(filter, initials):
     if initials == 0:
         if filter == 0:
             return "Minimum phase"

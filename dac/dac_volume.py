@@ -1,9 +1,14 @@
 import repo.storage as storage
 import configs.app_config as app_config
 import util.communication as communication
-import volume.system_volume as sys_volume
 from volume.system_volume import Volume
-from volume.system_volume import VOLUME_ALGORITHM
+from volume.volume_util import (
+    VOLUME_ALGORITHM,
+    VOL_DIRECTION,
+    CURRENT_DEVICE_ID,
+    VOLUME_DEVICE,
+    CURRENT_VOLUME_ID,
+)
 
 
 DAC_MIN_VOL = 255
@@ -46,8 +51,8 @@ class DacVolume(Volume):
 
     def set_volume(self, vol):
         # if logarithmic is set adjust volume to logarithmic scale
-        if super.get_current_volume_algorithm() == VOLUME_ALGORITHM.LOGARITHMIC:
-            vol = super.get_logarithmic_volume_level(vol, DAC_MIN_VOL, DAC_MAX_VOL)
+        if super().get_current_volume_algorithm() == VOLUME_ALGORITHM.LOGARITHMIC:
+            vol = super().get_logarithmic_volume_level(vol, DAC_MIN_VOL, DAC_MAX_VOL)
             print("vol:" + str(vol))
         # hold both channels
         hold_addr = addrConfig["DAC_SPDIF_SEL_ADDR"]
@@ -70,7 +75,7 @@ class DacVolume(Volume):
     def update_volume(self, direction):
         currVol = super.get_current_volume()
         steps = config["DAC"]["VOLUME"]["VOLUME_STEPS"]  # get volume steps from config
-        if direction == super.VOL_DIRECTION.UP:  # volume increase
+        if direction == VOL_DIRECTION.UP:  # volume increase
             if currVol <= DAC_MAX_VOL:  # skip processing if volume is already at Max
                 return
             currVol -= steps  # dacs lower value=increase
@@ -81,9 +86,9 @@ class DacVolume(Volume):
                 return
             currVol += steps  # dacs higher value=decrease
         self.set_volume(currVol)
-        super.persist_volume(currVol)
+        super().persist_volume(currVol)
         # update ui with the new volume
-        super.update_ui_volume(currVol)
+        super().update_ui_volume(currVol)
 
     def is_volume_disabled(self):
         return storage.read(DISABLE_VOLUME_ID)
@@ -125,17 +130,17 @@ class DacVolume(Volume):
             storage.write(DAC_MUTED_ID, 1)
 
     def get_percentage_volume(self, vol):
-        val = super.map_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
+        val = super().map_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
         return int(val)
 
     def set_current_volume_device():
-        storage.write(sys_volume.CURRENT_DEVICE_ID, sys_volume.VOLUME_DEVICE.DAC.name)
+        storage.write(CURRENT_DEVICE_ID, VOLUME_DEVICE.DAC.name)
 
     def get_current_volume_device(self):
-        return sys_volume.VOLUME_DEVICE.DAC
+        return VOLUME_DEVICE.DAC
 
     def get_current_volume(self):
-        return storage.read(sys_volume.CURRENT_VOLUME_ID)
+        return storage.read(CURRENT_VOLUME_ID)
 
     def persist_volume(self, volume):
-        storage.write(sys_volume.CURRENT_VOLUME_ID, volume)
+        storage.write(CURRENT_VOLUME_ID, volume)

@@ -17,6 +17,8 @@ def new(type: SYS_OBJECTS):
         return FastAPI()
     if type == SYS_OBJECTS.MUSES:
         return Muses72323()
+    if type==SYS_OBJECTS.DAC_VOLUME:
+        return DacVolume()
     if type == SYS_OBJECTS.VOLUME:
         device = sys_volume.get_current_volume_device()
         if device == sys_volume.VOLUME_DEVICE.DAC:

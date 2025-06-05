@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-import volume.system_volume as volume
-import general.sound_modes as sound_modes
+import factory.system_factory as factory
+from factory.system_factory import SYS_OBJECTS
 from general.sound_modes import SoundMode
+import general.sound_modes as sound_modes
 
 from ui.generics.general_button import GeneralButton
 
@@ -10,11 +11,14 @@ from util.styles import BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE
 
 font = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 
+volume = factory.new(SYS_OBJECTS.VOLUME)
+
 
 class Home(tk.Frame):
     def get_current_row(self):
         ret = self.row_index
         self.row_index += 1
+
         return ret
 
     def on_key_press(self, event):

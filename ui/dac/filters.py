@@ -25,7 +25,7 @@ class Filters(tk.Frame):
             "Confirmation", "Are you sure you want to select " + selection
         )
         if answer:
-            dac_filters.updateFilter(type)
+            dac_filters.update_filter(type)
             if type == 0:
                 frame.f0Btn.config(fg=SELECTED_COLOR)
                 frame.f1Btn.config(fg=UNSELECTED_COLOR)
@@ -102,7 +102,7 @@ class Filters(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.row_index = 1
-        curr = dac_filters.getCurrentFilter()
+        curr = dac_filters.get_current_filter()
         tk.Label(self, text="Select DAC Filter", font=("Arial", 16)).grid(
             row=self.get_current_row(), column=0, sticky="nsew"
         )
