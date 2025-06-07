@@ -2,16 +2,33 @@ from factory.system_factory import SYS_OBJECTS
 import factory.system_factory as factory
 from model.model import ResponseModel
 import general.sound_modes as sound_modes
+from services.ws_connection_manager import WSConnectionManager
+import logging
+from fastapi import WebSocket, APIRouter
+import asyncio
 from volume.volume_util import (
     VOLUME_DEVICE,
     CURRENT_MUSES_VOLUME_ID,
     CURRENT_VOLUME_ID,
 )
+from services.services_util import SOUND_MODE_DISPLAY_NAME, VOLUME_DISPLAY_NAME
+from volume.volume_util import VOL_DIRECTION
 
-system_app = factory.new(SYS_OBJECTS.FASTAPI)
-VOLUME_DISPLAY_NAME = "Volume"
-SOUND_MODE_DISPLAY_NAME = "Sound Mode"
-volume = factory.new(SYS_OBJECTS.VOLUME)
+connection_manager: WSConnectionManager = factory.new(SYS_OBJECTS.WS_CONN_MANAGER)
+system_app = APIRouter(prefix="/system")
+volume = factory.new(SYS_OBJECTS.VOLUME, connection_manager)
+
+logger = logging.getLogger(__name__)
+
+
+@system_app.websocket("/ws")
+async def home_websocket(websocket: WebSocket):
+    await connection_manager.connect(websocket)
+    try:
+        while True:
+            await asyncio.sleep(1)
+    except Exception as e:
+        logger.error(e)
 
 
 @system_app.get("/volume")
@@ -59,3 +76,15 @@ async def update_volume(response: ResponseModel):
     print("rsp:" + response.value)
     volume.update_volume(response.value)
     return response
+
+
+@system_app.get("/up")
+async def volume_up():
+    await volume.update_volume(VOL_DIRECTION.UP)
+    
+
+
+@system_app.get("/down")
+async def volume_down():
+    await volume.update_volume(VOL_DIRECTION.DOWN)
+    

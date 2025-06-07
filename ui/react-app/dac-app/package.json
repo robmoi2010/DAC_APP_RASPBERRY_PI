@@ -15,7 +15,11 @@
     "axios": "^1.9.0",
     "react": "^19.1.0",
     "react-circular-progressbar": "^2.2.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-redux": "^9.2.0",
+    "react-use-websocket": "^4.13.0",
+    "redux": "^5.0.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

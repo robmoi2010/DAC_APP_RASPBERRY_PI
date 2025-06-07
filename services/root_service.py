@@ -4,11 +4,16 @@ from services.dac_service import dac_app
 from services.system_service import system_app
 import factory.system_factory as factory
 from factory.system_factory import SYS_OBJECTS
+import logging
 
 origins = ["http://localhost", "http://localhost:5173", "http//127.0.0.1"]
 app = factory.new(SYS_OBJECTS.FASTAPI)
 app.include_router(dac_app.router, prefix="/dac")
-app.include_router(system_app.router, prefix="/system")
+app.include_router(system_app)
+
+logger = logging.getLogger(__name__)
+
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,8 +25,8 @@ app.add_middleware(
 
 
 @app.get("/")
-def read_root():
-    return {"message": "Hello World"}
+async def read_root():
+    return "message: Hello World"
 
 
 @app.middleware("http")

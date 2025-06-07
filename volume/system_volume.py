@@ -1,21 +1,29 @@
 import repo.storage as storage
-
+from services.ws_connection_manager import WSConnectionManager
 from volume.volume_util import (
     VOLUME_ALGORITHM,
     VOLUME_ALGORITHM_ID,
     VOLUME_DEVICE,
     CURRENT_DEVICE_ID,
+    CURRENT_VOLUME_ID,
+    CURRENT_MUSES_VOLUME_ID,
 )
 import configs.app_config as configuration
 import math
+from model.model import ResponseModel
+from services.services_util import VOLUME_DISPLAY_NAME
+import json
+import asyncio
 
 config = configuration.getConfig()
 LOG_CURVE = 0.6
 
+#
+
 
 class Volume:
-    def __init__(self):
-        pass
+    def __init__(self, init_object):
+        self.connection_manager: WSConnectionManager = init_object
 
     def get_current_volume_device(self):
         raise NotImplementedError
@@ -40,10 +48,6 @@ class Volume:
         # Convert back to max–min scale, inverted
         adjusted = minimum - int(round(log_scaled * minimum))
         return adjusted
-
-    def update_ui_volume(self, volume):
-        # home.update_volume(volume)
-        pass
 
     def map_value(self, x, in_min, in_max, out_min, out_max):
         return ((x - in_min) * (out_max - out_min)) / ((in_max - in_min) + out_min)
@@ -72,6 +76,21 @@ class Volume:
 
     def set_volume_algorithm(self, algo: VOLUME_ALGORITHM):
         storage.write(VOLUME_ALGORITHM_ID, algo.value)
+
+    async def update_ui_volume(self, vol):
+        list = []
+        device: VOLUME_DEVICE = self.get_current_volume_device()
+        id = None
+        if device == VOLUME_DEVICE.DAC:
+            id = CURRENT_VOLUME_ID
+        elif device == VOLUME_DEVICE.MUSES:
+            id = CURRENT_MUSES_VOLUME_ID
+        response = ResponseModel(
+            key=id, value=str(vol), display_name=VOLUME_DISPLAY_NAME
+        )
+        list.append(response)
+        data=[dt.model_dump() for dt in list]
+        await self.connection_manager.send_data(json.dumps(data))
 
 
 def get_current_volume_device():

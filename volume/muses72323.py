@@ -1,4 +1,5 @@
 from volume.system_volume import Volume
+
 from volume.volume_util import (
     VOLUME_DEVICE,
     VOL_DIRECTION,
@@ -13,13 +14,13 @@ config = configuration.getConfig()["MUSES72323"]
 
 
 class Muses72323(Volume):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, init_object=None):
+        super().__init__(init_object)
         self.MAX_VOLUME = config["MAX_VOLUME"]
         self.MIN_VOLUME = config["MIN_VOLUME"]
         self.STEP = config["STEP"]
 
-    def update_volume(self, direction):
+    async def update_volume(self, direction):
         curr_volume = super().get_current_volume()
         if direction == VOL_DIRECTION.UP:  # volume increase
             if (
@@ -37,7 +38,7 @@ class Muses72323(Volume):
         self.update_chip_volume(curr_volume)
         super().persist_volume(curr_volume)
         # update ui with the new volume
-        super().update_ui_volume(curr_volume)
+        await self.update_ui_volume(curr_volume)
 
     def update_chip_volume(self, vol):
         # if logarithmic is set adjust volume to logarithmic scale
@@ -117,7 +118,12 @@ class Muses72323(Volume):
 
     def get_current_volume(self):
         return storage.read(CURRENT_MUSES_VOLUME_ID)
+
     def is_volume_disabled():
         raise NotImplementedError
+
     def persist_volume(self, volume):
         storage.write(CURRENT_MUSES_VOLUME_ID, volume)
+
+    async def update_ui_volume(self, volume):
+        await super().update_ui_volume(self.get_percentage_volume(volume))

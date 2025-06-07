@@ -9,7 +9,7 @@ from volume.volume_util import (
     VOLUME_DEVICE,
     CURRENT_VOLUME_ID,
 )
-
+import volume.volume_util as volume_util
 
 DAC_MIN_VOL = 255
 DAC_MAX_VOL = 0
@@ -23,8 +23,8 @@ DAC_MUTED_ID = "DAC_MUTED"
 
 
 class DacVolume(Volume):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, init_object=None):
+        super().__init__(init_object)
 
     # def onkeyLeft(counter):
     #     from ui.app import current_visible_frame
@@ -64,16 +64,16 @@ class DacVolume(Volume):
         # update volume of both channels
         volume_1_addr = addrConfig["VOLUME_CH1"]
         volume_2_addr = addrConfig["VOLUME_CH2"]
-        volume_data = format(vol, "08b")
-        communication.write(DAC_I2C_ADDR, volume_1_addr, volume_data)
-        communication.write(DAC_I2C_ADDR, volume_2_addr, volume_data)
+        # volume_data = format(vol, "08b")
+        # communication.write(DAC_I2C_ADDR, volume_1_addr, volume_data)
+        # communication.write(DAC_I2C_ADDR, volume_2_addr, volume_data)
 
         # release hold on both channels
         data = data & ~hold_mask
         communication.write(DAC_I2C_ADDR, hold_addr, data)
 
-    def update_volume(self, direction):
-        currVol = super.get_current_volume()
+    async def update_volume(self, direction):
+        currVol = self.get_current_volume()
         steps = config["DAC"]["VOLUME"]["VOLUME_STEPS"]  # get volume steps from config
         if direction == VOL_DIRECTION.UP:  # volume increase
             if currVol <= DAC_MAX_VOL:  # skip processing if volume is already at Max
@@ -86,9 +86,9 @@ class DacVolume(Volume):
                 return
             currVol += steps  # dacs higher value=decrease
         self.set_volume(currVol)
-        super().persist_volume(currVol)
+        self.persist_volume(currVol)
         # update ui with the new volume
-        super().update_ui_volume(currVol)
+        await self.update_ui_volume(currVol)
 
     def is_volume_disabled(self):
         return storage.read(DISABLE_VOLUME_ID)
@@ -144,3 +144,6 @@ class DacVolume(Volume):
 
     def persist_volume(self, volume):
         storage.write(CURRENT_VOLUME_ID, volume)
+
+    async def update_ui_volume(self, volume):
+        await super().update_ui_volume(self.get_percentage_volume(volume))

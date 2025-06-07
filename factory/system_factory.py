@@ -3,6 +3,9 @@ from fastapi import FastAPI
 from volume.muses72323 import Muses72323
 from dac.dac_volume import DacVolume
 import volume.system_volume as sys_volume
+from services.ws_connection_manager import WSConnectionManager
+
+connection_manager = None
 
 
 class SYS_OBJECTS(Enum):
@@ -10,18 +13,24 @@ class SYS_OBJECTS(Enum):
     MUSES = 1
     VOLUME = 2
     DAC_VOLUME = 3
+    WS_CONN_MANAGER = 4
 
 
-def new(type: SYS_OBJECTS):
+def new(type: SYS_OBJECTS, init_object=None):
     if type == SYS_OBJECTS.FASTAPI:
         return FastAPI()
     if type == SYS_OBJECTS.MUSES:
         return Muses72323()
-    if type==SYS_OBJECTS.DAC_VOLUME:
+    if type == SYS_OBJECTS.DAC_VOLUME:
         return DacVolume()
     if type == SYS_OBJECTS.VOLUME:
         device = sys_volume.get_current_volume_device()
         if device == sys_volume.VOLUME_DEVICE.DAC:
-            return DacVolume()
+            return DacVolume(init_object)
         elif device == sys_volume.VOLUME_DEVICE.MUSES:
-            return Muses72323()
+            return Muses72323(init_object)
+    if type == SYS_OBJECTS.WS_CONN_MANAGER:
+        global connection_manager
+        if connection_manager is None:
+            connection_manager = WSConnectionManager()
+        return connection_manager
