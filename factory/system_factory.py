@@ -4,8 +4,11 @@ from volume.muses72323 import Muses72323
 from dac.dac_volume import DacVolume
 import volume.system_volume as sys_volume
 from services.ws_connection_manager import WSConnectionManager
+from services.ir_connection_manager import IRConnectionManager
+from general.ir_remote_router import IrRemoteRouter
 
 connection_manager = None
+ir_connecction_manager = None
 
 
 class SYS_OBJECTS(Enum):
@@ -14,6 +17,8 @@ class SYS_OBJECTS(Enum):
     VOLUME = 2
     DAC_VOLUME = 3
     WS_CONN_MANAGER = 4
+    IR_CONN_MANAGER = 5
+    IR_ROUTER = 6
 
 
 def new(type: SYS_OBJECTS, init_object=None):
@@ -34,3 +39,10 @@ def new(type: SYS_OBJECTS, init_object=None):
         if connection_manager is None:
             connection_manager = WSConnectionManager()
         return connection_manager
+    if type == SYS_OBJECTS.IR_CONN_MANAGER:
+        global ir_connecction_manager
+        if ir_connecction_manager is None:
+            ir_connecction_manager = IRConnectionManager()
+        return ir_connecction_manager
+    if type == SYS_OBJECTS.IR_ROUTER:
+        return IrRemoteRouter(init_object)

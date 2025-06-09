@@ -1,13 +1,12 @@
 import pigpio
 import time
 import configs.app_config as app_config
-import volume.system_volume as volume
-from volume.system_volume import VOL_DIRECTION
 from enum import Enum
-from ui.remote_navigation import RemoteNavigation
+from factory.system_factory import SYS_OBJECTS
+import factory.system_factory as factory
+from general.ir_remote_router import IrRemoteRouter
 
-remoteNav = RemoteNavigation()
-
+ir_remote_router: IrRemoteRouter = factory.new(SYS_OBJECTS.IR_ROUTER, None)
 config = app_config.getConfig()
 irConfig = config["IR_REMOTE"]["BUTTON_HASH"]
 BUTTON = Enum("BUTTON", irConfig)
@@ -54,7 +53,7 @@ def ir_callback(gpio, level, tick):
             decoded = decode_pulse(code)
             if decoded:
                 btn = next((k for k, v in irConfig.items() if v == decoded), None)
-                handleRemoteButton(btn)
+                ir_remote_router.handle_remote_button(btn)
                 print(f"Key Pressed: {btn} (Hex: {decoded})")
             code = []
     else:
@@ -76,20 +75,3 @@ try:
         time.sleep(1)
 except KeyboardInterrupt:
     print("\nExiting...")
-
-
-def handleRemoteButton(button):
-    if button == BUTTON.VOL_UP:
-        volume.updateVolume(VOL_DIRECTION.UP)
-    elif button == BUTTON.VOL_DOWN:
-        volume.updateVolume(VOL_DIRECTION.DOWN)
-    elif button == BUTTON.POWER:
-        pass
-    elif button == BUTTON.MUTE:
-        volume.mute()
-    elif button == BUTTON.UP:
-        remoteNav.handle_up_button()
-    elif button == BUTTON.DOWN:
-        remoteNav.handle_down_button()
-    elif button == BUTTON.OK:
-        remoteNav.handle_OK_button()

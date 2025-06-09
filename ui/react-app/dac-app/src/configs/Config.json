@@ -1,5 +1,6 @@
 {
     "BASE_URL": "http://127.0.0.1:8000/",
     "HOME_POLL_MILLIS": 100,
-    "WS_URL": "ws://localhost:8000/system/ws"
+    "WS_URL": "ws://localhost:8000/system/ws",
+    "IR_REMOTE_WS_URL": "ws://localhost:8000/system/ws/ir_remote"
 }

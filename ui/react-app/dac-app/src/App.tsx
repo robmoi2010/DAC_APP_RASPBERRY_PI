@@ -1,14 +1,18 @@
-import { Theme } from '@radix-ui/themes'
-import './App.css'
-import AppRoot from './AppRoot'
+import { Theme } from '@radix-ui/themes';
+import './App.css';
+import Router from './components/Router';
+import { Provider } from 'react-redux';
+import store from "./state-repo/Store";
 
 function App() {
-  // const [count, setCount] = useState(0)
-
   return (
+
+    <Provider store={store}>
       <Theme>
-          <AppRoot />
-      </Theme> 
+        <Router />
+      </Theme>
+    </Provider>
+
   )
 }
 

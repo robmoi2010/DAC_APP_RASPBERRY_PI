@@ -1,8 +1,10 @@
 from factory.system_factory import SYS_OBJECTS
 import factory.system_factory as factory
+from general.general_util import BUTTON
 from model.model import ResponseModel
 import general.sound_modes as sound_modes
 from services.ws_connection_manager import WSConnectionManager
+from services.ir_connection_manager import IRConnectionManager
 import logging
 from fastapi import WebSocket, APIRouter
 import asyncio
@@ -13,17 +15,29 @@ from volume.volume_util import (
 )
 from services.services_util import SOUND_MODE_DISPLAY_NAME, VOLUME_DISPLAY_NAME
 from volume.volume_util import VOL_DIRECTION
+from general.ir_remote_router import IrRemoteRouter
 
 connection_manager: WSConnectionManager = factory.new(SYS_OBJECTS.WS_CONN_MANAGER)
+ir_connection_manager: IRConnectionManager = factory.new(SYS_OBJECTS.IR_CONN_MANAGER)
 system_app = APIRouter(prefix="/system")
 volume = factory.new(SYS_OBJECTS.VOLUME, connection_manager)
-
+ir_router: IrRemoteRouter = factory.new(SYS_OBJECTS.IR_ROUTER, ir_connection_manager)
 logger = logging.getLogger(__name__)
 
 
 @system_app.websocket("/ws")
 async def home_websocket(websocket: WebSocket):
     await connection_manager.connect(websocket)
+    try:
+        while True:
+            await asyncio.sleep(1)
+    except Exception as e:
+        logger.error(e)
+
+
+@system_app.websocket("/ws/ir_remote")
+async def ir_remote_websocket(websocket: WebSocket):
+    await ir_connection_manager.connect(websocket)
     try:
         while True:
             await asyncio.sleep(1)
@@ -81,10 +95,15 @@ async def update_volume(response: ResponseModel):
 @system_app.get("/up")
 async def volume_up():
     await volume.update_volume(VOL_DIRECTION.UP)
-    
+    await ir_router.handle_ws_routing(BUTTON.UP)
 
 
 @system_app.get("/down")
 async def volume_down():
     await volume.update_volume(VOL_DIRECTION.DOWN)
-    
+    await ir_router.handle_ws_routing(BUTTON.DOWN)
+
+
+@system_app.get("/ok")
+async def volume_down():
+    await ir_router.handle_ws_routing(BUTTON.OK)
