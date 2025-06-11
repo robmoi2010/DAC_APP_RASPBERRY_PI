@@ -4,12 +4,16 @@ import useWebSocket from "react-use-websocket";
 import { decrement, increment, setIndex } from "../../state-repo/slices/navigationIndex";
 import Config from '../../configs/Config.json';
 import { useNavigate } from "react-router-dom";
+import { setSelectedIndex } from "../../state-repo/slices/selectedIndexSlice";
+type indexMap = {
+    index: number,
+    url: string
+}
 const RemoteNavigation = () => {
     const index = useSelector((state) => state.navigationIndex.value);
     const dispatch = useDispatch();
-    const totalItems = useSelector((state) => state.totalItems.value);
     const navigate = useNavigate();
-    const nextUrl = useSelector((state) => state.nextUrl.value);
+    const indexMap: indexMap[] = useSelector((state) => state.indexUrlMap.value);
     // setup websocket for ir remote commands
     const { lastMessage } = useWebSocket(
         Config["IR_REMOTE_WS_URL"],
@@ -28,14 +32,14 @@ const RemoteNavigation = () => {
             console.log(code)
             if (code == "UP") {
                 if (index <= 0) {
-                    dispatch(setIndex(totalItems));
+                    dispatch(setIndex(indexMap.length));
                 }
                 else {
                     dispatch(decrement());
                 }
             }
             if (code == "DOWN") {
-                if (index >= totalItems - 1) {
+                if (index >= indexMap.length - 1) {
                     dispatch(setIndex(0));
                 }
                 else {
@@ -43,7 +47,16 @@ const RemoteNavigation = () => {
                 }
             }
             if (code == "OK") {
-                navigate(nextUrl);
+                const indexBuffer = index;
+                // reset index to zero
+                dispatch(setIndex(0));
+                const value = indexMap.find(m => m.index == index);
+                if (value?.url != "") {
+                    navigate("" + value?.url);
+                }
+                else {
+                    dispatch(setSelectedIndex(indexBuffer))
+                }
             }
 
         }

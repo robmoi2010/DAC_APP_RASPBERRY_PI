@@ -12,22 +12,24 @@ import util.communication as communication
 # 7 Minimum phase slow roll-off low dispersion
 config = app_config.getConfig()["DAC"]["ADDR"]
 DAC_I2C_ADDR = config["I2C_ADDR"]
+CURRENT_FILTER_ID = "CURRENT_FILTER"
 
 
 def update_filter(filter):
     filter_shape_addr = config["DAC_FILTER_SHAPE"]
     gen_mask = 0b00000111
     msb = "00000"
-    lsb = format(filter, "0b3")
-    filter_mask = int(msb + lsb)
-    data = communication.read(DAC_I2C_ADDR, filter_shape_addr)
-    data = data & ~gen_mask # reset the bits to zero first
-    data = data | filter_mask
-    communication.write(DAC_I2C_ADDR, filter_shape_addr, data)
+    # lsb = format(str(filter), "03b")
+    # filter_mask = int(msb + lsb)
+    # data = communication.read(DAC_I2C_ADDR, filter_shape_addr)
+    # data = data & ~gen_mask  # reset the bits to zero first
+    # data = data | filter_mask
+    # communication.write(DAC_I2C_ADDR, filter_shape_addr, data)
+    storage.write(CURRENT_FILTER_ID, filter)
 
 
 def get_current_filter():
-    return storage.read("CURRENT_FILTER")
+    return storage.read(CURRENT_FILTER_ID)
 
 
 def get_filter_name(filter, initials):

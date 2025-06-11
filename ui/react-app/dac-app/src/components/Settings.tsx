@@ -5,48 +5,30 @@ import Header from "./header";
 import PaddingRow from "./PaddingRow";
 import Page from "./Page";
 import { useNavigate } from "react-router-dom";
+import { setIndexUrlMap } from "../state-repo/slices/indexUrlMap";
 import { useEffect } from "react";
-import { setTotalItems } from "../state-repo/slices/totalIemsSlice";
-import { setNextUrl } from "../state-repo/slices/nextUrl";
+
+
 const Settings = () => {
     const navigate = useNavigate();
     const index = useSelector((state) => state.navigationIndex.value);
     const dispatch = useDispatch();
-
-    // set total items that will be displayed by the component
-    dispatch(setTotalItems(4));
-    //listen for changes in index state and update url
     useEffect(() => {
-        let url = "";
-        switch (index) {
-            case 0: {
-                url = "/DacSettings";
-                break;
-            }
-            case 1: {
-                url = "/DspSettings";
-                break;
-            }
-            case 2: {
-                url = "/GeneralSettings";
-                break;
-            }
-            case 3: {
-                url = "/Home";
-                break;
-            }
-        }
-        dispatch(setNextUrl(url));
-    }, [index]);
-
+        const indexMap = [
+            { index: 0, url: "/DacSettings" },
+            { index: 1, url: "/DspSettings" },
+            { index: 2, url: "/GeneralSettings" },
+            { index: 3, url: "/Home" }];
+        dispatch(setIndexUrlMap(indexMap));
+    }, []);
     const components = [
         <Header text="Settings" />,
+        < PaddingRow />,
+        <DataRow selected={false} onClick={() => navigate("/DacSettings")} text="Dac Settings" type={1} active={index == 0} />,
         <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/DacSettings")} text="DacSettings" type={1} active={index == 0} />,
+        <DataRow selected={false} onClick={() => navigate("/DspSettings")} text="Dsp Settings" type={1} active={index == 1} />,
         <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/DspSettings")} text="DspSettings" type={1} active={index == 1} />,
-        <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/GeneralSettings")} text="GeneralSettings" type={1} active={index == 2} />,
+        <DataRow selected={false} onClick={() => navigate("/GeneralSettings")} text="General Settings" type={1} active={index == 2} />,
         <PaddingRow />,
         <DataRow selected={false} onClick={() => navigate("/Home")} text="Back" type={2} active={index == 3} />,
     ];

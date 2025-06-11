@@ -6,21 +6,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import Page from './Page';
 import { getHomeData } from '../services/SystemService';
 import { setVolume } from '../state-repo/slices/volumeSlice';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { setHomeData } from '../state-repo/slices/homeDataSlice';
 import useWebSocket from 'react-use-websocket';
 import { addMessage } from '../state-repo/slices/webSocketSlice';
 import Config from '../configs/Config.json';
 import { useNavigate } from 'react-router-dom';
+import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
 
 const Home = () => {
    const volume = useSelector((state) => state.volume.value);
    const homeData = useSelector((state) => state.homeData.value);
    const dispatch = useDispatch();
    const navigate = useNavigate();
-   const settingsRef = useRef(null);
+
+
+
    // initial data load to display
    useEffect(() => {
+      const indexMap = [
+         { index: 0, url: "/Settings" }];
+      dispatch(setIndexUrlMap(indexMap));
       const dt = getHomeData();
       dt.then(data => {
          let row = "";
@@ -74,13 +80,14 @@ const Home = () => {
       }
 
    }, [lastMessage, dispatch]);
+
    const components = [
       <PaddingRow />,
       <Header text={homeData} />,
       <PaddingRow />,
       <VolumeGauge volume={volume} />,
       <PaddingRow />,
-      <DataRow selected={false} ref={settingsRef} onClick={() => navigate("/Settings")} text="Settings" type={1} />
+      <DataRow selected={false} onClick={() => navigate("/Settings")} text="Settings" type={1} active={false} />
    ];
    return <Page items={components} />;
 }

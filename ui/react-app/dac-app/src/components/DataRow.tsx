@@ -8,7 +8,7 @@ const radius = "none";
 function DataRow({ onClick, text, type, selected, active }) {
    let styles = {};
    if (active) {
-      styles = { ...styles, 'border': '1px solid gray' };
+      styles = { ...styles, 'border': '1px solid black' };
    }
    if (selected) {
       styles = { ...styles, 'color': 'red' };
