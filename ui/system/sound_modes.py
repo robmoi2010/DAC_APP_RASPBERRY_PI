@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import general.sound_modes
+import system.sound_modes
 from util.styles import UNSELECTED_COLOR, SELECTED_COLOR
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
@@ -17,7 +17,7 @@ class SoundModes(tk.Frame):
             "Confirmation", "Are you sure you want to select " + selection
         )
         if answer:
-            general.sound_modes.update_sound_mode(type)
+            system.sound_modes.update_sound_mode(type)
             if type == 0:
                 frame.btn1.config(fg=SELECTED_COLOR)
                 frame.btn2.config(fg=UNSELECTED_COLOR)
@@ -37,7 +37,7 @@ class SoundModes(tk.Frame):
         tk.Label(self, text="Select Sound Mode", font=("Arial", 16)).grid(
             row=self.get_current_row(), column=0, sticky="nsew"
         )
-        current_sound_mode = general.sound_modes.get_current_sound_mode()
+        current_sound_mode = system.sound_modes.get_current_sound_mode()
         self.btn1 = GeneralButton(
             self,
             "Pure Direct",

@@ -1,4 +1,4 @@
-from services.ws_connection_manager import WSConnectionManager
+from services.utils.ws_connection_manager import WSConnectionManager
 
 
 class IRConnectionManager(WSConnectionManager):

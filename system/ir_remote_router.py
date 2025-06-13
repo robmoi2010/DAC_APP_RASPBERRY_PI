@@ -1,12 +1,12 @@
 from enum import Enum
 import json
 from configs import app_config
-from services.ir_connection_manager import IRConnectionManager
+from services.utils.ir_connection_manager import IRConnectionManager
 
 from volume.system_volume import Volume
 from volume.volume_util import VOL_DIRECTION
 from model.model import ResponseModel
-from general.general_util import BUTTON
+from system.system_util import BUTTON
 
 
 volume: Volume = None

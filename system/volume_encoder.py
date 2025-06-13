@@ -4,7 +4,7 @@ from factory.system_factory import SYS_OBJECTS
 import factory.system_factory as factory
 from gpiozero import RotaryEncoder, Button, Device
 from gpiozero.pins.mock import MockFactory
-from services.ws_connection_manager import WSConnectionManager
+from services.utils.ws_connection_manager import WSConnectionManager
 
 config = app_config.getConfig()
 

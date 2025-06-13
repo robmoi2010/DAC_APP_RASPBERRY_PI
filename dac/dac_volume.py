@@ -5,11 +5,8 @@ from volume.system_volume import Volume
 from volume.volume_util import (
     VOLUME_ALGORITHM,
     VOL_DIRECTION,
-    CURRENT_DEVICE_ID,
-    VOLUME_DEVICE,
     CURRENT_VOLUME_ID,
 )
-import volume.volume_util as volume_util
 
 DAC_MIN_VOL = 255
 DAC_MAX_VOL = 0
@@ -133,17 +130,11 @@ class DacVolume(Volume):
         val = super().map_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
         return int(val)
 
-    def set_current_volume_device():
-        storage.write(CURRENT_DEVICE_ID, VOLUME_DEVICE.DAC.name)
-
-    def get_current_volume_device(self):
-        return VOLUME_DEVICE.DAC
+    def persist_volume(self, volume):
+        storage.write(CURRENT_VOLUME_ID, volume)
 
     def get_current_volume(self):
         return storage.read(CURRENT_VOLUME_ID)
-
-    def persist_volume(self, volume):
-        storage.write(CURRENT_VOLUME_ID, volume)
 
     async def update_ui_volume(self, volume):
         await super().update_ui_volume(self.get_percentage_volume(volume))

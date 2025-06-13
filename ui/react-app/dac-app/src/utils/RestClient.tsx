@@ -1,4 +1,3 @@
-import axios from 'axios';
 export async function sendGet(endpoint: string) {
   return fetch(endpoint).then(response => response.json());
 }

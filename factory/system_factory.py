@@ -1,11 +1,13 @@
 from enum import Enum
 from fastapi import FastAPI
+from repo import storage
 from volume.muses72323 import Muses72323
 from dac.dac_volume import DacVolume
 import volume.system_volume as sys_volume
-from services.ws_connection_manager import WSConnectionManager
-from services.ir_connection_manager import IRConnectionManager
-from general.ir_remote_router import IrRemoteRouter
+from services.utils.ws_connection_manager import WSConnectionManager
+from services.utils.ir_connection_manager import IRConnectionManager
+from system.ir_remote_router import IrRemoteRouter
+from volume.volume_util import CURRENT_DEVICE_ID, VOLUME_DEVICE
 
 connection_manager = None
 ir_connecction_manager = None
@@ -29,7 +31,7 @@ def new(type: SYS_OBJECTS, init_object=None):
     if type == SYS_OBJECTS.DAC_VOLUME:
         return DacVolume()
     if type == SYS_OBJECTS.VOLUME:
-        device = sys_volume.get_current_volume_device()
+        device = get_current_volume_device()
         if device == sys_volume.VOLUME_DEVICE.DAC:
             return DacVolume(init_object)
         elif device == sys_volume.VOLUME_DEVICE.MUSES:
@@ -46,3 +48,11 @@ def new(type: SYS_OBJECTS, init_object=None):
         return ir_connecction_manager
     if type == SYS_OBJECTS.IR_ROUTER:
         return IrRemoteRouter(init_object)
+
+
+def get_current_volume_device():
+    device = storage.read(CURRENT_DEVICE_ID)
+    if device == VOLUME_DEVICE.DAC.value:
+        return VOLUME_DEVICE.DAC
+    elif device == VOLUME_DEVICE.MUSES.value:
+        return VOLUME_DEVICE.MUSES

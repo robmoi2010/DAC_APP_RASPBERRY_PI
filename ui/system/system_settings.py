@@ -3,7 +3,7 @@ from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 
 
-class GeneralSettings(tk.Frame):
+class SystemSettings(tk.Frame):
     def get_current_row(self):
         ret = self.row_index
         self.row_index += 1
@@ -12,7 +12,7 @@ class GeneralSettings(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.row_index = 1
-        tk.Label(self, text="General settings", font=("Arial", 16)).grid(
+        tk.Label(self, text="System settings", font=("Arial", 16)).grid(
             row=self.get_current_row(), column=0, sticky="nsew"
         )
         btn = GeneralButton(

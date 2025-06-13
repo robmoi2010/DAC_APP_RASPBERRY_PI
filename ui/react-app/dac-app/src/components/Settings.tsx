@@ -17,7 +17,7 @@ const Settings = () => {
         const indexMap = [
             { index: 0, url: "/DacSettings" },
             { index: 1, url: "/DspSettings" },
-            { index: 2, url: "/GeneralSettings" },
+            { index: 2, url: "/SystemSettings" },
             { index: 3, url: "/Home" }];
         dispatch(setIndexUrlMap(indexMap));
     }, []);
@@ -28,7 +28,7 @@ const Settings = () => {
         <PaddingRow />,
         <DataRow selected={false} onClick={() => navigate("/DspSettings")} text="Dsp Settings" type={1} active={index == 1} />,
         <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/GeneralSettings")} text="General Settings" type={1} active={index == 2} />,
+        <DataRow selected={false} onClick={() => navigate("/SystemSettings")} text="System Settings" type={1} active={index == 2} />,
         <PaddingRow />,
         <DataRow selected={false} onClick={() => navigate("/Home")} text="Back" type={2} active={index == 3} />,
     ];

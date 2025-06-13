@@ -6,21 +6,23 @@ import PaddingRow from "../PaddingRow";
 import Page from "../Page";
 import { useNavigate } from "react-router-dom";
 import { setIndexUrlMap } from "../../state-repo/slices/indexUrlMap";
+import { useEffect } from "react";
 
 
 const DspSettings = () => {
     const navigate = useNavigate();
     const index = useSelector((state) => state.navigationIndex.value);
     const dispatch = useDispatch();
-    const indexMap = useSelector((state) => state.indexUrlMap.value)
-    const indexMap2 = [
-        { index: 0, url: "/Input" },
-        { index: 1, url: "/Output" },
-        { index: 2, url: "/Settings" }
-    ];
-    if (indexMap[0]?.url != indexMap2[0].url) {
-        dispatch(setIndexUrlMap(indexMap2));
-    }
+    useEffect(() => {
+        const indexMap = [
+            { index: 0, url: "/Input" },
+            { index: 1, url: "/Output" },
+            { index: 2, url: "/Settings" }
+        ];
+
+        dispatch(setIndexUrlMap(indexMap));
+
+    }, []);
     const components = [
         <Header text="Dsp Settings" />,
         < PaddingRow />,

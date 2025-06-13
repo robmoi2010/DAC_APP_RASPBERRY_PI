@@ -10,14 +10,14 @@ from ui.dsp.input import Input
 from ui.dsp.main_output import MainOutput
 from ui.dsp.subwoofer_output import SubwooferOutput
 from ui.dsp.output import Output
-from ui.general.sound_modes import SoundModes
-from ui.general.general_settings import GeneralSettings
+from ui.system.sound_modes import SoundModes
+from ui.system.system_settings import SystemSettings
 from ui.dac.thd_compensation import ThdCompensation
 from ui.dac.second_order_compensation import SecondOrderCompensation
 from ui.dac.third_order_compensation import ThirdOrderCompensation
 from ui.dac.dac_volume_settings import DacVolumeSettings
-from ui.general.volume_device import VolumeDevice
-from ui.general.volume_algorithm import VolumeAlgorithm
+from ui.system.volume_device import VolumeDevice
+from ui.system.volume_algorithm import VolumeAlgorithm
 
 current_visible_frame = None
 prev_frame = None
@@ -46,7 +46,7 @@ class App(tk.Tk):
             SubwooferOutput,
             Output,
             SoundModes,
-            GeneralSettings,
+            SystemSettings,
             ThdCompensation,
             SecondOrderCompensation,
             ThirdOrderCompensation,

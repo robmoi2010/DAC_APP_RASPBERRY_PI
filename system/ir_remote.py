@@ -4,7 +4,7 @@ import configs.app_config as app_config
 from enum import Enum
 from factory.system_factory import SYS_OBJECTS
 import factory.system_factory as factory
-from general.ir_remote_router import IrRemoteRouter
+from system.ir_remote_router import IrRemoteRouter
 
 ir_remote_router: IrRemoteRouter = factory.new(SYS_OBJECTS.IR_ROUTER, None)
 config = app_config.getConfig()

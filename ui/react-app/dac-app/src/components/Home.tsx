@@ -1,6 +1,5 @@
 import { VolumeGauge } from './VolumeGauge';
 import DataRow from './DataRow';
-import Header from './header';
 import PaddingRow from './PaddingRow';
 import { useDispatch, useSelector } from 'react-redux';
 import Page from './Page';
@@ -13,6 +12,7 @@ import { addMessage } from '../state-repo/slices/webSocketSlice';
 import Config from '../configs/Config.json';
 import { useNavigate } from 'react-router-dom';
 import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
+import Header from './header';
 
 const Home = () => {
    const volume = useSelector((state) => state.volume.value);
@@ -32,7 +32,7 @@ const Home = () => {
          let row = "";
          if (data != null) {
             data.forEach(d => {
-               if (d.key == "CURRENT_VOLUME" || d.key == "CURRENT_MUSE_VOLUME") {
+               if (d.key.trim() == "CURRENT_VOLUME" || d.key.trim() == "CURRENT_MUSES_VOLUME") {
                   dispatch(setVolume(d.value));
                }
                else {
@@ -65,7 +65,7 @@ const Home = () => {
          dispatch(addMessage(data));
          let genDt = "";
          data.forEach(d => {
-            if (d.key == "CURRENT_VOLUME" || d.key == "CURRENT_MUSE_VOLUME") {
+            if (d.key.trim() == "CURRENT_VOLUME" || d.key.trim() == "CURRENT_MUSES_VOLUME") {
                dispatch(setVolume(d.value));
             }
             else {

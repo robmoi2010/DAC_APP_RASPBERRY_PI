@@ -1,5 +1,5 @@
 import repo.storage as storage
-from services.ws_connection_manager import WSConnectionManager
+from services.utils.ws_connection_manager import WSConnectionManager
 from volume.volume_util import (
     VOLUME_ALGORITHM,
     VOLUME_ALGORITHM_ID,
@@ -11,7 +11,7 @@ from volume.volume_util import (
 import configs.app_config as configuration
 import math
 from model.model import ResponseModel
-from services.services_util import VOLUME_DISPLAY_NAME
+from services.utils.services_util import VOLUME_DISPLAY_NAME
 import json
 import asyncio
 
@@ -26,10 +26,7 @@ class Volume:
         self.connection_manager: WSConnectionManager = init_object
 
     def get_current_volume_device(self):
-        raise NotImplementedError
-
-    def get_current_volume(self):
-        raise NotImplementedError
+       return storage.read(CURRENT_DEVICE_ID)
 
     def persist_volume(self, volume):
         raise NotImplementedError
@@ -61,8 +58,8 @@ class Volume:
     def get_percentage_volume(self, volume):
         raise NotImplementedError
 
-    def set_current_volume_device(self):
-        raise NotImplementedError
+    def set_current_volume_device(self, device):
+        storage.write(CURRENT_DEVICE_ID, device)
 
     def is_volume_disabled():
         raise NotImplementedError
@@ -89,13 +86,5 @@ class Volume:
             key=id, value=str(vol), display_name=VOLUME_DISPLAY_NAME
         )
         list.append(response)
-        data=[dt.model_dump() for dt in list]
+        data = [dt.model_dump() for dt in list]
         await self.connection_manager.send_data(json.dumps(data))
-
-
-def get_current_volume_device():
-    device = storage.read(CURRENT_DEVICE_ID)
-    if device == VOLUME_DEVICE.DAC.name:
-        return VOLUME_DEVICE.DAC
-    elif device == VOLUME_DEVICE.MUSES.name:
-        return VOLUME_DEVICE.MUSES

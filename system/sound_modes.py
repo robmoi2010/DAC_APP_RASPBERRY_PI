@@ -12,43 +12,42 @@ SOUND_MODE_ID = "SOUND_MODE"
 config = configuration.getConfig()["ADAU1452"]["ADDR"]
 
 
-class SoundMode(Enum):
+class SOUND_MODE(Enum):
     PURE_DIRECT = 0
     SEMI_PURE_DIRECT = 1
     DSP = 2
 
 
 def get_current_sound_mode():
-    mode=storage.read(SOUND_MODE_ID)
-    if mode==SoundMode.DSP.value:
-        return SoundMode.DSP
-    elif mode==SoundMode.PURE_DIRECT.value:
-        return SoundMode.PURE_DIRECT
-    elif mode==SoundMode.SEMI_PURE_DIRECT.value:
-        return SoundMode.SEMI_PURE_DIRECT
+    mode = storage.read(SOUND_MODE_ID)
+    if mode == SOUND_MODE.DSP.value:
+        return SOUND_MODE.DSP
+    elif mode == SOUND_MODE.PURE_DIRECT.value:
+        return SOUND_MODE.PURE_DIRECT
+    elif mode == SOUND_MODE.SEMI_PURE_DIRECT.value:
+        return SOUND_MODE.SEMI_PURE_DIRECT
 
 
 def get_sound_mode_name(mode):
-    if mode == SoundMode.PURE_DIRECT.value:
-        return SoundMode.PURE_DIRECT.name
-    elif mode == SoundMode.SEMI_PURE_DIRECT.value:
-        return SoundMode.SEMI_PURE_DIRECT.name
-    elif mode == SoundMode.DSP.value:
-        return SoundMode.DSP.name
-    
+    if mode == SOUND_MODE.PURE_DIRECT.value:
+        return SOUND_MODE.PURE_DIRECT.name
+    elif mode == SOUND_MODE.SEMI_PURE_DIRECT.value:
+        return SOUND_MODE.SEMI_PURE_DIRECT.name
+    elif mode == SOUND_MODE.DSP.value:
+        return SOUND_MODE.DSP.name
 
 
 def update_sound_mode(mode):
     storage.write(SOUND_MODE_ID, mode)
-    if mode == SoundMode.PURE_DIRECT.value:
+    if mode == SOUND_MODE.PURE_DIRECT.value:
         handle_pure_direct()
-        update_ui_sound_mode(SoundMode.PURE_DIRECT.name)
-    elif mode == SoundMode.SEMI_PURE_DIRECT.value:
+        # update_ui_sound_mode(SOUND_MODE.PURE_DIRECT.name)
+    elif mode == SOUND_MODE.SEMI_PURE_DIRECT.value:
         handle_semi_pure_direct()
-        update_ui_sound_mode(SoundMode.SEMI_PURE_DIRECT.name)
-    elif mode == SoundMode.DSP.value:
+        # update_ui_sound_mode(SOUND_MODE.SEMI_PURE_DIRECT.name)
+    elif mode == SOUND_MODE.DSP.value:
         handle_dsp_mode()
-        update_ui_sound_mode(SoundMode.DSP.name)
+        # update_ui_sound_mode(SOUND_MODE.DSP.name)
 
 
 def update_ui_sound_mode(mode):

@@ -5,11 +5,12 @@ import Header from "../header";
 import PaddingRow from "../PaddingRow";
 import Page from "../Page";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
-import { setIndexUrlMap } from "../../state-repo/slices/indexUrlMap";
 import { type ReactElement, useEffect } from "react";
 import { getVolumeModes, updateVolumeModes } from "../../services/DacService";
-import type { indexMapType, responseDataType } from "../../utils/types";
+import type { responseDataType } from "../../utils/types";
 import { setComponentsData } from "../../state-repo/slices/dynamicComponentsDataSlice";
+import type { Dispatch } from "redux";
+import { loadDynamicData } from "../../utils/dataUtil";
 
 
 const VolumeModes = () => {
@@ -19,47 +20,33 @@ const VolumeModes = () => {
     const componentsData = useSelector((state) => state.dynamicComponentsData.value);
     const dispatch = useDispatch();
     useEffect(() => {
-        const indexMap: indexMapType[] = [];
-        const components: responseDataType[] = [];
-        indexMap.push({ index: 0, url: "" });
-        indexMap.push({ index: 1, url: "" });
-        indexMap.push({ index: 2, url: "/DacSettings" });
-        dispatch(setIndexUrlMap(indexMap))
-        const status = getVolumeModes();
-        let disabled = false;
-        status.then(data => {
-            console.log(data);
-            disabled = data.value;
-        });
-        const enableVal = ((disabled) ? "0" : "1");
-        const disableVal = ((disabled) ? "1" : "0");
-        components.push({ key: "0", value: enableVal, display_name: "Mute" });
-        components.push({ key: "1", value: disableVal, display_name: "Enable/DIsable Volume" });
-        dispatch(setComponentsData(components));
+        loadDynamicData(getVolumeModes(), dispatch, "/DacSettings");
     }, []);
 
     useEffect(() => {
-        console.log(selectedIndex);
         if (selectedIndex != -1) {
-            handleSelection(selectedIndex);
+            dataSelection(selectedIndex, dispatch);
         }
-    }, [selectedIndex]);
-    return <Page items={generateComponents(componentsData, index, navigate)} />
+    }, [selectedIndex, dispatch]);
+    return <Page items={generateComponents(componentsData, index, navigate, dispatch)} />
 }
-const generateComponents = (data: responseDataType[], index: number, navigate: NavigateFunction) => {
+const generateComponents = (data: responseDataType[], index: number, navigate: NavigateFunction, dispatch: Dispatch) => {
     const components: ReactElement[] = [];
-    components.push(<Header text="Volume Settings" />);
+    components.push(<Header text="Volume Modes" />);
     components.push(<PaddingRow />);
     data.forEach(x => {
-        components.push(<DataRow selected={x?.value == "1"} onClick={() => handleSelection(x.key)} text={x?.display_name} type={1} active={index == x?.key} />);
+        components.push(<DataRow selected={x?.value == "1"} onClick={() => dataSelection(Number(x?.key), dispatch)} text={x?.display_name} type={1} active={index == Number(x?.key)} />);
         components.push(<PaddingRow />);
     });
     components.push(<DataRow selected={false} onClick={() => navigate("/DacSettings")} text="Back" type={2} active={index == data.length} />);
     return components;
 }
-const handleSelection = (selection: number) => {
-    const data = { key: selection, value: selection };
-    updateVolumeModes(JSON.stringify(data));
+const dataSelection = (selection: number, dispatch: Dispatch) => {
+    updateVolumeModes(JSON.stringify({ key: "" + selection, value: "" + selection })).then(
+        data => {
+            dispatch(setComponentsData(data));
+        }
+    );
 }
 
 

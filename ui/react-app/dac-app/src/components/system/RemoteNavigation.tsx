@@ -50,7 +50,7 @@ const RemoteNavigation = () => {
                 const indexBuffer = index;
                 // reset index to zero
                 dispatch(setIndex(0));
-                const value = indexMap.find(m => m.index == index);
+                const value = indexMap.find(m => m.index == indexBuffer);
                 if (value?.url != "") {
                     navigate("" + value?.url);
                 }

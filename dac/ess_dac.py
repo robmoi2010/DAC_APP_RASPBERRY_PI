@@ -52,7 +52,7 @@ def set_spdif_mode():
     # enable spdif decode
     addr = config["SYS_MODE_CONFIG"]
     smask = 0b00001000
-    data = communication.read(addr)
+    data = communication.read(DAC_I2C_ADDR, addr)
     data = data | smask
     communication.write(DAC_I2C_ADDR, addr, data)
 
@@ -73,7 +73,7 @@ def set_spdif_mode():
     gen_mask = 0b11110000
     n = pin_bin + "0000"
     pin_mask = int(n)
-    data3 = communication.read(spdf_addr)
+    data3 = communication.read(DAC_I2C_ADDR, spdf_addr)
     data3 = data3 & ~gen_mask  # reset to zero first
     data3 = data3 | pin_mask
     communication.write(DAC_I2C_ADDR, spdf_addr, data3)
@@ -89,7 +89,6 @@ def initialize_dac():
 def set_dac_mode(
     mode,
 ):  # 0 I2S Slave mode, 1 LJ Slave mode, 2 I2S Master mode, 3 SPDIF mode, 4 TDM I2S Slave mode Async, 5 TDM I2S Slave mode Sync
-    print(mode)
     if mode == 0:
         set_i2s_slave_mode()
         storage.write("CURRENT_DAC_MODE", mode)
@@ -126,14 +125,14 @@ def is_third_order_compensation_enabled():
 
 def enable_disable_second_order_compensation(selected):
     active = is_second_order_compensation_enabled()
-    if (selected==0 and active) or (selected==1 and not active):
+    if (selected==1 and active) or (selected==0 and not active):
         return
     reg_1_addr = config["THD_2ND_ORDER_1"]
     reg_2_addr = config["THD_2ND_ORDER_2"]
     reg_3_addr = config["THD_2ND_ORDER_3"]
     reg_4_addr = config["THD_2ND_ORDER_4"]
     print("abc:" + str(active))
-    if selected==1:  # disable
+    if selected==0:  # disable
         data = 0b00000000
         # store reg values for enabling the setting if not stored yet
         if not storage.read("SECOND_ORDER_COEFFICIENTS_STORED"):
@@ -169,13 +168,13 @@ def enable_disable_second_order_compensation(selected):
 
 def enable_disable_third_order_compensation(selected):
     active = is_third_order_compensation_enabled()
-    if (selected==0 and active) or (selected==1 and not active):
+    if (selected==1 and active) or (selected==0 and not active):
         return
     reg_1_addr = config["THD_3RD_ORDER_1"]
     reg_2_addr = config["THD_3RD_ORDER_2"]
     reg_3_addr = config["THD_3RD_ORDER_3"]
     reg_4_addr = config["THD_3RD_ORDER_4"]
-    if selected==1:  # disable
+    if selected==0:  # disable
         data = 0b00000000
         # store reg values for enabling the setting if not stored yet
         if not storage.read("THIRD_ORDER_COEFFICIENTS_STORED"):

@@ -24,3 +24,17 @@ export const getVolumeModes = () => {
 export const updateVolumeModes = (data: string) => {
     return sendPut(Config["BASE_URL"] + "dac/volume_modes", data);
 }
+export const getSecondOrderStatus = () => {
+    return sendGet(Config["BASE_URL"] + "dac/thd_compensation/second_order/status");
+}
+export const updateSecondOrderStatus = (data: string) => {
+    console.log(data);
+    return sendPut(Config["BASE_URL"] + "dac/thd_compensation/second_order/status", data);
+}
+export const getThirdOrderStatus = () => {
+    return sendGet(Config["BASE_URL"] + "dac/thd_compensation/third_order/status");
+}
+export const updateThirdOrderStatus = (data: string) => {
+    console.log(data);
+    return sendPut(Config["BASE_URL"] + "dac/thd_compensation/third_order/status", data);
+}

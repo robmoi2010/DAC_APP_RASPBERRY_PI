@@ -1,7 +1,6 @@
 from volume.system_volume import Volume
 
 from volume.volume_util import (
-    VOLUME_DEVICE,
     VOL_DIRECTION,
     VOLUME_ALGORITHM,
     CURRENT_MUSES_VOLUME_ID,
@@ -109,12 +108,6 @@ class Muses72323(Volume):
         if vol == 0:  # 0 db corresponds with 32 binary equivalent
             return 32
         return (vol / self.STEP) + 32
-
-    def set_current_volume_device(self):
-        storage.write(self.CURRENT_DEVICE_ID, VOLUME_DEVICE.MUSES.name)
-
-    def get_current_volume_device(self):
-        return VOLUME_DEVICE.MUSES
 
     def get_current_volume(self):
         return storage.read(CURRENT_MUSES_VOLUME_ID)

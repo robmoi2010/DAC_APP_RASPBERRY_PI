@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 
-import general.volume_encoder as volume_encoder
+import system.volume_encoder as volume_encoder
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
