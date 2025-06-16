@@ -1,50 +1,55 @@
-from volume.system_volume import Volume
-
+from dac.dac_volume import DISABLE_VOLUME_ID
+from registry.register import register
+from repo.storage import Storage
 from volume.volume_util import (
     VOL_DIRECTION,
     VOLUME_ALGORITHM,
     CURRENT_MUSES_VOLUME_ID,
+    get_logarithmic_volume_level,
+    map_value,
 )
 import configs.app_config as configuration
-import util.communication as comm
-import repo.storage as storage
+from muses.muses_comm import MusesComm
 
 config = configuration.getConfig()["MUSES72323"]
 
 
-class Muses72323(Volume):
-    def __init__(self, init_object=None):
-        super().__init__(init_object)
+@register
+class Muses72323:
+
+    def __init__(self, storage: Storage, comm: MusesComm):
+        self.storage = storage
+        self.comm = comm
         self.MAX_VOLUME = config["MAX_VOLUME"]
         self.MIN_VOLUME = config["MIN_VOLUME"]
         self.STEP = config["STEP"]
 
-    async def update_volume(self, direction):
-        curr_volume = super().get_current_volume()
+    def update_volume(self, direction, volume_algorithm: VOLUME_ALGORITHM):
+        curr_volume = self.get_current_volume()
         if direction == VOL_DIRECTION.UP:  # volume increase
             if (
                 curr_volume >= self.MAX_VOLUME
             ):  # skip processing if volume is already at Max
-                return
+                return 100
             curr_volume += self.STEP
         else:
             if (
                 curr_volume <= self.MIN_VOLUME
             ):  # skip processing if volume is already at Minimum
-                return
+                return 0
             curr_volume -= self.STEP
             print("after step:" + str(curr_volume))
-        self.update_chip_volume(curr_volume)
-        super().persist_volume(curr_volume)
-        # update ui with the new volume
-        await self.update_ui_volume(curr_volume)
+        self.update_chip_volume(curr_volume, volume_algorithm)
+        self.persist_volume(curr_volume)
+        # return new percentage volume for ui update
+        return self.get_percentage_volume(curr_volume)
 
-    def update_chip_volume(self, vol):
+    def update_chip_volume(self, vol, volume_algorithm: VOLUME_ALGORITHM):
         # if logarithmic is set adjust volume to logarithmic scale
         if (
-            super().get_current_volume_algorithm() == VOLUME_ALGORITHM.LOGARITHMIC
+            volume_algorithm == VOLUME_ALGORITHM.LOGARITHMIC
         ):  # fix issue of algorithm returning 0 during implementation
-            vol = super().get_logarithmic_volume_level(
+            vol = get_logarithmic_volume_level(
                 abs(vol), self.MIN_VOLUME, self.MAX_VOLUME
             )
         print("prev_val:", str(vol))
@@ -63,8 +68,8 @@ class Muses72323(Volume):
         print(data)
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
-        comm.spi_write(r_pin, data)
-        comm.spi_write(l_pin, data)
+        self.comm.spi_write(r_pin, data)
+        self.comm.spi_write(l_pin, data)
 
     def initialize_volume_chip(self):
         # link left and right channel volume control, enable zero cross and channels gain
@@ -77,8 +82,8 @@ class Muses72323(Volume):
         print("data:" + data)
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
-        comm.spi_write(r_pin, data)
-        comm.spi_write(l_pin, data)
+        self.comm.spi_write(r_pin, data)
+        self.comm.spi_write(l_pin, data)
 
     def mute(self):
         master_channel = config["MASTER_CHANNEL"]
@@ -94,13 +99,11 @@ class Muses72323(Volume):
         print(data)
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
-        comm.spi_write(r_pin, data)
-        comm.spi_write(l_pin, data)
+        self.comm.spi_write(r_pin, data)
+        self.comm.spi_write(l_pin, data)
 
     def get_percentage_volume(self, vol):
-        print(vol)
-        p_vol = super().map_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
-        print(p_vol)
+        p_vol = map_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
         return int(p_vol)
 
     def map_db_to_reg_binary(self, vol):
@@ -110,13 +113,23 @@ class Muses72323(Volume):
         return (vol / self.STEP) + 32
 
     def get_current_volume(self):
-        return storage.read(CURRENT_MUSES_VOLUME_ID)
+        return self.storage.read(CURRENT_MUSES_VOLUME_ID)
 
-    def is_volume_disabled():
-        raise NotImplementedError
+    def is_volume_disabled(self):
+        return self.storage.read(DISABLE_VOLUME_ID)
 
     def persist_volume(self, volume):
-        storage.write(CURRENT_MUSES_VOLUME_ID, volume)
+        self.storage.write(CURRENT_MUSES_VOLUME_ID, volume)
 
-    async def update_ui_volume(self, volume):
-        await super().update_ui_volume(self.get_percentage_volume(volume))
+    def disable_enable_volume(self, selected, volume_algorithm: VOLUME_ALGORITHM):
+        curr = self.storage.read(DISABLE_VOLUME_ID)
+        if (curr == 0 and selected == 0) or (curr == 1 and selected == 1):
+            return
+        if selected == 1:
+            self.update_chip_volume(self.MAX_VOLUME, volume_algorithm)  # disable volume
+            self.storage.write(DISABLE_VOLUME_ID, 1)
+            return 0  # disabled
+        else:
+            self.update_chip_volume(self.get_current_volume(), volume_algorithm)
+            self.storage.write(DISABLE_VOLUME_ID, 0)
+            return 1  # enabled

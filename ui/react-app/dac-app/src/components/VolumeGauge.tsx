@@ -6,7 +6,7 @@ import 'react-circular-progressbar/dist/styles.css';
 
 export function VolumeGauge({ volume }) {
     return (
-        <div style={{ width: 300, height: 300 }}>
+        <div style={{ 'width': '70%', 'height': '70%' }}>
             <CircularProgressbar
                 value={volume}
                 text={`${volume}%`}

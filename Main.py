@@ -1,12 +1,14 @@
-from ui.app import App
+import logging
 
-import repo.mongo_repo as mongo_repo
-from volume.muses72323 import Muses72323
-import dac.ess_dac as dac
+from repo.mongo_storage import MongoStorage
+from ui.app import App
+import registry.register as register
+from dac.ess_dac import Dac
 import uvicorn
 
 
 app_window = None
+logger = logging.getLogger(__name__)
 
 
 def get_app_window():
@@ -23,9 +25,22 @@ def main():
 
 
 def initialize_device():
-    dac.initialize_dac()
-    mongo_repo.initialize()
-    Muses72323().initialize_volume_chip()
+    try:
+        dac: Dac = register.get_instance("dac")
+        dac.initialize_dac()
+    except Exception as e:
+        logger.error(e)
+    try:
+        storage: MongoStorage = register.get_instance("mongostorage")
+        storage.initialize()
+        pass
+    except Exception as e:
+        logger.error(e)
+    try:
+        muses = register.get_instance("muses72323")
+        muses.initialize_volume_chip()
+    except Exception as e:
+        logger.error(e)
 
 
 if __name__ == "__main__":

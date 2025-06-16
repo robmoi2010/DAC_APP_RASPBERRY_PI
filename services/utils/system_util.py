@@ -1,8 +1,10 @@
 from model.model import ResponseModel
-from system import sound_modes
+from registry.register import get_instance
 from system.sound_modes import SOUND_MODE
 from volume import system_volume
 from volume.volume_util import VOLUME_ALGORITHM, VOLUME_DEVICE
+
+sound_modes = get_instance("soundmode")
 
 
 def is_selected(current_item, index):

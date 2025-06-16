@@ -1,22 +1,22 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-import dac.ess_dac as dac
-import factory.system_factory as factory
-from factory.system_factory import SYS_OBJECTS
+from registry.register import get_instance
 from services.utils.dac_util import (
     create_dac_mode_response,
     create_filter_response,
     create_volume_modes_response,
 )
-from system import volume_encoder
+
 from model.model import RequestModel, ResponseModel
 import logging
 
-import dac.dac_filters as dac_filters
 
 dac_app = APIRouter(prefix="/dac")
 logger = logging.getLogger(__name__)
-volume = factory.new(SYS_OBJECTS.DAC_VOLUME)
+volume = get_instance("volume")
+dac = get_instance("dac")
+volume_encoder = get_instance("volumeencoder")
+dac_filters = get_instance("dacfilters")
 
 
 @dac_app.get("/")

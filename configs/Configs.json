@@ -127,6 +127,7 @@
         "SETTINGS_ADDR": "00001000"
     },
     "SYSTEM": {
-        "MASTER_VOLUME_DEVICE": "MUSES"
+        "MASTER_VOLUME_DEVICE": "MUSES",
+        "STORAGE":1
     }
 }

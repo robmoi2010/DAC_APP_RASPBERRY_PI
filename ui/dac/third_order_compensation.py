@@ -1,11 +1,11 @@
 import tkinter as tk
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
-import dac.ess_dac as dac
+from registry.register import get_instance
 from tkinter import messagebox
 from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
-
+dac = get_instance("dac")
 class ThirdOrderCompensation(tk.Frame):
     def get_current_row(self):
         ret = self.row_index

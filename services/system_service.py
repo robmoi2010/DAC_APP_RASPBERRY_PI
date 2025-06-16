@@ -1,19 +1,16 @@
-from factory.system_factory import SYS_OBJECTS
-import factory.system_factory as factory
-from system.system_util import BUTTON
+from system.system_util import BUTTON, SOUND_MODE_ID
 from model.model import RequestModel, ResponseModel
-import system.sound_modes as sound_modes
 from system.sound_modes import SOUND_MODE
 from services.utils.system_util import (
     create_sound_mode_response,
     create_volume_algorithm_response,
     create_volume_device_response,
 )
-from services.utils.ws_connection_manager import WSConnectionManager
-from services.utils.ir_connection_manager import IRConnectionManager
+from services.utils.ws_connection_manager import WS_TYPE, WSConnectionManager
 import logging
 from fastapi import WebSocket, APIRouter
 import asyncio
+from registry.register import get_instance
 from volume.volume_util import (
     VOLUME_ALGORITHM,
     VOLUME_DEVICE,
@@ -24,13 +21,15 @@ from services.utils.services_util import SOUND_MODE_DISPLAY_NAME, VOLUME_DISPLAY
 from volume.volume_util import VOL_DIRECTION
 from system.ir_remote_router import IrRemoteRouter
 
-connection_manager: WSConnectionManager = factory.new(SYS_OBJECTS.WS_CONN_MANAGER)
-ir_connection_manager: IRConnectionManager = factory.new(SYS_OBJECTS.IR_CONN_MANAGER)
+connection_manager: WSConnectionManager = get_instance("wsconnectionmanager")
 system_app = APIRouter(prefix="/system")
-ir_router: IrRemoteRouter = factory.new(SYS_OBJECTS.IR_ROUTER, ir_connection_manager)
-logger = logging.getLogger(__name__)
+ir_router: IrRemoteRouter = get_instance("irremoterouter")
+logging.basicConfig(
+    level=logging.ERROR, format="[%(levelname)s] %(filename)s:%(lineno)d - %(message)s"
+)
 
-volume = factory.new(SYS_OBJECTS.VOLUME, connection_manager)
+volume = get_instance("volume")
+sound_modes = get_instance("soundmode")
 
 
 @system_app.get("/sound_mode")
@@ -49,7 +48,7 @@ async def update_sound_mode(request: RequestModel):
         sound_modes.update_sound_mode(mode.value)
         return create_sound_mode_response()
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
 
 
 @system_app.get("/volume_algorithm")
@@ -66,7 +65,7 @@ async def update_volume_algorithm(request: RequestModel):
         volume.set_volume_algorithm(algorithm)
         return create_volume_algorithm_response(volume)
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
 
 
 @system_app.get("/volume_device")
@@ -85,30 +84,30 @@ async def update_volume_device(request: RequestModel):
         volume.set_current_volume_device(device.value)
 
         # reload volume object to capture the device change
-        volume = factory.new(SYS_OBJECTS.VOLUME, connection_manager)
+        volume = get_instance("volume", force_new=True)
         return create_volume_device_response(volume)
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
 
 
 @system_app.websocket("/ws")
 async def home_websocket(websocket: WebSocket):
-    await connection_manager.connect(websocket)
+    await connection_manager.connect(WS_TYPE.HOME_DATA, websocket)
     try:
         while True:
             await asyncio.sleep(1)
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
 
 
 @system_app.websocket("/ws/ir_remote")
 async def ir_remote_websocket(websocket: WebSocket):
-    await ir_connection_manager.connect(websocket)
+    await connection_manager.connect(WS_TYPE.IR_REMOTE, websocket)
     try:
         while True:
             await asyncio.sleep(1)
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
 
 
 @system_app.get("/volume")
@@ -143,7 +142,7 @@ async def home():
     mode = sound_modes.get_current_sound_mode()
     list.append(
         ResponseModel(
-            key=sound_modes.SOUND_MODE_ID,
+            key=SOUND_MODE_ID,
             value=mode.name,
             display_name=SOUND_MODE_DISPLAY_NAME,
         )

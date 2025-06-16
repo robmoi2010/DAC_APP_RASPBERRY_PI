@@ -1,12 +1,14 @@
 import logging
 
 from fastapi import APIRouter
-import dsp.io as dsp
+from registry.register import get_instance
 from model.model import RequestModel
 from services.utils.dsp_util import create_input_response, create_output_response
 
 dsp_app = APIRouter(prefix="/dsp")
 logger = logging.getLogger(__name__)
+
+dsp = get_instance("dspio")
 
 
 @dsp_app.put("/output/subwoofer")
@@ -49,4 +51,3 @@ async def update_input(request: RequestModel):
 @dsp_app.get("/input")
 async def get_inputs():
     return create_input_response()
-

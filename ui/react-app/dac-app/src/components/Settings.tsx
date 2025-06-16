@@ -7,6 +7,7 @@ import Page from "./Page";
 import { useNavigate } from "react-router-dom";
 import { setIndexUrlMap } from "../state-repo/slices/indexUrlMap";
 import { useEffect } from "react";
+import { Slider } from "@radix-ui/themes/components/slider";
 
 
 const Settings = () => {
@@ -22,6 +23,7 @@ const Settings = () => {
         dispatch(setIndexUrlMap(indexMap));
     }, []);
     const components = [
+        <Slider min={0} max={100}  onChange={() => { }} />,
         <Header text="Settings" />,
         < PaddingRow />,
         <DataRow selected={false} onClick={() => navigate("/DacSettings")} text="Dac Settings" type={1} active={index == 0} />,

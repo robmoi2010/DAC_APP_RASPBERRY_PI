@@ -1,6 +1,9 @@
 from model.model import ResponseModel
 from services.utils.system_util import is_selected
-import dsp.io as dsp
+from registry.register import get_instance
+from dsp.io import DspIO
+
+dsp: DspIO = get_instance("dspio")
 
 
 def create_output_response(type):  # 0 mains 1 subwoofer

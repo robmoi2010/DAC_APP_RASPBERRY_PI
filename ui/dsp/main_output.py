@@ -4,6 +4,9 @@ import dsp.io as output
 from util.styles import UNSELECTED_COLOR, SELECTED_COLOR
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
+from registry.register import get_instance
+from dsp.io import DspIO
+output = get_instance("dspio")
 
 
 class MainOutput(tk.Frame):

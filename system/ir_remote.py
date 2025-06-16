@@ -2,11 +2,10 @@ import pigpio
 import time
 import configs.app_config as app_config
 from enum import Enum
-from factory.system_factory import SYS_OBJECTS
-import factory.system_factory as factory
+from registry.register import get_instance
 from system.ir_remote_router import IrRemoteRouter
 
-ir_remote_router: IrRemoteRouter = factory.new(SYS_OBJECTS.IR_ROUTER, None)
+ir_remote_router: IrRemoteRouter = get_instance("irremoterouter")
 config = app_config.getConfig()
 irConfig = config["IR_REMOTE"]["BUTTON_HASH"]
 BUTTON = Enum("BUTTON", irConfig)

@@ -1,8 +1,11 @@
-from dac import dac_filters
+from registry.register import get_instance
 from model.model import ResponseModel
 from services.utils.system_util import is_selected
-from system import volume_encoder
-import dac.ess_dac as dac
+
+dac_filters = get_instance("dacfilters")
+dac = get_instance("dac")
+volume_encoder = get_instance("volumeencoder")
+
 
 def create_filter_response():
     # 0 Minimum phase

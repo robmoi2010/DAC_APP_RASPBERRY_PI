@@ -1,6 +1,5 @@
-import { Badge } from "@radix-ui/themes"
+
 function PaddingRow() {
-    return <Badge>
-    </Badge>
+    return <div style={{ padding: '5px' }} />
 }
 export default PaddingRow

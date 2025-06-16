@@ -1,9 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
-import dsp.io as input
-from util.styles import UNSELECTED_COLOR, SELECTED_COLOR
+from registry.register import get_instance
+from util.styles import BUTTON_BG, BUTTON_ONFOCUS_BG, UNSELECTED_COLOR, SELECTED_COLOR
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
+from dsp.io import DspIO
+
+input: DspIO = get_instance("dspio")
 
 
 class Input(tk.Frame):
@@ -58,7 +61,9 @@ class Input(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.row_index = 1
-        tk.Label(self, text="Select Input", font=("Arial", 16)).grid(row=self.get_current_row(), column=0, sticky="nsew")
+        tk.Label(self, text="Select Input", font=("Arial", 16)).grid(
+            row=self.get_current_row(), column=0, sticky="nsew"
+        )
         current_input = input.get_current_input()
         self.btn1 = GeneralButton(
             self,

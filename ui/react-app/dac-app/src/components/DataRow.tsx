@@ -6,7 +6,7 @@ const size = "2";
 const radius = "none";
 
 function DataRow({ onClick, text, type, selected, active }) {
-   let styles = {};
+   let styles = { 'width': '500px', 'height': '50px' };
    if (active) {
       styles = { ...styles, 'border': '1px solid black' };
    }
@@ -15,7 +15,7 @@ function DataRow({ onClick, text, type, selected, active }) {
    }
    if (type == 2)//Back button
    {
-      styles = { ...styles, '': '' };
+      styles = { ...styles, 'width': '100px', 'height': '50px' };
    }
    return <Button style={styles} onClick={onClick} variant={variant} color={color} size={size} radius={radius}>{text}</Button>
 

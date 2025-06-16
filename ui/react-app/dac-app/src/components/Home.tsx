@@ -13,6 +13,7 @@ import Config from '../configs/Config.json';
 import { useNavigate } from 'react-router-dom';
 import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
 import Header from './header';
+import VolumeSlider from './VolumeSlider';
 
 const Home = () => {
    const volume = useSelector((state) => state.volume.value);
@@ -86,6 +87,8 @@ const Home = () => {
       <Header text={homeData} />,
       <PaddingRow />,
       <VolumeGauge volume={volume} />,
+      <PaddingRow />,
+      <VolumeSlider />,
       <PaddingRow />,
       <DataRow selected={false} onClick={() => navigate("/Settings")} text="Settings" type={1} active={false} />
    ];

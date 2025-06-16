@@ -2,12 +2,11 @@ import tkinter as tk
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 from volume.volume_util import VOLUME_ALGORITHM
-import factory.system_factory as factory
-from factory.system_factory import SYS_OBJECTS
+from registry.register import get_instance
 from tkinter import messagebox
 from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
-volume = factory.new(SYS_OBJECTS.VOLUME)
+volume = get_instance("volume")
 
 
 class VolumeAlgorithm(tk.Frame):

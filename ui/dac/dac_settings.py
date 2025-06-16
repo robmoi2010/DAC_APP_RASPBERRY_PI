@@ -1,16 +1,14 @@
 import tkinter as tk
-import dac.dac_volume as dac_volume
-from tkinter import messagebox
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
-import factory.system_factory as factory
-from factory.system_factory import SYS_OBJECTS
+from registry.register import register, get_instance
 from volume.volume_util import VOLUME_DEVICE
+from volume.system_volume import Volume
 
 ENABLE_VOL_TEXT = "Enable Volume"
 DISABLE_VOL_TEXT = "Disable Volume"
 
-volume = factory.new(SYS_OBJECTS.VOLUME)
+volume: Volume = get_instance("volume")
 
 
 class DacSettings(tk.Frame):
