@@ -16,8 +16,8 @@ import Header from './header';
 import VolumeSlider from './VolumeSlider';
 
 const Home = () => {
-   const volume = useSelector((state) => state.volume.value);
-   const homeData = useSelector((state) => state.homeData.value);
+   const volume = useSelector((state: { volume: { value: number } }) => state.volume.value);
+   const homeData = useSelector((state: { homeData: { value: string } }) => state.homeData.value);
    const dispatch = useDispatch();
    const navigate = useNavigate();
 
@@ -33,7 +33,7 @@ const Home = () => {
          let row = "";
          if (data != null) {
             data.forEach(d => {
-               if (d.key.trim() == "CURRENT_VOLUME" || d.key.trim() == "CURRENT_MUSES_VOLUME") {
+               if (d.key.trim() == "CURRENT_VOLUME") {
                   dispatch(setVolume(d.value));
                }
                else {
@@ -66,7 +66,7 @@ const Home = () => {
          dispatch(addMessage(data));
          let genDt = "";
          data.forEach(d => {
-            if (d.key.trim() == "CURRENT_VOLUME" || d.key.trim() == "CURRENT_MUSES_VOLUME") {
+            if (d.key.trim() == "CURRENT_VOLUME") {
                dispatch(setVolume(d.value));
             }
             else {
@@ -86,9 +86,11 @@ const Home = () => {
       <PaddingRow />,
       <Header text={homeData} />,
       <PaddingRow />,
-      <VolumeGauge volume={volume} />,
-      <PaddingRow />,
-      <VolumeSlider />,
+      <div style={{ paddingLeft: '125px' }}>
+         <VolumeGauge volume={volume} />
+         <PaddingRow />
+         <VolumeSlider volume={volume} />
+      </div>,
       <PaddingRow />,
       <DataRow selected={false} onClick={() => navigate("/Settings")} text="Settings" type={1} active={false} />
    ];

@@ -1,10 +1,13 @@
 from dac.dac_volume import DISABLE_VOLUME_ID
 from registry.register import register
 from repo.storage import Storage
+from services.utils.ws_connection_manager import WSConnectionManager
+from volume.abstract_volume import AbstractVolume
 from volume.volume_util import (
     VOL_DIRECTION,
     VOLUME_ALGORITHM,
     CURRENT_MUSES_VOLUME_ID,
+    VOLUME_DEVICE,
     get_logarithmic_volume_level,
     map_value,
 )
@@ -15,14 +18,17 @@ config = configuration.getConfig()["MUSES72323"]
 
 
 @register
-class Muses72323:
+class Muses72323(AbstractVolume):
 
-    def __init__(self, storage: Storage, comm: MusesComm):
+    def __init__(
+        self, storage: Storage, comm: MusesComm, connection_manager: WSConnectionManager
+    ):
         self.storage = storage
         self.comm = comm
         self.MAX_VOLUME = config["MAX_VOLUME"]
         self.MIN_VOLUME = config["MIN_VOLUME"]
         self.STEP = config["STEP"]
+        self.connection_manager = connection_manager
 
     def update_volume(self, direction, volume_algorithm: VOLUME_ALGORITHM):
         curr_volume = self.get_current_volume()
@@ -133,3 +139,8 @@ class Muses72323:
             self.update_chip_volume(self.get_current_volume(), volume_algorithm)
             self.storage.write(DISABLE_VOLUME_ID, 0)
             return 1  # enabled
+
+    def update_ui_volume(self, volume):
+        return super().update_ui_volume(
+            VOLUME_DEVICE.MUSES, self.connection_manager, volume
+        )

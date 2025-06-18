@@ -56,9 +56,12 @@ def create_volume_algorithm_response(volume):
 
 def create_volume_device_response(volume: system_volume):
     current = volume.get_current_volume_device()
-    selected = "0"
+    if current == VOLUME_DEVICE.DAC.value:
+        selected = "0"
     if current == VOLUME_DEVICE.MUSES.value:
         selected = "1"
+    if current == VOLUME_DEVICE.ALPS.value:
+        selected = "2"
     list = []
     r0 = ResponseModel(
         key="0",
@@ -72,4 +75,10 @@ def create_volume_device_response(volume: system_volume):
         display_name=VOLUME_DEVICE.MUSES.name,
     )
     list.append(r1)
+    r2 = ResponseModel(
+        key="2",
+        value=is_selected(current, 2),
+        display_name=VOLUME_DEVICE.ALPS.name,
+    )
+    list.append(r2)
     return list

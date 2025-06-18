@@ -2,10 +2,13 @@ from registry.register import get_instance
 import configs.app_config as app_config
 from registry.register import register
 from dac.dac_comm import DacComm
+from services.utils.ws_connection_manager import WSConnectionManager
+from volume.abstract_volume import AbstractVolume
 from volume.volume_util import (
     VOLUME_ALGORITHM,
     VOL_DIRECTION,
     CURRENT_VOLUME_ID,
+    VOLUME_DEVICE,
     get_logarithmic_volume_level,
     map_value,
 )
@@ -22,10 +25,16 @@ DAC_MUTED_ID = "DAC_MUTED"
 
 
 @register
-class DacVolume:
-    def __init__(self, dac_comm: DacComm, storage: Storage):
+class DacVolume(AbstractVolume):
+    def __init__(
+        self,
+        dac_comm: DacComm,
+        storage: Storage,
+        connection_manager: WSConnectionManager,
+    ):
         self.dac_comm = dac_comm
         self.storage = storage
+        self.connection_manager = connection_manager
 
     # def onkeyLeft(counter):
     #     from ui.app import current_visible_frame
@@ -143,3 +152,8 @@ class DacVolume:
 
     def get_current_volume(self):
         return self.storage.read(CURRENT_VOLUME_ID)
+
+    def update_ui_volume(self, volume):
+        return super().update_ui_volume(
+            VOLUME_DEVICE.DAC, self.connection_manager, volume
+        )

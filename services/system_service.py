@@ -12,6 +12,7 @@ from fastapi import WebSocket, APIRouter
 import asyncio
 from registry.register import get_instance
 from volume.volume_util import (
+    CURRENT_ALPS_VOLUME_ID,
     VOLUME_ALGORITHM,
     VOLUME_DEVICE,
     CURRENT_MUSES_VOLUME_ID,
@@ -78,9 +79,13 @@ async def get_volume_device():
 async def update_volume_device(request: RequestModel):
     try:
         global volume
-        device = VOLUME_DEVICE.MUSES
+        device = None
         if request.value == "0":
             device = VOLUME_DEVICE.DAC
+        if request.value == "1":
+            device = VOLUME_DEVICE.MUSES
+        if request.value == "2":
+            device = VOLUME_DEVICE.ALPS
         volume.set_current_volume_device(device.value)
 
         # reload volume object to capture the device change
@@ -129,11 +134,7 @@ async def home():
     # get current volume
     current = volume.get_percentage_volume(volume.get_current_volume())
     device: VOLUME_DEVICE = volume.get_current_volume_device()
-    id = None
-    if device == VOLUME_DEVICE.DAC.value:
-        id = CURRENT_VOLUME_ID
-    elif device == VOLUME_DEVICE.MUSES.value:
-        id = CURRENT_MUSES_VOLUME_ID
+    id = "CURRENT_VOLUME"
     list.append(
         ResponseModel(key=id, value=str(current), display_name=VOLUME_DISPLAY_NAME)
     )
@@ -157,18 +158,26 @@ async def update_volume(response: ResponseModel):
     return response
 
 
-@system_app.get("/up")
+@system_app.get("/volume/up")
 async def volume_up():
     await volume.update_volume(VOL_DIRECTION.UP)
-    await ir_router.handle_ws_routing(BUTTON.UP)
 
 
-@system_app.get("/down")
+@system_app.get("/volume/down")
 async def volume_down():
     await volume.update_volume(VOL_DIRECTION.DOWN)
-    await ir_router.handle_ws_routing(BUTTON.DOWN)
 
 
 @system_app.get("/ok")
 async def volume_down():
     await ir_router.handle_ws_routing(BUTTON.OK)
+
+
+@system_app.get("/up")
+async def ir_nav_up():
+    await ir_router.handle_ws_routing(BUTTON.UP)
+
+
+@system_app.get("/down")
+async def ir_nav_down():
+    await ir_router.handle_ws_routing(BUTTON.DOWN)

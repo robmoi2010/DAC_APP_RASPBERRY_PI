@@ -1,20 +1,15 @@
 from dac.dac_volume import DacVolume
-from registry.register import register, get_instance
-from services.utils.ws_connection_manager import WS_TYPE, WSConnectionManager
+from registry.register import register
 from muses.muses72323 import Muses72323
+from alps.alps_pot import AlpsPot
+from volume.abstract_volume import AbstractVolume
 from volume.volume_util import (
     VOLUME_ALGORITHM,
     VOLUME_ALGORITHM_ID,
     VOLUME_DEVICE,
     CURRENT_DEVICE_ID,
-    CURRENT_VOLUME_ID,
-    CURRENT_MUSES_VOLUME_ID,
 )
 import configs.app_config as configuration
-import math
-from model.model import ResponseModel
-from services.utils.services_util import VOLUME_DISPLAY_NAME
-import json
 from repo.storage import Storage
 
 config = configuration.getConfig()
@@ -24,19 +19,16 @@ LOG_CURVE = 0.6
 @register
 class Volume:
     def __init__(
-        self,
-        muses: Muses72323,
-        dac_volume: DacVolume,
-        storage: Storage,
-        connection_manager: WSConnectionManager = None,
+        self, muses: Muses72323, dac_volume: DacVolume, storage: Storage, alps: AlpsPot
     ):
         self.storage = storage
-        self.connection_manager: WSConnectionManager = connection_manager
         default = self.get_current_volume_device()
-        if default == VOLUME_DEVICE.DAC:
-            self.default_volume = dac_volume
-        else:
-            self.default_volume = muses
+        if default == VOLUME_DEVICE.DAC.value:
+            self.default_volume: AbstractVolume = dac_volume
+        elif default == VOLUME_DEVICE.ALPS.value:
+            self.default_volume: AbstractVolume = alps
+        elif default == VOLUME_DEVICE.MUSES.value:
+            self.default_volume: AbstractVolume = muses
 
     def get_current_volume_device(self):
         return self.storage.read(CURRENT_DEVICE_ID)
@@ -48,7 +40,7 @@ class Volume:
         vol = self.default_volume.update_volume(
             direction, self.get_current_volume_algorithm()
         )
-        return await self.update_ui_volume(vol)
+        return await self.default_volume.update_ui_volume(vol)
 
     def mute(self):
         self.default_volume.mute()
@@ -71,21 +63,6 @@ class Volume:
 
     def set_volume_algorithm(self, algo: VOLUME_ALGORITHM):
         self.storage.write(VOLUME_ALGORITHM_ID, algo.value)
-
-    async def update_ui_volume(self, vol):
-        list = []
-        device = self.get_current_volume_device()
-        id = None
-        if device == VOLUME_DEVICE.DAC.value:
-            id = CURRENT_VOLUME_ID
-        elif device == VOLUME_DEVICE.MUSES.value:
-            id = CURRENT_MUSES_VOLUME_ID
-        response = ResponseModel(
-            key=id, value=str(vol), display_name=VOLUME_DISPLAY_NAME
-        )
-        list.append(response)
-        data = [dt.model_dump() for dt in list]
-        await self.connection_manager.send_data(WS_TYPE.HOME_DATA, json.dumps(data))
 
     def get_current_volume(self):
         return self.default_volume.get_current_volume()

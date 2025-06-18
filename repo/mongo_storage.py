@@ -17,7 +17,11 @@ class MongoStorage:
         self.records = self.db.records
 
     def read(self, key):
-        return self.records.find_one({key: {"$exists": True}})[key]
+        record = self.records.find_one({key: {"$exists": True}})
+        if record is not None:
+            return record[key]
+        else:
+            return None
 
     def write(self, key, value):
         r = self.read(key)
@@ -58,6 +62,7 @@ class MongoStorage:
             "THIRD_ORDER_ENABLE_COEFFICIENTS_2": "0110",
             "THIRD_ORDER_ENABLE_COEFFICIENTS_3": "0110",
             "THIRD_ORDER_ENABLE_COEFFICIENTS_4": "0110",
+            "CURRENT_ALPS_VOLUME": 0,
         }
         for key, value in data.items():
             if self.read(key) is None:
