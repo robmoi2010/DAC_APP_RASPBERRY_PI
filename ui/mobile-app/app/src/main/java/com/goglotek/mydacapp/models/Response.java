@@ -1,9 +1,22 @@
 package com.goglotek.mydacapp.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Response {
     private String key;
     private String value;
-    private String display_name;
+    @JsonProperty("display_name")
+    private String displayName;
+
+    public Response() {
+
+    }
+
+    public Response(String key, String value, String displayName) {
+        this.key = key;
+        this.value = value;
+        this.displayName = displayName;
+    }
 
     public String getKey() {
         return key;
@@ -22,10 +35,10 @@ public class Response {
     }
 
     public String getDisplayName() {
-        return display_name;
+        return displayName;
     }
 
     public void setDisplayName(String displayName) {
-        this.display_name = displayName;
+        this.displayName = displayName;
     }
 }

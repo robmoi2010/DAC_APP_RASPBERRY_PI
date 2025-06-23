@@ -29,19 +29,23 @@ public class AppFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         View view = inflater.inflate(R.layout.app, container, false);
         recyclerView = view.findViewById(R.id.data_view_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         updateUI();
         return view;
     }
 
     private void updateUI() {
-        List<Response> rsp = new ArrayList<>();
-        Response r = new Response();
-        r.setKey("0");
-        r.setValue("0");
-        r.setDisplayName("DacSettings");
-        rsp.add(r);
-        adapter = new DataAdapter(rsp);
+
+        adapter = new DataAdapter(getList());
         recyclerView.setAdapter(adapter);
+    }
+
+    private List<Response> getList() {
+        List<Response> l = new ArrayList<>();
+        for (int i = 0; i < 50; i++) {
+            Response r = new Response("" + i, "" + i, "item " + i);
+            l.add(r);
+        }
+        return l;
     }
 }

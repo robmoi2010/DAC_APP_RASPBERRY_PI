@@ -8,19 +8,26 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
+    <TextView
+        android:id="@+id/home_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <com.github.anastr.speedviewlib.SpeedView
         android:id="@+id/speedView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:sv_maxSpeed="100"
         app:sv_minSpeed="0"
-        app:sv_unit="Volume" />
-    <SeekBar
-        android:id="@+id/seekBar"
+        app:sv_unit="%" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="100"
-        android:progress="50"/>
+        android:stepSize="1"
+        android:valueFrom="0"
+        android:valueTo="100" />
 
     <Button
         android:id="@+id/settingsBtn"

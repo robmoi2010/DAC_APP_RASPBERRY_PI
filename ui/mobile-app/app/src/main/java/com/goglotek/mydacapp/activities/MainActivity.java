@@ -45,6 +45,6 @@ public class MainActivity extends DacAppActivity {
 
     @Override
     protected Fragment getFragment() {
-        return new AppFragment();
+        return new HomeFragment();
     }
 }

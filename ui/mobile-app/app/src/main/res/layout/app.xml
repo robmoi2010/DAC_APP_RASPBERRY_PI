@@ -1,11 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:sv_unit="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/header_title"
@@ -14,7 +9,9 @@
 
     <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/data_view_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="180dp"
+        android:layout_gravity="center"
+        android:overScrollMode="always" />
 
-</LinearLayout>
+</FrameLayout>

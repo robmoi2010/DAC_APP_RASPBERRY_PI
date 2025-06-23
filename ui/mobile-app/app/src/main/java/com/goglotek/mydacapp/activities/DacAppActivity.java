@@ -16,10 +16,7 @@ public abstract class DacAppActivity extends AppCompatActivity {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_main);
         FragmentManager fManager = getSupportFragmentManager();
-        Fragment fragment = fManager.findFragmentById(R.id.fragment_container);
-        if (fragment == null) {
-            fragment = getFragment();
-            fManager.beginTransaction().add(R.id.fragment_container, fragment).commit();
-        }
+        Fragment fragment = getFragment();
+        fManager.beginTransaction().replace(R.id.fragment_container, fragment).commit();
     }
 }

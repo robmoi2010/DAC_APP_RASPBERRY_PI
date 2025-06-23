@@ -2,35 +2,26 @@ package com.goglotek.mydacapp.models;
 
 public class Home {
     private static Home sHome;
-    private int mCurrentVolume;
-    private String[] mData;
+    private Response[] mData;
 
-    private Home(int currentVolume, String[] data) {
-        this.mCurrentVolume = currentVolume;
+    private Home(Response[] data) {
         this.mData = data;
-
     }
 
-    public static Home getInstance(int currentVolume, String[] data) {
+    public static Home getInstance(Response[] data) {
         if (sHome == null) {
-            sHome = new Home(currentVolume, data);
+            sHome = new Home(data);
+        } else {
+            sHome.setData(data);
         }
         return sHome;
     }
 
-    public int getCurrentVolume() {
-        return mCurrentVolume;
-    }
-
-    public void setCurrentVolume(int currentVolume) {
-        this.mCurrentVolume = currentVolume;
-    }
-
-    public String[] getData() {
+    public Response[] getData() {
         return mData;
     }
 
-    public void setData(String[] data) {
+    public void setData(Response[] data) {
         this.mData = data;
     }
 }
