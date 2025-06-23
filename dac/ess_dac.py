@@ -121,6 +121,9 @@ class Dac:
     def is_third_order_compensation_enabled(self):
         return self.storage.read("THIRD_ORDER_COMPENSATION_ENABLED") == 1
 
+    def is_oversampling_enabled(self):
+        return self.storage.read("OVERSAMPLING_ENABLED") == 1
+
     def enable_disable_second_order_compensation(self, selected):
         active = self.is_second_order_compensation_enabled()
         if (selected == 1 and active) or (selected == 0 and not active):
@@ -204,3 +207,15 @@ class Dac:
             self.dac_comm.write(reg_4_addr, data4)
 
             self.storage.write("THIRD_ORDER_COMPENSATION_ENABLED", 1)
+
+    def enable_disable_oversampling(self, selected):
+        active = self.is_oversampling_enabled()
+        if (selected == 1 and active) or (selected == 0 and not active):
+            return
+        if selected == 0:  # disbaled
+            # code for registry access and disabling oversampling here
+
+            self.storage.write("OVERSAMPLING_ENABLED", 0)
+        else:
+            # code for registry access and enabling oversampling here
+            self.storage.write("OVERSAMPLING_ENABLED", 1)

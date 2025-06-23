@@ -19,6 +19,7 @@ import SubwooferOutput from './dsp/SubwooferOutput';
 import VolumeDevice from './system/VolumeDevice';
 import SoundModes from './system/SoundModes';
 import VolumeAlgorithm from './system/VolumeAlgorithm';
+import Oversampling from './dac/Oversampling';
 function Router() {
     return <BrowserRouter>
         <RemoteNavigation />
@@ -42,6 +43,7 @@ function Router() {
             <Route path="/VolumeDevice" element={<VolumeDevice />} />
             <Route path="/SoundModes" element={<SoundModes />} />
             <Route path="/VolumeAlgorithm" element={<VolumeAlgorithm />} />
+            <Route path="/Oversampling" element={<Oversampling />} />
             <Route path="*" element={<Home />} />
         </Routes>
     </BrowserRouter>;

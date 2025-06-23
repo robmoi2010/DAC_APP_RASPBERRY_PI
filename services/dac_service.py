@@ -25,6 +25,29 @@ async def index():
     return response
 
 
+@dac_app.get("/oversampling/status")
+async def is_oversampling_enabled():
+    enabled = dac.is_oversampling_enabled()
+    ret = "0"
+    if enabled:
+        ret = "1"
+    response = ResponseModel(key="0", value=ret, display_name=ret)
+    return response
+
+
+@dac_app.put("/oversampling/status")
+async def update_oversampling_status(request: RequestModel):
+    try:
+        val = "0"
+        if request.value == "0":
+            val = "1"
+        dac.enable_disable_oversampling(int(val))
+        response = ResponseModel(key="0", value=val, display_name=val)
+        return response
+    except Exception as e:
+        logger.error(e)
+
+
 @dac_app.get("/volume/status")
 async def is_volume_disabled():
     disabled = volume.is_volume_disabled()

@@ -1,4 +1,4 @@
-package com.goglotek.dacmobileapp;
+package com.goglotek.mydacapp;
 
 import org.junit.Test;
 

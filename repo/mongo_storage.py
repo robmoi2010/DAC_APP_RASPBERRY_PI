@@ -63,6 +63,7 @@ class MongoStorage:
             "THIRD_ORDER_ENABLE_COEFFICIENTS_3": "0110",
             "THIRD_ORDER_ENABLE_COEFFICIENTS_4": "0110",
             "CURRENT_ALPS_VOLUME": 0,
+            "OVERSAMPLING_ENABLED": 1,
         }
         for key, value in data.items():
             if self.read(key) is None:

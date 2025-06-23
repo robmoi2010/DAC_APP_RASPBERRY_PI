@@ -20,7 +20,8 @@ const DacSettings = () => {
             { index: 2, url: "/DacModes" },
             { index: 3, url: "/VolumeModes" },
             { index: 4, url: "/ThdCompensation" },
-            { index: 5, url: "/Settings" },];
+            { index: 5, url: "/Oversampling" },
+            { index: 6, url: "/Settings" },];
         dispatch(setIndexUrlMap(indexMap));
     }, []);
 
@@ -37,7 +38,9 @@ const DacSettings = () => {
         <PaddingRow />,
         <DataRow selected={false} onClick={() => navigate("/ThdCompensation")} text="THD Compensation" type={1} active={index == 4} />,
         <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/Settings")} text="Back" type={2} active={index == 5} />,
+        <DataRow selected={false} onClick={() => navigate("/Oversampling")} text="Oversampling" type={1} active={index == 5} />,
+        <PaddingRow />,
+        <DataRow selected={false} onClick={() => navigate("/Settings")} text="Back" type={2} active={index == 6} />,
     ];
     return <Page items={components} />
 }

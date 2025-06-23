@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.goglotek.dacmobileapp'
+    namespace 'com.goglotek.mydacapp'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.goglotek.dacmobileapp"
+        applicationId "com.goglotek.mydacapp"
         minSdk 24
         targetSdk 35
         versionCode 1
@@ -26,19 +26,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
-
-    implementation libs.appcompat
-    implementation libs.material
-    implementation libs.constraintlayout
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
+    implementation 'com.github.anastr:speedviewlib:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
