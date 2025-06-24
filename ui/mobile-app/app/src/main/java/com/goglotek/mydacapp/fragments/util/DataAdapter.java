@@ -7,15 +7,21 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.goglotek.mydacapp.R;
-import com.goglotek.mydacapp.models.Response;
+import com.goglotek.mydacapp.menu.DataRow;
 
 import java.util.List;
 
 public class DataAdapter extends RecyclerView.Adapter<DataHolder> {
-    private List<Response> responseDataList;
+    private List<DataRow> rowList;
+    private OnItemClickListener listener;
 
-    public DataAdapter(List<Response> responseDataList) {
-        this.responseDataList = responseDataList;
+    public interface OnItemClickListener {
+        void onItemClick(DataRow row);
+    }
+
+    public DataAdapter(List<DataRow> rowList, OnItemClickListener listener) {
+        this.rowList = rowList;
+        this.listener = listener;
     }
 
     @Override
@@ -27,16 +33,18 @@ public class DataAdapter extends RecyclerView.Adapter<DataHolder> {
 
     @Override
     public void onBindViewHolder(DataHolder holder, int position) {
-        Response r = responseDataList.get(position);
-        holder.row.setText(r.getDisplayName());
+        DataRow r = rowList.get(position);
+        r.setIndex(position);
+        holder.bind(r, listener);
     }
+
 
     @Override
     public int getItemCount() {
-        return responseDataList.size();
+        return rowList.size();
     }
 
-    public void setResponseDataList(List<Response> responseDataList) {
-        this.responseDataList = responseDataList;
+    public void setResponseDataList(List<DataRow> responseDataList) {
+        this.rowList = responseDataList;
     }
 }

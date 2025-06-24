@@ -22,50 +22,25 @@ public class RestClient {
         return restClient;
     }
 
-    public String get(String url) {
+    public String get(String url) throws Exception {
         if (client == null) {
             client = new OkHttpClient();
         }
-        try {
 
-            Request request = new Request.Builder().url(url).get().addHeader("Content-type", "application/json").build();
-            try (Response response = client.newCall(request).execute()) {
-                return response.body().string();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Request request = new Request.Builder().url(url).get().addHeader("Content-type", "application/json").build();
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
         }
-        return null;
     }
 
-    public String post(String url, String data) {
+    public String post(String url, String data) throws Exception {
         if (client == null) {
             client = new OkHttpClient();
         }
-        try {
-            RequestBody body = RequestBody.create(data, JSON);
-            Request request = new Request.Builder().url(url).addHeader("Content-type", "application/json").post(body).build();
-            try (Response response = client.newCall(request).execute()) {
-                return response.body().string();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        RequestBody body = RequestBody.create(data, JSON);
+        Request request = new Request.Builder().url(url).addHeader("Content-type", "application/json").post(body).build();
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
         }
-        return null;
     }
-
-//    public static final MediaType JSON = MediaType.get("application/json");
-//
-//    OkHttpClient client = new OkHttpClient();
-//
-//    String post(String url, String json) throws IOException {
-//        RequestBody body = RequestBody.create(json, JSON);
-//        Request request = new Request.Builder()
-//                .url(url)
-//                .post(body)
-//                .build();
-//        try (Response response = client.newCall(request).execute()) {
-//            return response.body().string();
-//        }
-//    }
 }

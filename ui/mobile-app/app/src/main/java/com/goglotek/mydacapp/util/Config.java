@@ -11,9 +11,7 @@ public class Config {
         configs.put("CURRENT_VOLUME_ID", "CURRENT_VOLUME");
     }
 
-
     public static String getConfig(String name) {
-
         return configs.get(name);
     }
 

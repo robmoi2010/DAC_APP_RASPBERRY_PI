@@ -17,6 +17,9 @@ import androidx.fragment.app.Fragment;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.anastr.speedviewlib.SpeedView;
 import com.goglotek.mydacapp.R;
+import com.goglotek.mydacapp.exceptions.GoglotekException;
+import com.goglotek.mydacapp.menu.Menu;
+import com.goglotek.mydacapp.menu.MenuUtil;
 import com.goglotek.mydacapp.models.Home;
 import com.goglotek.mydacapp.models.Response;
 import com.goglotek.mydacapp.service.SystemService;
@@ -35,6 +38,7 @@ public class HomeFragment extends Fragment {
     Button settings;
     TextView homeData;
     int previousSliderVolume;
+    boolean isSliderManualSetting = false;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -49,8 +53,11 @@ public class HomeFragment extends Fragment {
         volumeSlider = view.findViewById(R.id.slider);
         previousSliderVolume = (int) volumeSlider.getValue();
         volumeSlider.addOnChangeListener((slider, newVal, b) -> handleVolumeSliderOnchange((int) newVal));
-        populateHomeData(view, null);
+        //get current volume and other home data from server
+        populateHomeData(view, null, false);
+        //creates a web socket to listen for server changes in volume and update the ui.
         createHomeDataWebSocketListener(view);
+        Menu menu= MenuUtil.createSettingsMenu();
         return view;
     }
 
@@ -62,41 +69,52 @@ public class HomeFragment extends Fragment {
                 .commit();
     }
 
-    private void populateHomeData(View view, Home home) {
+    private void populateHomeData(View view, Home home, boolean isWsData) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            Home homeLocal = null;
-            if (home == null) {
-                homeLocal = SystemService.getHomeData();
-            } else {
-                homeLocal = home;
-            }
-            Home finalHomeLocal = homeLocal;
-            ((Activity) getContext()).runOnUiThread(() -> {
-                int volume = 0;
-                StringBuilder sb = new StringBuilder();
-                for (Response rsp : finalHomeLocal.getData()) {
-                    if (rsp.getKey().equals(Config.getConfig("CURRENT_VOLUME_ID"))) {
-                        volume = Integer.parseInt(rsp.getValue());
-                    } else {
-                        sb.append(" " + rsp.getDisplayName()).append(": ").append(rsp.getValue());
-                    }
+            try {
+                Home homeLocal = null;
+                if (home == null) {
+                    homeLocal = SystemService.getHomeData();
+                } else {
+                    homeLocal = home;
                 }
-                final int currentVolume = volume;
-
-                volumeView = volumeView == null ? view.findViewById(R.id.speedView) : volumeView;
-                volumeView.setTrembleData(0, 0);
-                volumeView.speedTo(volume);
-                volumeSlider.setValue(volume);
-                homeData = homeData == null ? view.findViewById(R.id.home_data) : homeData;
-                homeData.setText(sb.toString());
-            });
+                Home finalHomeLocal = homeLocal;
+                ((Activity) getContext()).runOnUiThread(() -> {
+                    int volume = 0;
+                    StringBuilder sb = new StringBuilder();
+                    Response[] data = finalHomeLocal != null ? finalHomeLocal.getData() : null;
+                    if (data != null) {
+                        for (Response rsp : finalHomeLocal.getData()) {
+                            if (rsp.getKey().equals(Config.getConfig("CURRENT_VOLUME_ID"))) {
+                                volume = Integer.parseInt(rsp.getValue());
+                            } else {
+                                sb.append(" " + rsp.getDisplayName()).append(": ").append(rsp.getValue());
+                            }
+                        }
+                    }
+                    volumeView = volumeView == null ? view.findViewById(R.id.speedView) : volumeView;
+                    volumeView.setTrembleData(0, 0);
+                    volumeView.speedTo(volume);
+                    if (!isSliderManualSetting) {
+                        volumeSlider.setValue(volume);
+                        isSliderManualSetting = false;
+                    }
+                    if (!isWsData) {
+                        homeData = homeData == null ? view.findViewById(R.id.home_data) : homeData;
+                        homeData.setText(sb.toString());
+                    }
+                });
+            } catch (GoglotekException e) {
+                e.printStackTrace();
+            }
         });
     }
 
     private void handleVolumeSliderOnchange(int newVal) {
-        if (newVal != previousSliderVolume && newVal % 2 == 0) {
-
+        //to prevent jerkiness caused by server updating slider value while is being moved by user.
+        isSliderManualSetting = true;
+        if (newVal != previousSliderVolume) {
             VolumeDirection direction = null;
             if (newVal > previousSliderVolume) {
                 direction = VolumeDirection.UP;
@@ -106,10 +124,14 @@ public class HomeFragment extends Fragment {
             VolumeDirection finalDirection = direction;
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
-                SystemService.updateVolume(finalDirection);
+                try {
+                    SystemService.updateVolume(finalDirection);
+                } catch (GoglotekException e) {
+                    e.printStackTrace();
+                }
             });
-            previousSliderVolume = newVal;
         }
+        previousSliderVolume = newVal;
 
     }
 
@@ -120,7 +142,7 @@ public class HomeFragment extends Fragment {
                 try {
                     Response[] rsp = new ObjectMapper().readValue(message, Response[].class);
                     Home home = Home.getInstance(rsp);
-                    populateHomeData(view, home);
+                    populateHomeData(view, home, true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
