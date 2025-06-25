@@ -27,7 +27,7 @@ public class DacService {
 
     public static String updateFilter(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).post(BASE_URL + "dac/filters", data);
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "dac/filters", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -35,7 +35,7 @@ public class DacService {
 
     public static String updateVolumeStatus(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).post(BASE_URL + "dac/volume/status", data);
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "dac/volume/status", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -51,7 +51,7 @@ public class DacService {
 
     public static String updateDacMode(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).post(BASE_URL + "dac/dac_modes", data);
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "dac/dac_modes", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -67,7 +67,7 @@ public class DacService {
 
     public static String updateVolumeModes(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).post(BASE_URL + "dac/volume_modes", data);
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "dac/volume_modes", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -83,7 +83,7 @@ public class DacService {
 
     public static String updateSecondOrderStatus(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).post(BASE_URL + "dac/thd_compensation/second_order/status", data);
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "dac/thd_compensation/second_order/status", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -99,7 +99,7 @@ public class DacService {
 
     public static String updateThirdOrderStatus(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).post(BASE_URL + "dac/thd_compensation/third_order/status", data);
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "dac/thd_compensation/third_order/status", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -107,7 +107,7 @@ public class DacService {
 
     public static String getOversamplingStatus() throws GoglotekException {
         try {
-            RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "dac/oversampling/status");
+            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "dac/oversampling/status");
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -115,7 +115,7 @@ public class DacService {
 
     public static String updateOversamplingStatus(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).post(BASE_URL + "dac/oversampling/status", data);
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "dac/oversampling/status", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }

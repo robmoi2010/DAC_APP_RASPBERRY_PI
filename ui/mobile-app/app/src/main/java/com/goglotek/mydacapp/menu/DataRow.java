@@ -20,4 +20,8 @@ public interface DataRow {
     public int getIndex();
 
     public void setIndex(int index);
+
+    public void setType(RowDataType type);
+
+    public RowDataType getType();
 }

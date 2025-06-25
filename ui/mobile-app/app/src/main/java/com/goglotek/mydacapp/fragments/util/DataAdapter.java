@@ -1,5 +1,6 @@
 package com.goglotek.mydacapp.fragments.util;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataHolder> {
         void onItemClick(DataRow row);
     }
 
-    public DataAdapter(List<DataRow> rowList, OnItemClickListener listener) {
+    public DataAdapter(Context context, List<DataRow> rowList, OnItemClickListener listener) {
         this.rowList = rowList;
         this.listener = listener;
     }

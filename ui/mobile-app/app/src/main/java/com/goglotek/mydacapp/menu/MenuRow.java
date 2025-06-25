@@ -6,6 +6,7 @@ public class MenuRow implements DataRow {
     private String name;
     private boolean selected;
     private int index;
+    private RowDataType type;
 
     @Override
     public Menu getNext() {
@@ -55,5 +56,15 @@ public class MenuRow implements DataRow {
     @Override
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    @Override
+    public void setType(RowDataType type) {
+        this.type = type;
+    }
+
+    @Override
+    public RowDataType getType() {
+        return this.type;
     }
 }

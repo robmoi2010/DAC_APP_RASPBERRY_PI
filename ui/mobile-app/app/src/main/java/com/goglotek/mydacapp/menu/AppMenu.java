@@ -1,13 +1,12 @@
 package com.goglotek.mydacapp.menu;
 
-import com.goglotek.mydacapp.models.Response;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AppMenu implements Menu {
     private List<DataRow> rows = new ArrayList<>();
+    private MenuDataType dataType;
+    private DataRow root;
 
     @Override
     public List<DataRow> getRows() {
@@ -22,6 +21,26 @@ public class AppMenu implements Menu {
     @Override
     public void addRow(DataRow row) {
         rows.add(row);
+    }
+
+    @Override
+    public MenuDataType getDataType() {
+        return this.dataType;
+    }
+
+    @Override
+    public void setDataType(MenuDataType dataType) {
+        this.dataType = dataType;
+    }
+
+    @Override
+    public DataRow getRoot() {
+        return this.root;
+    }
+
+    @Override
+    public void setRoot(DataRow root) {
+        this.root = root;
     }
 
 }

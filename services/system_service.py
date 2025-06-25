@@ -153,7 +153,6 @@ async def home():
 
 @system_app.put("/volume/update")
 async def update_volume(response: ResponseModel):
-    print("rsp:" + response.value)
     volume.update_volume(response.value)
     return response
 

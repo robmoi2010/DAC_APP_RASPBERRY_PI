@@ -57,7 +57,6 @@ public class HomeFragment extends Fragment {
         populateHomeData(view, null, false);
         //creates a web socket to listen for server changes in volume and update the ui.
         createHomeDataWebSocketListener(view);
-        Menu menu= MenuUtil.createSettingsMenu();
         return view;
     }
 

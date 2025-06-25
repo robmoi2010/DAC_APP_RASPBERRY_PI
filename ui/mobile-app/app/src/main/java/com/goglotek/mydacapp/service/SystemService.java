@@ -27,7 +27,6 @@ public class SystemService {
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
-
     }
 
     public static void updateVolume(VolumeDirection direction) throws GoglotekException {
@@ -38,4 +37,70 @@ public class SystemService {
             throw new GoglotekException(e.getMessage(), e);
         }
     }
+
+    public static String getVolumeDevice() throws GoglotekException {
+        try {
+            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/volume_device");
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
+    public static String updateVolumeDevice(String data) throws GoglotekException {
+        try {
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "system/volume_device", data);
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
+    public static String getVolumeAlgorithm() throws GoglotekException {
+        try {
+            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/volume_algorithm");
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
+    public static String updateVolumeAlgorithm(String data) throws GoglotekException {
+        try {
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "system/volume_algorithm", data);
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
+    public static String getSoundModes() throws GoglotekException {
+        try {
+            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/sound_mode");
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
+    public static String updateSoundMode(String data) throws GoglotekException {
+        try {
+            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "system/sound_mode", data);
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
+    public static String increaseVolume() throws GoglotekException {
+        try {
+            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/volume/up");
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
+    public static String decreaseVolume() throws GoglotekException {
+        try {
+            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/volume/down");
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
+
 }

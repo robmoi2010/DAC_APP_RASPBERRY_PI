@@ -33,12 +33,12 @@ public class RestClient {
         }
     }
 
-    public String post(String url, String data) throws Exception {
+    public String put(String url, String data) throws Exception {
         if (client == null) {
             client = new OkHttpClient();
         }
         RequestBody body = RequestBody.create(data, JSON);
-        Request request = new Request.Builder().url(url).addHeader("Content-type", "application/json").post(body).build();
+        Request request = new Request.Builder().url(url).addHeader("Content-type", "application/json").put(body).build();
         try (Response response = client.newCall(request).execute()) {
             return response.body().string();
         }
