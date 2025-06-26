@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppMenu implements Menu {
-    private List<DataRow> rows = new ArrayList<>();
+    private List<DataRow> rows ;
     private MenuDataType dataType;
     private DataRow root;
 

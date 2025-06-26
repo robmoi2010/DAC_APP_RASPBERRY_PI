@@ -159,12 +159,14 @@ async def update_volume(response: ResponseModel):
 
 @system_app.get("/volume/up")
 async def volume_up():
-    await volume.update_volume(VOL_DIRECTION.UP)
+    vol=await volume.update_volume(VOL_DIRECTION.UP)
+    return ResponseModel(key="0", value=str(vol), display_name="")
 
 
 @system_app.get("/volume/down")
 async def volume_down():
-    await volume.update_volume(VOL_DIRECTION.DOWN)
+    vol=await volume.update_volume(VOL_DIRECTION.DOWN)
+    return ResponseModel(key="0", value=str(vol), display_name="")
 
 
 @system_app.get("/ok")

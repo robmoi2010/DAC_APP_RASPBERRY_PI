@@ -19,27 +19,26 @@ import com.goglotek.mydacapp.menu.RowDataType;
 import com.google.android.material.checkbox.MaterialCheckBox;
 
 public class DataHolder extends RecyclerView.ViewHolder {
+    DataAdapter.onSwitchChangeListener onSwitchChangeListener;
 
-    private LinearLayout layout;
-
-    public DataHolder(View view) {
+    public DataHolder(View view, DataAdapter.onSwitchChangeListener onSwitchChangeListener) {
         super(view);
+        this.onSwitchChangeListener = onSwitchChangeListener;
     }
 
     public void bind(final DataRow dataRow, final DataAdapter.OnItemClickListener listener) {
         LinearLayout layout = createLinearLayout();
         if (dataRow.getType() == RowDataType.TOGGLE) {
-            SwitchCompat switchBtn = createSwitch(dataRow.isSelected());
+            SwitchCompat switchBtn = createSwitch(dataRow.isSelected(), dataRow);
             switchBtn.setChecked(dataRow.isSelected());
             layout.addView(switchBtn);
         } else {
-
             if (dataRow.isSelected()) {
                 layout.addView(createCheckBox(dataRow.isSelected()));
             }
             layout.addView(createTextView(dataRow.getText()));
         }
-
+        ((ViewGroup) itemView).removeAllViews();
         ((ViewGroup) itemView).addView(layout);
         itemView.setOnClickListener(v -> listener.onItemClick(dataRow));
     }
@@ -77,22 +76,28 @@ public class DataHolder extends RecyclerView.ViewHolder {
         return linearLayout;
     }
 
-    private SwitchCompat createSwitch(boolean checked) {
+    private SwitchCompat createSwitch(boolean checked, DataRow row) {
 
         SwitchCompat defaultSwitch = new SwitchCompat(itemView.getContext());
-        defaultSwitch.setText("");
+        defaultSwitch.setThumbDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.custom_thumb));
+        defaultSwitch.setTrackDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.custom_track));
+        if (checked) {
+            defaultSwitch.setText("On");
+        } else {
+            defaultSwitch.setText("Off");
+        }
         defaultSwitch.setChecked(checked);
+        
 
-        defaultSwitch.setScaleX(1.5f);
-        defaultSwitch.setScaleY(1.5f);
-
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        params.gravity = Gravity.CENTER;
+        //params.gravity = Gravity.CENTER;
         defaultSwitch.setLayoutParams(params);
-
+        defaultSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            onSwitchChangeListener.handleSwitchChange(isChecked, row);
+        });
         return defaultSwitch;
     }
 }

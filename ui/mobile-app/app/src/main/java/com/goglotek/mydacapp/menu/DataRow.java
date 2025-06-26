@@ -24,4 +24,5 @@ public interface DataRow {
     public void setType(RowDataType type);
 
     public RowDataType getType();
+    public boolean equals(Object obj) ;
 }

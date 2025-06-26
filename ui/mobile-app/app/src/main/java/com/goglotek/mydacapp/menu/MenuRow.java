@@ -67,4 +67,13 @@ public class MenuRow implements DataRow {
     public RowDataType getType() {
         return this.type;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        DataRow other = (DataRow) obj;
+        return this.type == other.getType() && this.selected == other.isSelected() && this.name == other.getName() && this.text == other.getText();
+    }
 }

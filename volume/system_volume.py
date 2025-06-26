@@ -40,7 +40,11 @@ class Volume:
         vol = self.default_volume.update_volume(
             direction, self.get_current_volume_algorithm()
         )
-        return await self.default_volume.update_ui_volume(vol)
+        try:
+            await self.default_volume.update_ui_volume(vol)
+        except Exception as e:
+            pass
+        return vol
 
     def mute(self):
         self.default_volume.mute()

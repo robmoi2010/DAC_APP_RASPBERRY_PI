@@ -3,6 +3,8 @@ package com.goglotek.mydacapp.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +40,10 @@ public class HomeFragment extends Fragment {
     Button settings;
     TextView homeData;
     int previousSliderVolume;
-    boolean isSliderManualSetting = false;
+    boolean updatingSliderVolume = false;
+    Handler handler = new Handler(Looper.getMainLooper());
+    Runnable debouncedRunnable = null;
+    int debounceDelayMs = 300;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -52,9 +57,17 @@ public class HomeFragment extends Fragment {
         settings.setOnClickListener((View) -> handleSettingsOnclick());
         volumeSlider = view.findViewById(R.id.slider);
         previousSliderVolume = (int) volumeSlider.getValue();
-        volumeSlider.addOnChangeListener((slider, newVal, b) -> handleVolumeSliderOnchange((int) newVal));
+        volumeSlider.addOnChangeListener((slider, newVal, b) -> {
+            if (debouncedRunnable != null) {
+                handler.removeCallbacks(debouncedRunnable);
+            }
+            debouncedRunnable = () -> {
+                handleVolumeSliderOnchange((int) newVal);
+            };
+            handler.postDelayed(debouncedRunnable, debounceDelayMs);
+        });
         //get current volume and other home data from server
-        populateHomeData(view, null, false);
+        populateHomeData(null, false);
         //creates a web socket to listen for server changes in volume and update the ui.
         createHomeDataWebSocketListener(view);
         return view;
@@ -68,7 +81,7 @@ public class HomeFragment extends Fragment {
                 .commit();
     }
 
-    private void populateHomeData(View view, Home home, boolean isWsData) {
+    private void populateHomeData(Home home, boolean isWsData) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
@@ -92,15 +105,14 @@ public class HomeFragment extends Fragment {
                             }
                         }
                     }
-                    volumeView = volumeView == null ? view.findViewById(R.id.speedView) : volumeView;
+                    volumeView = volumeView == null ? ((Activity) getContext()).findViewById(R.id.speedView) : volumeView;
                     volumeView.setTrembleData(0, 0);
-                    volumeView.speedTo(volume);
-                    if (!isSliderManualSetting) {
+                    volumeView.speedTo(volume, 200);
+                    if (!updatingSliderVolume) {
                         volumeSlider.setValue(volume);
-                        isSliderManualSetting = false;
                     }
                     if (!isWsData) {
-                        homeData = homeData == null ? view.findViewById(R.id.home_data) : homeData;
+                        homeData = homeData == null ? ((Activity) getContext()).findViewById((R.id.home_data)) : homeData;
                         homeData.setText(sb.toString());
                     }
                 });
@@ -111,8 +123,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void handleVolumeSliderOnchange(int newVal) {
-        //to prevent jerkiness caused by server updating slider value while is being moved by user.
-        isSliderManualSetting = true;
+
         if (newVal != previousSliderVolume) {
             VolumeDirection direction = null;
             if (newVal > previousSliderVolume) {
@@ -121,10 +132,32 @@ public class HomeFragment extends Fragment {
                 direction = VolumeDirection.DOWN;
             }
             VolumeDirection finalDirection = direction;
+            updatingSliderVolume = true;
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 try {
-                    SystemService.updateVolume(finalDirection);
+                    int count = 0;
+                    int volume;
+                    while (true) {
+                        volume = SystemService.updateVolume(finalDirection);
+                        if (finalDirection == VolumeDirection.UP) {
+                            if (volume >= newVal) {
+                                break;
+                            }
+                        } else {
+                            if (volume <= newVal) {
+                                break;
+                            }
+                        }
+                        //just in case there is an issue, the loop wont run forever
+                        count++;
+                        if (count > 2000) {
+                            break;
+                        }
+                    }
+                    ((Activity) getContext()).runOnUiThread(() -> {
+                        updatingSliderVolume = false;
+                    });
                 } catch (GoglotekException e) {
                     e.printStackTrace();
                 }
@@ -141,7 +174,7 @@ public class HomeFragment extends Fragment {
                 try {
                     Response[] rsp = new ObjectMapper().readValue(message, Response[].class);
                     Home home = Home.getInstance(rsp);
-                    populateHomeData(view, home, true);
+                    populateHomeData(home, true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

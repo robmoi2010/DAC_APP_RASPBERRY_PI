@@ -37,12 +37,9 @@ async def is_oversampling_enabled():
 
 @dac_app.put("/oversampling/status")
 async def update_oversampling_status(request: RequestModel):
-    try:
-        val = "0"
-        if request.value == "0":
-            val = "1"
-        dac.enable_disable_oversampling(int(val))
-        response = ResponseModel(key="0", value=val, display_name=val)
+    try:  
+        dac.enable_disable_oversampling(int(request.value));
+        response = ResponseModel(key="0", value=request.value, display_name=request.value)
         return response
     except Exception as e:
         logger.error(e)

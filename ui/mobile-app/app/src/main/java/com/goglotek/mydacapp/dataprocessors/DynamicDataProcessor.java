@@ -24,7 +24,7 @@ public interface DynamicDataProcessor {
                 Response rsp = new ObjectMapper().readValue(data, Response.class);
                 DataRow row = new MenuRow();
                 row.setType(RowDataType.TOGGLE);
-                row.setSelected(Boolean.parseBoolean(rsp.getValue()));
+                row.setSelected(rsp.getValue().equals("1"));
                 rows.add(row);
 
             } catch (JsonProcessingException e) {

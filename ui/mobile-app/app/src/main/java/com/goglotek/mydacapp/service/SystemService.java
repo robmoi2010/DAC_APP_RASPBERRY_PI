@@ -16,7 +16,7 @@ public class SystemService {
 
     public static Home getHomeData() throws GoglotekException {
         try {
-            String data = RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/home");
+            String data = RestClient.getInstance().get(BASE_URL + "system/home");
             if (data != null) {
                 Response[] dt = new ObjectMapper().readValue(data, Response[].class);
                 Home home = Home.getInstance(dt);
@@ -29,10 +29,12 @@ public class SystemService {
         }
     }
 
-    public static void updateVolume(VolumeDirection direction) throws GoglotekException {
+    public static int updateVolume(VolumeDirection direction) throws GoglotekException {
         try {
             String url = BASE_URL + ((direction == VolumeDirection.UP) ? "system/volume/up" : "system/volume/down");
-            RestClient.getInstance(new OkHttpClient()).get(url);
+            String data = RestClient.getInstance().get(url);
+            Response r = new ObjectMapper().readValue(data, Response.class);
+            return Integer.parseInt(r.getValue());
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -40,7 +42,7 @@ public class SystemService {
 
     public static String getVolumeDevice() throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/volume_device");
+            return RestClient.getInstance().get(BASE_URL + "system/volume_device");
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -48,7 +50,7 @@ public class SystemService {
 
     public static String updateVolumeDevice(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "system/volume_device", data);
+            return RestClient.getInstance().put(BASE_URL + "system/volume_device", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -56,7 +58,7 @@ public class SystemService {
 
     public static String getVolumeAlgorithm() throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/volume_algorithm");
+            return RestClient.getInstance().get(BASE_URL + "system/volume_algorithm");
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -64,7 +66,7 @@ public class SystemService {
 
     public static String updateVolumeAlgorithm(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "system/volume_algorithm", data);
+            return RestClient.getInstance().put(BASE_URL + "system/volume_algorithm", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -72,7 +74,7 @@ public class SystemService {
 
     public static String getSoundModes() throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/sound_mode");
+            return RestClient.getInstance().get(BASE_URL + "system/sound_mode");
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -80,7 +82,7 @@ public class SystemService {
 
     public static String updateSoundMode(String data) throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).put(BASE_URL + "system/sound_mode", data);
+            return RestClient.getInstance().put(BASE_URL + "system/sound_mode", data);
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -88,7 +90,7 @@ public class SystemService {
 
     public static String increaseVolume() throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/volume/up");
+            return RestClient.getInstance().get(BASE_URL + "system/volume/up");
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }
@@ -96,7 +98,7 @@ public class SystemService {
 
     public static String decreaseVolume() throws GoglotekException {
         try {
-            return RestClient.getInstance(new OkHttpClient()).get(BASE_URL + "system/volume/down");
+            return RestClient.getInstance().get(BASE_URL + "system/volume/down");
         } catch (Exception e) {
             throw new GoglotekException(e.getMessage(), e);
         }

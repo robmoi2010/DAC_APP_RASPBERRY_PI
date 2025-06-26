@@ -7,17 +7,20 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class RestClient {
-    private OkHttpClient client = null;
+    private static OkHttpClient client = null;
     private static RestClient restClient = null;
     public static final MediaType JSON = MediaType.get("application/json");
 
-    private RestClient(OkHttpClient client) {
-        this.client = client;
+    private RestClient() {
+
     }
 
-    public static RestClient getInstance(OkHttpClient client) {
+    public static RestClient getInstance() {
+        if (client == null) {
+            client = new OkHttpClient();
+        }
         if (restClient == null) {
-            restClient = new RestClient(client);
+            restClient = new RestClient();
         }
         return restClient;
     }

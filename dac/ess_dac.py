@@ -212,7 +212,7 @@ class Dac:
         active = self.is_oversampling_enabled()
         if (selected == 1 and active) or (selected == 0 and not active):
             return
-        if selected == 0:  # disbaled
+        if selected == 0:  # disable
             # code for registry access and disabling oversampling here
 
             self.storage.write("OVERSAMPLING_ENABLED", 0)

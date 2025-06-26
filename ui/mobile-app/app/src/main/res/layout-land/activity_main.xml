@@ -1,25 +1,25 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:orientation="horizontal"
-    android:gravity="center">
-<!--    <ProgressBar-->
-<!--        android:id="@+id/volumeGauge"-->
-<!--        style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"-->
-<!--        android:layout_width="200dp"-->
-<!--        android:layout_height="200dp"-->
-<!--        android:indeterminate="false"-->
-<!--        android:max="100"-->
-<!--        android:progress="0"-->
-<!--        android:rotation="270"-->
-<!--&lt;!&ndash;        android:progressDrawable="@drawable/custom_gauge"&ndash;&gt;-->
-<!--        android:layout_gravity="center"/>-->
-    <Button
-        android:id="@+id/settingsBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/settingsBtn"/>
+    android:layout_height="match_parent">
 
-</FrameLayout>
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:title="My Screen"
+            android:titleTextColor="@android:color/white" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
