@@ -1,11 +1,11 @@
 import tkinter as tk
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
-import dac.dac_volume as volume
 from tkinter import messagebox
 from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
+from registry.register import register, get_instance
 
-
+volume = get_instance("volume")
 class DacVolumeSettings(tk.Frame):
     def get_current_row(self):
         ret = self.row_index

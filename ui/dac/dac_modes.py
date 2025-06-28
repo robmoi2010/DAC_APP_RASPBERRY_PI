@@ -1,9 +1,12 @@
 import tkinter as tk
-import dac.ess_dac as ess_dac
+from dac.ess_dac import Dac
+from registry.register import register, get_instance
 from tkinter import messagebox
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
+
+dac: Dac = get_instance("dac")
 
 
 class DacModes(tk.Frame):
@@ -18,7 +21,7 @@ class DacModes(tk.Frame):
             "Confirmation", "Are you sure you want to select " + selection
         )
         if answer:
-            ess_dac.setDacMode(type)
+            dac.setDacMode(type)
             if type == 0:
                 frame.mode0Btn.config(fg=SELECTED_COLOR)
                 frame.mode1Btn.config(fg=UNSELECTED_COLOR)
@@ -51,8 +54,10 @@ class DacModes(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.row_index = 1
-        tk.Label(self, text="Select Dac Modes", font=("Arial", 16)).grid(row=self.get_current_row(), column=0, sticky="nsew")
-        currentMode = ess_dac.get_current_dac_mode()
+        tk.Label(self, text="Select Dac Modes", font=("Arial", 16)).grid(
+            row=self.get_current_row(), column=0, sticky="nsew"
+        )
+        currentMode = dac.get_current_dac_mode()
 
         self.mode0Btn = GeneralButton(
             self,

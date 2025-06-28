@@ -1,0 +1,2 @@
+VOLUME_DISPLAY_NAME = "Volume"
+SOUND_MODE_DISPLAY_NAME = "Sound Mode"

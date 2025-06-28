@@ -1,10 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox
 
-import general.volume_encoder as volume_encoder
+from registry.register import get_instance
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
+from system.volume_encoder import VolumeEncoder
+
+
+volume_encoder: VolumeEncoder = get_instance("volumeencoder")
 
 
 class VolumeMode(tk.Frame):
@@ -28,7 +32,7 @@ class VolumeMode(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.row_index=1
+        self.row_index = 1
         tk.Label(
             self, text="Select volume knob press functionality", font=("Arial", 16)
         ).grid(row=self.get_current_row(), column=0, sticky="nsew")

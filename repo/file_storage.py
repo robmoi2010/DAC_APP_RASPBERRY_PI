@@ -1,0 +1,31 @@
+import json
+import logging
+from pathlib import Path
+from registry.register import register
+
+FILE_NAME = Path(__file__).parent / "../configs/Storage.json"
+
+
+@register
+class FileStorage:
+
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+
+    def read(self, addr):
+        try:
+            with open(FILE_NAME, "r") as f:
+                data = json.load(f)
+            return data[addr]
+        except Exception as e:
+            self.logger.error(e)
+
+    def write(self, addr, val):
+        try:
+            with open(FILE_NAME, "r") as f:
+                data = json.load(f)
+            data[addr] = val
+            with open(FILE_NAME, "w") as f:
+                json.dump(data, f, indent=4)
+        except Exception as e:
+            self.logger.error(e)

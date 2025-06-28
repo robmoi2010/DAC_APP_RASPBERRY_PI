@@ -1,109 +1,77 @@
-import repo.storage as storage
-import ui.home as home
-from enum import Enum
+from dac.dac_volume import DacVolume
+from registry.register import register
+from muses.muses72323 import Muses72323
+from alps.alps_pot import AlpsPot
+from volume.abstract_volume import AbstractVolume
+from volume.volume_util import (
+    VOLUME_ALGORITHM,
+    VOLUME_ALGORITHM_ID,
+    VOLUME_DEVICE,
+    CURRENT_DEVICE_ID,
+)
 import configs.app_config as configuration
-from volume.muses72323 import Muses72323
-import dac.dac_volume as dac_volume
-import math
+from repo.storage import Storage
 
 config = configuration.getConfig()
 LOG_CURVE = 0.6
 
 
-class VOL_DIRECTION(Enum):
-    UP = 0
-    DOWN = 1
+@register
+class Volume:
+    def __init__(
+        self, muses: Muses72323, dac_volume: DacVolume, storage: Storage, alps: AlpsPot
+    ):
+        self.storage = storage
+        default = self.get_current_volume_device()
+        if default == VOLUME_DEVICE.DAC.value:
+            self.default_volume: AbstractVolume = dac_volume
+        elif default == VOLUME_DEVICE.ALPS.value:
+            self.default_volume: AbstractVolume = alps
+        elif default == VOLUME_DEVICE.MUSES.value:
+            self.default_volume: AbstractVolume = muses
 
+    def get_current_volume_device(self):
+        return self.storage.read(CURRENT_DEVICE_ID)
 
-class VOLUME_DEVICE(Enum):
-    DAC = 0
-    MUSES = 1
+    def persist_volume(self, volume):
+        self.default_volume.persist_volume(volume)
 
-
-class VOLUME_ALGORITHM(Enum):
-    LINEAR = 0
-    LOGARITHMIC = 1
-
-
-def get_current_volume_device():
-    return storage.read("CURRENT_VOLUME_DEVICE")
-
-
-def get_current_volume():
-    master_vol_dev = get_current_volume_device()
-    if master_vol_dev == "MUSES":
-        return storage.read("CURRENT_MUSES_VOLUME")
-    elif master_vol_dev == "DAC":
-        return storage.read("CURRENT_VOLUME")
-
-
-def persist_volume(volume):
-    master_vol_dev = get_current_volume_device()
-    if master_vol_dev == "MUSES":
-        storage.write("CURRENT_MUSES_VOLUME", volume)
-    elif master_vol_dev == "DAC":
-        storage.write("CURRENT_VOLUME", volume)
-
-
-def get_logarithmic_volume_level(vol, minimum, maximum):
-    vol = max(maximum, min(minimum, vol))  # Clamp to valid range
-    if vol == minimum or vol == maximum:
+    async def update_volume(self, direction):
+        vol = self.default_volume.update_volume(
+            direction, self.get_current_volume_algorithm()
+        )
+        try:
+            await self.default_volume.update_ui_volume(vol)
+        except Exception as e:
+            pass
         return vol
 
-    # Normalize and invert (so 0 = loudest)
-    x = (minimum - vol) / minimum
+    def mute(self):
+        self.default_volume.mute()
 
-    # Apply logarithmic curve
-    log_scaled = math.log10(1 + 9 * x) / math.log10(10)  # Range: 0–1
+    def get_percentage_volume(self, volume):
+        return self.default_volume.get_percentage_volume(volume)
 
-    # Convert back to max–min scale, inverted
-    adjusted = minimum - int(round(log_scaled * minimum))
-    return adjusted
+    def set_current_volume_device(self, device):
+        self.storage.write(CURRENT_DEVICE_ID, device)
 
+    def is_volume_disabled(self):
+        return self.default_volume.is_volume_disabled()
 
-def update_ui_volume(volume):
-    home.update_volume(volume)
+    def get_current_volume_algorithm(self):
+        algo = self.storage.read(VOLUME_ALGORITHM_ID)
+        if algo == VOLUME_ALGORITHM.LINEAR.value:
+            return VOLUME_ALGORITHM.LINEAR
+        elif algo == VOLUME_ALGORITHM.LOGARITHMIC.value:
+            return VOLUME_ALGORITHM.LOGARITHMIC
 
+    def set_volume_algorithm(self, algo: VOLUME_ALGORITHM):
+        self.storage.write(VOLUME_ALGORITHM_ID, algo.value)
 
-def map_value(x, in_min, in_max, out_min, out_max):
-    return ((x - in_min) * (out_max - out_min)) / ((in_max - in_min) + out_min)
+    def get_current_volume(self):
+        return self.default_volume.get_current_volume()
 
-
-def update_volume(direction):
-    master_vol_dev = get_current_volume_device()
-    if master_vol_dev == "MUSES":
-        Muses72323().update_volume(direction)
-    elif master_vol_dev == "DAC":
-        dac_volume.update_volume(direction)
-
-
-def mute():
-    master_vol_dev = get_current_volume_device()
-    if master_vol_dev == "MUSES":
-        Muses72323().mute()
-    elif master_vol_dev == "DAC":
-        dac_volume.mute()
-
-
-def get_percentage_volume(volume):
-    master_vol_dev = get_current_volume_device()
-    if master_vol_dev == "MUSES":
-        return Muses72323().get_percentage_volume(volume)
-    elif master_vol_dev == "DAC":
-        return dac_volume.get_percentage_volume(volume)
-
-
-def set_current_volume_device(volume_device):
-    storage.write("CURRENT_VOLUME_DEVICE", volume_device)
-
-
-def get_current_volume_algorithm():
-    algo = storage.read("VOLUME_ALGORITHM")
-    if algo == VOLUME_ALGORITHM.LINEAR.value:
-        return VOLUME_ALGORITHM.LINEAR
-    else:
-        return VOLUME_ALGORITHM.LOGARITHMIC
-
-
-def set_volume_algorithm(algo: VOLUME_ALGORITHM):
-    storage.write("VOLUME_ALGORITHM", algo.value)
+    def disable_enable_volume(self, selected):
+        return self.default_volume.disable_enable_volume(
+            selected, self.get_current_volume_algorithm()
+        )

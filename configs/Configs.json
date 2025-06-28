@@ -127,6 +127,16 @@
         "SETTINGS_ADDR": "00001000"
     },
     "SYSTEM": {
-        "MASTER_VOLUME_DEVICE": "MUSES"
+        "MASTER_VOLUME_DEVICE": "MUSES",
+        "STORAGE": 1
+    },
+    "ALPS": {
+        "ADC_MIN_VALUE": 0,
+        "ADC_MAX_VALUE": 2047,
+        "STEP": 1,
+        "MOTOR_STEP_MILLIS": 100,
+        "POLL_MILLIS": 1000,
+        "FORWARD_GPIO_PIN": 20,
+        "BACKWARD_GPIO_PIN": 32
     }
 }

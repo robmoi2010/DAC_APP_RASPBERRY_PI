@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import dsp.io as output
+from registry.register import get_instance
 from util.styles import (
     RELIEF,
     BUTTON_BG,
@@ -13,8 +13,11 @@ from util.styles import (
     BUTTON_ONFOCUS_BG,
     SELECTED_COLOR,
 )
+from dsp.io import DspIO
 
 btnFont = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
+
+output = get_instance("dspio")
 
 
 class SubwooferOutput(tk.Frame):
@@ -22,6 +25,7 @@ class SubwooferOutput(tk.Frame):
         ret = self.row_index
         self.row_index += 1
         return ret
+
     def output_on_click(frame, selection, type):
         answer = messagebox.askyesno(
             "Confirmation", "Are you sure you want to select " + selection
@@ -67,8 +71,10 @@ class SubwooferOutput(tk.Frame):
 
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.row_index=1
-        tk.Label(self, text="Select Subwoofer Output", font=("Arial", 16)).grid(row=self.get_current_row(), column=0, sticky="nsew")
+        self.row_index = 1
+        tk.Label(self, text="Select Subwoofer Output", font=("Arial", 16)).grid(
+            row=self.get_current_row(), column=0, sticky="nsew"
+        )
         current_sub_output = output.get_current_subwoofer_output()
         self.btn1 = tk.Button(
             self,

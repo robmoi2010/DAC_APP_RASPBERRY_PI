@@ -1,13 +1,14 @@
 import tkinter as tk
-import dac.dac_volume as dac_volume
-from tkinter import messagebox
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
-import volume.system_volume as volume
-from volume.system_volume import VOLUME_DEVICE
+from registry.register import register, get_instance
+from volume.volume_util import VOLUME_DEVICE
+from volume.system_volume import Volume
 
 ENABLE_VOL_TEXT = "Enable Volume"
 DISABLE_VOL_TEXT = "Disable Volume"
+
+volume: Volume = get_instance("volume")
 
 
 class DacSettings(tk.Frame):
@@ -15,10 +16,13 @@ class DacSettings(tk.Frame):
         ret = self.row_index
         self.row_index += 1
         return ret
+
     def __init__(self, parent, controller):
         super().__init__(parent)
-        self.row_index=1
-        tk.Label(self, text="Dac Settings", font=("Arial", 16)).grid(row=self.get_current_row(), column=0, sticky="nsew")
+        self.row_index = 1
+        tk.Label(self, text="Dac Settings", font=("Arial", 16)).grid(
+            row=self.get_current_row(), column=0, sticky="nsew"
+        )
         current_vol_device = volume.get_current_volume_device()
         if current_vol_device == VOLUME_DEVICE.DAC.name:
             self.volBtn = GeneralButton(

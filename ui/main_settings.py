@@ -46,7 +46,7 @@ class MainSettings(tk.Frame):
 
         btn2.grid(row=self.get_current_row(), column=0, sticky="nsew")
         btn3 = GeneralButton(
-            self, "General", command=lambda: controller.show_frame("GeneralSettings")
+            self, "System", command=lambda: controller.show_frame("SystemSettings")
         )
         btn3.grid(row=self.get_current_row(), column=0, sticky="nsew")
         btn4 = BackButton(self, command=lambda: controller.show_frame("Home"))
