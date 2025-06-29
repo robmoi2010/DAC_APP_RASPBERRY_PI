@@ -6,6 +6,8 @@ import navigationIndexReducer from "./slices/navigationIndex";
 import indexUrlMapReducer from "./slices/indexUrlMap";
 import dynamicComponentsDataSlice from "./slices/dynamicComponentsDataSlice";
 import selectedIndexSlice from "./slices/selectedIndexSlice";
+import clientTypeSlice from "./slices/clientTypeSlice";
+import switchCheckedSlice from "./slices/switchCheckedSlice";
 export default configureStore({
     reducer:
     {
@@ -16,6 +18,8 @@ export default configureStore({
         navigationIndex: navigationIndexReducer,
         indexUrlMap: indexUrlMapReducer,
         dynamicComponentsData: dynamicComponentsDataSlice,
-        selectedIndex: selectedIndexSlice
+        selectedIndex: selectedIndexSlice,
+        clientType:clientTypeSlice,
+        switchChecked:switchCheckedSlice
     }
 });

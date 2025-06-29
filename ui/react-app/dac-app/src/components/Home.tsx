@@ -14,15 +14,19 @@ import { useNavigate } from 'react-router-dom';
 import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
 import Header from './header';
 import VolumeSlider from './VolumeSlider';
+import { ClientType } from '../utils/types';
+import Tab from './tabs/Tab';
+import { Provider } from "./ui/provider"
+
 
 const Home = () => {
    const volume = useSelector((state: { volume: { value: number } }) => state.volume.value);
    const homeData = useSelector((state: { homeData: { value: string } }) => state.homeData.value);
+   const clientType = useSelector((state: { clientType: { value: ClientType } }) => state.clientType.value);
    const dispatch = useDispatch();
    const navigate = useNavigate();
-
-
-
+   console.log(clientType);
+   
    // initial data load to display
    useEffect(() => {
       const indexMap = [
@@ -94,6 +98,7 @@ const Home = () => {
       <PaddingRow />,
       <DataRow selected={false} onClick={() => navigate("/Settings")} text="Settings" type={1} active={false} />
    ];
-   return <Page items={components} />;
+   //return <Page clientType={clientType} items={components} />;
+   return (<Provider><Tab /></Provider>);
 }
 export default Home;
