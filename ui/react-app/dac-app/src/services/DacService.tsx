@@ -36,9 +36,9 @@ export const getThirdOrderStatus = () => {
 export const updateThirdOrderStatus = (data: string) => {
     return sendPut(Config["BASE_URL"] + "dac/thd_compensation/third_order/status", data);
 }
-export const getOversamplingStatus = () => {
+export const  getOversamplingStatus = async () => {
     return sendGet(Config["BASE_URL"] + "dac/oversampling/status");
 }
-export const updateOversamplingStatus = (data: string) => {
+export const updateOversamplingStatus = async (data: string) => {
     return sendPut(Config["BASE_URL"] + "dac/oversampling/status", data);
 }

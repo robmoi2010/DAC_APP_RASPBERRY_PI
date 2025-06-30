@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class RequestModel(BaseModel):
@@ -8,5 +9,6 @@ class RequestModel(BaseModel):
 
 class ResponseModel(BaseModel):
     key: str
+    description: Optional[str]=""
     value: str
-    display_name:str
+    display_name: str

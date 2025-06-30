@@ -14,14 +14,16 @@ import { useNavigate } from 'react-router-dom';
 import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
 import Header from './header';
 import VolumeSlider from './VolumeSlider';
+import { ClientType } from '../utils/types';
+
 
 const Home = () => {
    const volume = useSelector((state: { volume: { value: number } }) => state.volume.value);
    const homeData = useSelector((state: { homeData: { value: string } }) => state.homeData.value);
+   const clientType = useSelector((state: { clientType: { value: ClientType } }) => state.clientType.value);
    const dispatch = useDispatch();
    const navigate = useNavigate();
-
-
+   console.log(clientType);
 
    // initial data load to display
    useEffect(() => {
@@ -92,8 +94,16 @@ const Home = () => {
          <VolumeSlider volume={volume} />
       </div>,
       <PaddingRow />,
-      <DataRow selected={false} onClick={() => navigate("/Settings")} text="Settings" type={1} active={false} />
+      <DataRow selected={false} onClick={() => navigate(handleSettingsOnclick(clientType))} text="Settings" type={1} active={false} />
    ];
    return <Page items={components} />;
+}
+const handleSettingsOnclick = (clientType: ClientType): string => {
+   if (clientType == ClientType.DEVICE) {
+      return "/Settings";
+   }
+   else {
+      return "/Tabs";
+   }
 }
 export default Home;

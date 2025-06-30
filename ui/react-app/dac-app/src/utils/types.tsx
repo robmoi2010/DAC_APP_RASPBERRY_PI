@@ -7,3 +7,8 @@ export type responseDataType = {
     value: string;
     display_name: string
 }
+export const ClientType= {
+    DEVICE: 0,
+    WEB: 1
+} as const
+export type ClientType = typeof ClientType[keyof typeof ClientType];
