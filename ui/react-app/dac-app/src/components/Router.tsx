@@ -23,11 +23,12 @@ import Oversampling from './dac/Oversampling';
 import { useDispatch } from 'react-redux';
 import { setClientType } from '../state-repo/slices/clientTypeSlice';
 import { ClientType } from '../utils/types';
+import MainTab from './tabs/MainTab';
 
 
 function Router() {
     const port = window.location.port;
-    const clientType = (port == "5174") ? ClientType.DEVICE : ClientType.WEB;
+    const clientType = (port == "5173") ? ClientType.DEVICE : ClientType.WEB;
     const dispatch = useDispatch();
     dispatch(setClientType(clientType));
     if (clientType == ClientType.DEVICE) {
@@ -62,6 +63,7 @@ function Router() {
         return (
             <BrowserRouter>
                 <Routes>
+                    <Route path="/Tabs" element={<MainTab />} />
                     <Route path="*" element={<Home />} />
                 </Routes>
             </BrowserRouter>

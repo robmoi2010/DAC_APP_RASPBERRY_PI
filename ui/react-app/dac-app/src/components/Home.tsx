@@ -15,8 +15,6 @@ import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
 import Header from './header';
 import VolumeSlider from './VolumeSlider';
 import { ClientType } from '../utils/types';
-import Tab from './tabs/Tab';
-import { Provider } from "./ui/provider"
 
 
 const Home = () => {
@@ -26,7 +24,7 @@ const Home = () => {
    const dispatch = useDispatch();
    const navigate = useNavigate();
    console.log(clientType);
-   
+
    // initial data load to display
    useEffect(() => {
       const indexMap = [
@@ -96,9 +94,16 @@ const Home = () => {
          <VolumeSlider volume={volume} />
       </div>,
       <PaddingRow />,
-      <DataRow selected={false} onClick={() => navigate("/Settings")} text="Settings" type={1} active={false} />
+      <DataRow selected={false} onClick={() => navigate(handleSettingsOnclick(clientType))} text="Settings" type={1} active={false} />
    ];
-   //return <Page clientType={clientType} items={components} />;
-   return (<Provider><Tab /></Provider>);
+   return <Page items={components} />;
+}
+const handleSettingsOnclick = (clientType: ClientType): string => {
+   if (clientType == ClientType.DEVICE) {
+      return "/Settings";
+   }
+   else {
+      return "/Tabs";
+   }
 }
 export default Home;

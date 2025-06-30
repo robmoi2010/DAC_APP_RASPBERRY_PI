@@ -17,7 +17,7 @@ function DataRow({ onClick, text, type, selected, active }) {
       {
          styles = { ...styles, 'width': '100px', 'height': '50px' };
       }
-      return <Button style={styles} onClick={onClick}>{text}</Button>
+      return <Button variant="outline" style={styles} onClick={onClick}>{text}</Button>
    }
    else {
       if (type != 2) { //any type apart from back button should be displayed

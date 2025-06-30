@@ -3,7 +3,7 @@ import type { responseDataType } from "../utils/types";
 import { Switch } from "@chakra-ui/react/switch";
 import { Tooltip } from "../components/ui/tooltip";
 import { useDispatch, useSelector } from "react-redux";
-import { addSwitchChecked, setSwitchChecked, updateSwitchChecked } from "../state-repo/slices/switchCheckedSlice";
+import { addSwitchChecked, updateSwitchChecked } from "../state-repo/slices/switchCheckedSlice";
 import { useEffect } from "react";
 import type { CheckedChangeDetails } from "@zag-js/switch";
 type Props = {
@@ -27,7 +27,7 @@ const DynamicSwitch = ({ dataFunction, updateFunction, tooltipText, index }: Pro
     }, []);
     return (
         <Tooltip content={tooltipText}>
-            <Switch.Root checked={switchChecked[index]} onCheckedChange={(e) => handleChange(dispatch, e, updateFunction, index)}>
+            <Switch.Root colorPalette="green" checked={switchChecked[index]} onCheckedChange={(e) => handleChange(dispatch, e, updateFunction, index)}>
                 <Switch.HiddenInput />
                 <Switch.Control />
                 <Switch.Label>{switchChecked[index] ? "Deactivate" : "Activate"}</Switch.Label>
@@ -41,6 +41,5 @@ const handleChange = (dispatch: Dispatch, e: CheckedChangeDetails, updateFunctio
     updateFunction(JSON.stringify(data)).then(dt => {
         dispatch(updateSwitchChecked({ index: index, value: dt.value == "1" }));
     });
-
 }
 export default DynamicSwitch;

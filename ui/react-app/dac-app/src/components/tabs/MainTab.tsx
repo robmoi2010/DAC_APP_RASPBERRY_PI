@@ -2,19 +2,23 @@
 import DacTabs from './DacTabs';
 import DspTabs from './DspTabs';
 import SystemTabs from './SystemTabs';
-import { IconPhoto, IconMessageCircle, IconSettings } from '@tabler/icons-react';
+import { IconCpu, IconAdjustments, IconSettings, IconArrowLeft } from '@tabler/icons-react';
 import {
+    Button,
     Tabs
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Tab() {
-    return (
+    const navigate = useNavigate();
+    return (<>
+        <Button onClick={() => navigate("/Home")} ><IconArrowLeft /></Button>
         <Tabs.Root lazyMount unmountOnExit defaultValue="DacSettings">
             <Tabs.List>
-                <Tabs.Trigger value="DacSettings">Dac Settings</Tabs.Trigger>
-                <Tabs.Trigger value="DspSettings">Dsp Settings</Tabs.Trigger>
-                <Tabs.Trigger value="SystemSettings">System Settings</Tabs.Trigger>
+                <Tabs.Trigger value="DacSettings"><IconCpu />Dac Settings</Tabs.Trigger>
+                <Tabs.Trigger value="DspSettings"><IconAdjustments />Dsp Settings</Tabs.Trigger>
+                <Tabs.Trigger value="SystemSettings"><IconSettings />System Settings</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="DacSettings">
                 <DacTabs />
@@ -26,5 +30,6 @@ export default function Tab() {
                 <SystemTabs />
             </Tabs.Content>
         </Tabs.Root>
+    </>
     );
 }

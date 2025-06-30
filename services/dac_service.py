@@ -37,9 +37,11 @@ async def is_oversampling_enabled():
 
 @dac_app.put("/oversampling/status")
 async def update_oversampling_status(request: RequestModel):
-    try:  
-        dac.enable_disable_oversampling(int(request.value));
-        response = ResponseModel(key="0", value=request.value, display_name=request.value)
+    try:
+        dac.enable_disable_oversampling(int(request.value))
+        response = ResponseModel(
+            key="0", value=request.value, display_name=request.value
+        )
         return response
     except Exception as e:
         logger.error(e)
@@ -72,11 +74,8 @@ async def is_second_order_enabled():
 @dac_app.put("/thd_compensation/second_order/status")
 async def update_second_order_status(request: RequestModel):
     try:
-        val = "0"
-        if request.value == "0":
-            val = "1"
-        dac.enable_disable_second_order_compensation(int(val))
-        response = ResponseModel(key="0", value=val, display_name=val)
+        dac.enable_disable_second_order_compensation(int(request.value))
+        response = ResponseModel(key="0", value=request.value, display_name=request.value)
         return response
     except Exception as e:
         logger.error(e)
@@ -95,11 +94,10 @@ async def is_third_order_enabled():
 @dac_app.put("/thd_compensation/third_order/status")
 async def update_third_order_status(request: RequestModel):
     try:
-        val = "0"
-        if request.value == "0":
-            val = "1"
-        dac.enable_disable_third_order_compensation(int(val))
-        response = ResponseModel(key="0", value=val, display_name=val)
+        dac.enable_disable_third_order_compensation(int(request.value))
+        response = ResponseModel(
+            key="0", value=request.value, display_name=request.value
+        )
         return response
     except Exception as e:
         logger.error(e)
