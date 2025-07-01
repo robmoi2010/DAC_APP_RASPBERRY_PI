@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Response {
     private String key;
     private String value;
+    private String description;
     @JsonProperty("display_name")
     private String displayName;
 
@@ -40,5 +41,13 @@ public class Response {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

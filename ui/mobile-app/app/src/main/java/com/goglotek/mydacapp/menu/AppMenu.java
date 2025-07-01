@@ -1,5 +1,10 @@
 package com.goglotek.mydacapp.menu;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,5 +47,6 @@ public class AppMenu implements Menu {
     public void setRoot(DataRow root) {
         this.root = root;
     }
+
 
 }
