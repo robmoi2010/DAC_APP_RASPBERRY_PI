@@ -3,10 +3,7 @@ package com.goglotek.mydacapp.fragments;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +20,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.goglotek.mydacapp.R;
 import com.goglotek.mydacapp.exceptions.GoglotekException;
 import com.goglotek.mydacapp.fragments.util.DataAdapter;
-import com.goglotek.mydacapp.fragments.util.PagerAdapter;
+import com.goglotek.mydacapp.fragments.util.ViewPagerAdapter;
 import com.goglotek.mydacapp.menu.DataRow;
 import com.goglotek.mydacapp.menu.Menu;
 import com.goglotek.mydacapp.menu.MenuDataType;
@@ -41,24 +38,30 @@ public class MenuFragment extends Fragment {
     private DataAdapter adapter;
     private TextView header;
     private Menu menu;
-    PagerAdapter pagerAdapter;
+    ViewPagerAdapter pagerAdapter;
     ViewPager2 viewPager;
     private TabLayout tabLayout;
-    
+    private boolean initDataLoaded = false;
+
+    public MenuFragment() {
+
+    }
+
+    private MenuFragment(Menu menu) {
+        this.menu = menu;
+    }
+
     public static MenuFragment newInstance(Menu menu) {
-        MenuFragment frag = new MenuFragment();
+        MenuFragment frag = new MenuFragment(menu);
         Bundle bundle = new Bundle();
+
         bundle.putSerializable("menu", menu);
         frag.setArguments(bundle);
         return frag;
     }
 
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         menu = (Menu) getArguments().getSerializable("menu");
         LinearLayout layout = new LinearLayout(requireContext());
@@ -84,13 +87,16 @@ public class MenuFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        menu = (Menu) getArguments().getSerializable("menu");
         if (menu.getDataType() == MenuDataType.DYNAMIC) {
             adapter = new DataAdapter(new ArrayList<>(), (row) ->
                     handleRowOnclick(row)
                     , (isChecked, row) -> handleSwitchChange(isChecked, row));
             recyclerView.setAdapter(adapter);
+            loadData();
+            initDataLoaded = true;
         } else {
-            pagerAdapter = new PagerAdapter(this, menu);
+            pagerAdapter = new ViewPagerAdapter(this, menu);
             viewPager.registerOnPageChangeCallback(
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
@@ -98,7 +104,9 @@ public class MenuFragment extends Fragment {
                             MenuFragment frag = pagerAdapter.getFragment(position);
                             if (frag != null) {
                                 if (frag.menu.getDataType() == MenuDataType.DYNAMIC) {
-                                    frag.loadData();
+                                    if (!initDataLoaded) {
+                                        frag.loadData();
+                                    }
                                 }
                             }
                         }
@@ -117,10 +125,14 @@ public class MenuFragment extends Fragment {
         service.execute(() -> {
             try {
                 final List<DataRow> rows = MenuUtil.getDataProcessor(menu.getRoot()).loadData();
-                requireActivity().runOnUiThread(() -> {
-                    menu.setRows(rows);
-                    updateAdapter();
-                });
+                try {
+                    requireActivity().runOnUiThread(() -> {
+                        menu.setRows(rows);
+                        updateAdapter();
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } catch (GoglotekException e) {
                 e.printStackTrace();
             }
@@ -133,11 +145,39 @@ public class MenuFragment extends Fragment {
     }
 
     private void handleRowOnclick(DataRow row) {
-
+        updateServerData(row);
     }
 
     private void handleSwitchChange(boolean isChecked, DataRow row) {
-        System.out.println("Switched.." + isChecked);
-        //updateServerData(row.getIndex(), true, isChecked);
+        updateServerData(row.getIndex(), true, isChecked);
+    }
+
+    private void updateServerData(DataRow row) {
+        updateServerData(row.getIndex(), false, false);
+    }
+
+    private void updateServerData(int index, boolean isSwitch, boolean checked) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            int localIndex = index;
+            List<DataRow> dt = new ArrayList<>();
+            try {
+                if (isSwitch) {
+                    if (checked) {
+                        localIndex = 1;
+                    } else {
+                        localIndex = 0;
+                    }
+                }
+                dt = MenuUtil.getDataProcessor(menu.getRoot()).updateServerData(localIndex);
+            } catch (GoglotekException e) {
+                e.printStackTrace();
+            }
+            final List<DataRow> finalList = dt;
+            requireActivity().runOnUiThread(() -> {
+                menu.setRows(finalList);
+                updateAdapter();
+            });
+        });
     }
 }

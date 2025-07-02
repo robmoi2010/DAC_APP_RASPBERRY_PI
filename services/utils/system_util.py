@@ -20,17 +20,21 @@ def create_sound_mode_response():
     r0 = ResponseModel(
         key="0",
         value=is_selected(current.value, 0),
+        description="Dsp core is bypassed and the main speakers dac receives digitally unprocesses signal. Subwoofer is turned off",
         display_name=SOUND_MODE.PURE_DIRECT.name,
     )
     list.append(r0)
     r1 = ResponseModel(
         key="1",
         value=is_selected(current.value, 1),
+        description="Mains speakers digital signal bypasses dsp core. No filters or time alignment are applied. Subwoofer signal is dsp processesed and low pass filter, PEQ and timealignment is applied to it.",
         display_name=SOUND_MODE.SEMI_PURE_DIRECT.name,
     )
     list.append(r1)
     r2 = ResponseModel(
-        key="2", value=is_selected(current.value, 2), display_name=SOUND_MODE.DSP.name
+        key="2", value=is_selected(current.value, 2), 
+        description="Mains and subwoofer digital signals are dsp processed and filters, EQ and time alignment are applied to them.",
+        display_name=SOUND_MODE.DSP.name
     )
     list.append(r2)
     return list
@@ -42,12 +46,14 @@ def create_volume_algorithm_response(volume):
     r0 = ResponseModel(
         key="0",
         value=is_selected(current.value, 0),
+        description="Volume level changes linearly",
         display_name=VOLUME_ALGORITHM.LINEAR.name,
     )
     list.append(r0)
     r1 = ResponseModel(
         key="1",
         value=is_selected(current.value, 1),
+        description="Volume level changes logarithmically",
         display_name=VOLUME_ALGORITHM.LOGARITHMIC.name,
     )
     list.append(r1)
@@ -66,18 +72,21 @@ def create_volume_device_response(volume: system_volume):
     r0 = ResponseModel(
         key="0",
         value=is_selected(current, 0),
+        description="Ess dac digital volume.",
         display_name=VOLUME_DEVICE.DAC.name,
     )
     list.append(r0)
     r1 = ResponseModel(
         key="1",
         value=is_selected(current, 1),
+        description="Muses digitally controlled analog volume. Muses chip hardware must be implemented and connected to the dac",
         display_name=VOLUME_DEVICE.MUSES.name,
     )
     list.append(r1)
     r2 = ResponseModel(
         key="2",
         value=is_selected(current, 2),
+        description="Motorized alps volume pot. Hardware must be implemented first",
         display_name=VOLUME_DEVICE.ALPS.name,
     )
     list.append(r2)

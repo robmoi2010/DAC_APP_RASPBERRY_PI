@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -23,16 +21,14 @@ import com.goglotek.mydacapp.menu.DataRow;
 import com.goglotek.mydacapp.menu.Menu;
 import com.goglotek.mydacapp.menu.MenuDataType;
 import com.goglotek.mydacapp.menu.MenuUtil;
-import com.goglotek.mydacapp.models.Response;
 
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
+@Deprecated
 public class AppFragment extends Fragment {
     private RecyclerView recyclerView;
     private DataAdapter adapter;

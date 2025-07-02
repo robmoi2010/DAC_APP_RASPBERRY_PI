@@ -9,20 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.goglotek.mydacapp.R;
-import com.goglotek.mydacapp.fragments.util.PagerAdapter;
+import com.goglotek.mydacapp.fragments.util.ViewPagerAdapter;
 import com.goglotek.mydacapp.menu.Menu;
 import com.goglotek.mydacapp.menu.MenuUtil;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-public class TabTestFragment extends Fragment {
-    PagerAdapter pagerAdapter;
+import java.util.EmptyStackException;
+
+public class MainTabFragment extends Fragment {
+    ViewPagerAdapter pagerAdapter;
     ViewPager2 viewPager;
     TabLayout tabLayout;
 
@@ -46,11 +49,33 @@ public class TabTestFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Menu menu = MenuUtil.createAppMenus();
-        pagerAdapter = new PagerAdapter(this, menu);
+        pagerAdapter = new ViewPagerAdapter(this, menu);
         viewPager.setAdapter(pagerAdapter);
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> {
             tab.setText(menu.getRows().get(pos).getText());
         }).attach();
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        handleBackButtonPress();
+                    }
+                }
+        );
+    }
+
+    private void handleBackButtonPress() {
+        try {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new HomeFragment())
+                    .addToBackStack(null)
+                    .commit();
+
+        } catch (EmptyStackException e) {
+            e.printStackTrace();
+        }
     }
 }

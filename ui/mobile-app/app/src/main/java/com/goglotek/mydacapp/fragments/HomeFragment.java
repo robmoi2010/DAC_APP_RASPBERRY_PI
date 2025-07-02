@@ -74,11 +74,15 @@ public class HomeFragment extends Fragment {
     }
 
     private void handleSettingsOnclick() {
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, new AppFragment())
-                .addToBackStack(null)
-                .commit();
+        try {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new MainTabFragment())
+                    .addToBackStack(null)
+                    .commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void populateHomeData(Home home, boolean isWsData) {

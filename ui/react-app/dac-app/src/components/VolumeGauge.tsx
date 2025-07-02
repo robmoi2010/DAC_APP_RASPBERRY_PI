@@ -4,7 +4,7 @@ import {
 } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-export function VolumeGauge({ volume }) {
+export function VolumeGauge({ volume }: { volume: number }) {
     return (
         <div style={{ 'width': '70%', 'height': '70%' }}>
             <CircularProgressbar

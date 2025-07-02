@@ -1,4 +1,4 @@
-import { Tabs } from '@chakra-ui/react';
+import { Box, Tabs } from '@chakra-ui/react';
 import Input from '../dsp/Input';
 import MainsOutput from '../dsp/MainsOutput';
 import SubwooferOutput from '../dsp/SubwooferOutput';
@@ -12,13 +12,34 @@ const DspTabs = () => {
                 <Tabs.Trigger value="SubwooferOutput"><IconWaveSquare />Subwoofer Output</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="Input">
-                <Input />
+                <Box
+                    height="500px"
+                    overflowY="auto"
+                    width="800px"
+                    p={4}
+                >
+                    <Input />
+                </Box>
             </Tabs.Content>
             <Tabs.Content value="MainOutput">
-                <MainsOutput />
+                <Box
+                    height="500px"
+                    overflowY="auto"
+                    width="800px"
+                    p={4}
+                >
+                    <MainsOutput />
+                </Box>
             </Tabs.Content>
             <Tabs.Content value="SubwooferOutput">
-                <SubwooferOutput />
+                <Box
+                    height="500px"
+                    overflowY="auto"
+                    width="800px"
+                    p={4}
+                >
+                    <SubwooferOutput />
+                </Box>
             </Tabs.Content>
         </Tabs.Root>
     );

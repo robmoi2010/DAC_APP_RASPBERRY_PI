@@ -1,4 +1,4 @@
-import { Tabs } from '@chakra-ui/react';
+import { Box, Tabs } from '@chakra-ui/react';
 import VolumeDevice from '../system/VolumeDevice';
 import VolumeAlgorithm from '../system/VolumeAlgorithm';
 import SoundModes from '../system/SoundModes';
@@ -12,13 +12,34 @@ const SystemTabs = () => {
                 <Tabs.Trigger value="SoundModes"><IconSettings />Sound Modes</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="VolumeDevice">
-                <VolumeDevice />
+                <Box
+                    height="500px"
+                    width="800px"
+                    overflowY="auto"
+                    p={4}
+                >
+                    <VolumeDevice />
+                </Box>
             </Tabs.Content>
             <Tabs.Content value="VolumeAlgorithm">
-                <VolumeAlgorithm />
+                <Box
+                    height="500px"
+                    overflowY="auto"
+                    width="800px"
+                    p={4}
+                >
+                    <VolumeAlgorithm />
+                </Box>
             </Tabs.Content>
             <Tabs.Content value="SoundModes">
-                <SoundModes />
+                <Box
+                    height="500px"
+                    overflowY="auto"
+                    width="800px"
+                    p={4}
+                >
+                    <SoundModes />
+                </Box>
             </Tabs.Content>
         </Tabs.Root>);
 }

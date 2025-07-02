@@ -6,10 +6,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.goglotek.mydacapp.fragments.AppFragment;
-import com.goglotek.mydacapp.fragments.DisplayFragment;
 import com.goglotek.mydacapp.fragments.HomeFragment;
-import com.goglotek.mydacapp.fragments.TabTestFragment;
 
 public class MainActivity extends DacAppActivity {
     @Override
@@ -25,8 +22,9 @@ public class MainActivity extends DacAppActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     protected Fragment getFragment() {
-        return new TabTestFragment();
+        return new HomeFragment();
     }
 }

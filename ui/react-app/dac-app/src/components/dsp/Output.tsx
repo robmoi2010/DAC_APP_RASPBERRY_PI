@@ -1,7 +1,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import DataRow from "../DataRow";
-import Header from "../header";
+import Header from "../Header";
 import PaddingRow from "../PaddingRow";
 import Page from "../Page";
 import { useNavigate } from "react-router-dom";
@@ -10,9 +10,9 @@ import { setIndexUrlMap } from "../../state-repo/slices/indexUrlMap";
 
 const Output = () => {
     const navigate = useNavigate();
-    const index = useSelector((state) => state.navigationIndex.value);
+    const index = useSelector((state: { navigationIndex: { value: number } }) => state.navigationIndex.value);
     const dispatch = useDispatch();
-    const indexMap = useSelector((state) => state.indexUrlMap.value)
+    const indexMap = useSelector((state: { indexUrlMap: { value: { index: number, url: string }[] } }) => state.indexUrlMap.value)
     const indexMap2 = [
         { index: 0, url: "/MainsOutput" },
         { index: 1, url: "/SubwooferOutput" },
@@ -24,11 +24,11 @@ const Output = () => {
     const components = [
         <Header text="Dsp Settings" />,
         < PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/MainsOutput")} text="Mains Output" type={1} active={index == 0} />,
+        <DataRow selected={false} onClick={() => navigate("/MainsOutput")} text="Mains Output" type={1} active={index == 0} description="" />,
         <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/SubwooferOutput")} text="Subwoofer Output" type={1} active={index == 1} />,
+        <DataRow selected={false} onClick={() => navigate("/SubwooferOutput")} text="Subwoofer Output" type={1} active={index == 1} description="" />,
         <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/DspSettings")} text="Back" type={2} active={index == 2} />,
+        <DataRow selected={false} onClick={() => navigate("/DspSettings")} text="Back" type={2} active={index == 2} description="" />,
     ];
     return <Page items={components} />
 }
