@@ -14,7 +14,7 @@ import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
 import Header from './Header';
 import VolumeSlider from './VolumeSlider';
 import { ClientType } from '../utils/types';
-import { Button } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 
 
 const Home = () => {
@@ -96,7 +96,7 @@ const Home = () => {
       <PaddingRow />,
       <Button variant="outline" style={{ 'width': '500px' }} onClick={() => navigate(handleSettingsOnclick(clientType))}>Settings</Button>
    ];
-   return <Page items={components} />;
+   return <Box>{components}</Box>;
 }
 const handleSettingsOnclick = (clientType: ClientType): string => {
    if (clientType == ClientType.DEVICE) {

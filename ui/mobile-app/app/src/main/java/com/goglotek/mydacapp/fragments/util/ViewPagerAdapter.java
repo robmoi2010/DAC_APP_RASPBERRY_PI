@@ -1,23 +1,26 @@
 package com.goglotek.mydacapp.fragments.util;
 
 import android.util.SparseArray;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.goglotek.mydacapp.fragments.MainTabFragment;
 import com.goglotek.mydacapp.fragments.MenuFragment;
 import com.goglotek.mydacapp.menu.DataRow;
 import com.goglotek.mydacapp.menu.Menu;
-import com.goglotek.mydacapp.menu.MenuDataType;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
     private Menu menu;
     private SparseArray<MenuFragment> fragments = new SparseArray<>();
+    private MainTabFragment.OverlayController overlay;
 
-    public ViewPagerAdapter(@NonNull Fragment fragment, Menu menu) {
+    public ViewPagerAdapter(@NonNull Fragment fragment, Menu menu, MainTabFragment.OverlayController overlay) {
         super(fragment);
         this.menu = menu;
+        this.overlay = overlay;
     }
 
     @NonNull
@@ -25,7 +28,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         try {
             DataRow row = menu.getRows().get(position);
-            MenuFragment fragment = MenuFragment.newInstance(row.getNext());
+            MenuFragment fragment = MenuFragment.newInstance(row.getNext(), overlay);
             fragments.put(position, fragment);
             return fragment;
             //} else {

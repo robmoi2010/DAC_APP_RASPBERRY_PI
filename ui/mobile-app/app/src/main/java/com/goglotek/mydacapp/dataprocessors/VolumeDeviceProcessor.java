@@ -17,7 +17,7 @@ public class VolumeDeviceProcessor implements DynamicDataProcessor {
 
     @Override
     public List<DataRow> loadData() throws GoglotekException {
-        String data = SystemService.getVolumeDevice();
+       String data = SystemService.getVolumeDevice();
         return processServerData(data);
     }
 

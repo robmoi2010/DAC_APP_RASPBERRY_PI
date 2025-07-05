@@ -14,18 +14,28 @@ type props = {
 function DataRow({ onClick, text, type, selected, active, description }: props) {
    const clientType = useSelector((state: { clientType: { value: ClientType } }) => state.clientType.value);
    if (clientType == ClientType.DEVICE) {
-      let styles = { 'width': '500px', 'height': '50px' };
-      if (active) {
-         styles = { ...styles, 'border': '1px solid black' };
+      // let styles = { 'width': '500px', 'height': '50px' };
+      // if (active) {
+      //    styles = { ...styles, 'border': '1px solid black' };
+      // }
+      // if (selected) {
+      //    styles = { ...styles, 'color': 'red' };
+      // }
+      // if (type == 2)//Back button
+      // {
+      //    styles = { ...styles, 'width': '100px', 'height': '50px' };
+      // }
+      if (type != 2) {
+         return (
+            <Card.Root onClick={onClick} size="sm" minW="50px" variant="elevated" border={selected ? "1px solid" : "none"} borderColor={selected ? "red" : "gray"}>
+               <Card.Header>
+               </Card.Header>
+               <Card.Body color="fg.muted">
+                  <Heading size="md">{text}</Heading>
+               </Card.Body>
+            </Card.Root>
+         );
       }
-      if (selected) {
-         styles = { ...styles, 'color': 'red' };
-      }
-      if (type == 2)//Back button
-      {
-         styles = { ...styles, 'width': '100px', 'height': '50px' };
-      }
-      return <Button variant="outline" style={styles} onClick={onClick}>{text}</Button>
    }
    else {
       if (type != 2) { //any type apart from back button should be displayed

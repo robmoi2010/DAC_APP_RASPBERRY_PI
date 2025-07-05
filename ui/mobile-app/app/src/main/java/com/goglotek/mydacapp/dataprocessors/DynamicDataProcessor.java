@@ -62,5 +62,24 @@ public interface DynamicDataProcessor {
             throw new GoglotekException(e.getMessage(), e);
         }
     }
+
+    default List<DataRow> dummyData() {
+        List<DataRow> rows = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            DataRow row = new MenuRow();
+            row.setIndex(i);
+            row.setText("Data " + i);
+            row.setName("Data " + i);
+            row.setSelected(false);
+            rows.add(row);
+        }
+        DataRow row = new MenuRow();
+        row.setIndex(100);
+        row.setText("Data " + 100);
+        row.setName("Data " + 100);
+        row.setSelected(true);
+        rows.add(row);
+        return rows;
+    }
 }
 
