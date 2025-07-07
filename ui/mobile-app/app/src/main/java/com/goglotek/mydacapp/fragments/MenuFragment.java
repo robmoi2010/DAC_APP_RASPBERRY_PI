@@ -3,6 +3,7 @@ package com.goglotek.mydacapp.fragments;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -41,27 +42,25 @@ public class MenuFragment extends Fragment {
     private DataAdapter adapter;
     private TextView header;
     private Menu menu;
-    ViewPagerAdapter pagerAdapter;
-    ViewPager2 viewPager;
+    private ViewPagerAdapter pagerAdapter;
+    private ViewPager2 viewPager;
     private TabLayout tabLayout;
     private boolean initDataLoaded = false;
-    private MainTabFragment.OverlayController overlay;
+    private ProgressBar progressBar;
+    private FrameLayout overlay;
 
     public MenuFragment() {
 
     }
 
-    private MenuFragment(Menu menu, MainTabFragment.OverlayController overlay) {
+    private MenuFragment(Menu menu) {
         this.menu = menu;
-        this.overlay = overlay;
     }
 
-    public static MenuFragment newInstance(Menu menu, MainTabFragment.OverlayController overlay) {
-        MenuFragment frag = new MenuFragment(menu, overlay);
+    public static MenuFragment newInstance(Menu menu) {
+        MenuFragment frag = new MenuFragment(menu);
         Bundle bundle = new Bundle();
-
         bundle.putSerializable("menu", menu);
-        bundle.putSerializable("overlay", overlay);
         frag.setArguments(bundle);
         return frag;
     }
@@ -70,23 +69,40 @@ public class MenuFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         menu = (Menu) getArguments().getSerializable("menu");
-        overlay = (MainTabFragment.OverlayController) getArguments().getSerializable("overlay");
         LinearLayout layout = new LinearLayout(requireContext());
         layout.setOrientation(LinearLayout.VERTICAL);
 
         tabLayout = new TabLayout(requireContext());
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         viewPager = new ViewPager2(requireContext());
+
+        progressBar = new ProgressBar(requireContext());
         FrameLayout.LayoutParams progressParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
+        progressParams.gravity = Gravity.CENTER;
+        progressBar.setLayoutParams(progressParams);
+        progressBar.setVisibility(View.VISIBLE);
+
+        // Overlay with ProgressBar (spinner)
+        overlay = new FrameLayout(requireContext());
+        overlay.setLayoutParams(new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+        overlay.setBackgroundColor(Color.parseColor("#88FFFFFF"));
+        overlay.setClickable(true);
+        overlay.addView(progressBar);
+        overlay.setVisibility(View.GONE);
 
         layout.addView(tabLayout, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         layout.addView(viewPager, new LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f));
+        layout.addView(overlay);
+
         if (menu.getDataType() == MenuDataType.DYNAMIC) {
             View view = inflater.inflate(R.layout.app, container, false);
-            recyclerView = view.findViewById(R.id.data_view_recycler);
+            recyclerView = new RecyclerView(requireContext());
             recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
             header = view.findViewById(R.id.header_title);
             return recyclerView;
@@ -98,16 +114,17 @@ public class MenuFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         menu = (Menu) getArguments().getSerializable("menu");
-        overlay = (MainTabFragment.OverlayController) getArguments().getSerializable("overlay");
         if (menu.getDataType() == MenuDataType.DYNAMIC) {
             adapter = new DataAdapter(new ArrayList<>(), (row) ->
                     handleRowOnclick(row)
                     , (isChecked, row) -> handleSwitchChange(isChecked, row));
             recyclerView.setAdapter(adapter);
+            overlay.setVisibility(View.VISIBLE);
             loadData();
+            overlay.setVisibility(View.GONE);
             initDataLoaded = true;
         } else {
-            pagerAdapter = new ViewPagerAdapter(this, menu, overlay);
+            pagerAdapter = new ViewPagerAdapter(this, menu);
             viewPager.registerOnPageChangeCallback(
                     new ViewPager2.OnPageChangeCallback() {
                         @Override
@@ -116,7 +133,9 @@ public class MenuFragment extends Fragment {
                             if (frag != null) {
                                 if (frag.menu.getDataType() == MenuDataType.DYNAMIC) {
                                     if (!initDataLoaded) {
+                                        overlay.setVisibility(View.VISIBLE);
                                         frag.loadData();
+                                        overlay.setVisibility(View.GONE);
                                     }
                                 }
                             }
@@ -131,20 +150,15 @@ public class MenuFragment extends Fragment {
     }
 
     private void loadData() {
-        System.out.println("loading data for " + menu.getRoot().getName());
-        this.overlay.showOverlay();
+
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
             try {
                 final List<DataRow> rows = MenuUtil.getDataProcessor(menu.getRoot()).loadData();
                 try {
                     requireActivity().runOnUiThread(() -> {
-                        try {
-                            menu.setRows(rows);
-                            updateAdapter();
-                        } finally {
-                            overlay.hideOverlay();
-                        }
+                        menu.setRows(rows);
+                        updateAdapter();
                     });
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -156,6 +170,7 @@ public class MenuFragment extends Fragment {
     }
 
     private void updateAdapter() {
+
         adapter.updateItems(menu.getRows());
         header.setText(menu.getRoot() != null ? menu.getRoot().getText() : "Settings");
     }

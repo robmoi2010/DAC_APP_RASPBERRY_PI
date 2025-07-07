@@ -15,12 +15,10 @@ import com.goglotek.mydacapp.menu.Menu;
 public class ViewPagerAdapter extends FragmentStateAdapter {
     private Menu menu;
     private SparseArray<MenuFragment> fragments = new SparseArray<>();
-    private MainTabFragment.OverlayController overlay;
 
-    public ViewPagerAdapter(@NonNull Fragment fragment, Menu menu, MainTabFragment.OverlayController overlay) {
+    public ViewPagerAdapter(@NonNull Fragment fragment, Menu menu) {
         super(fragment);
         this.menu = menu;
-        this.overlay = overlay;
     }
 
     @NonNull
@@ -28,7 +26,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         try {
             DataRow row = menu.getRows().get(position);
-            MenuFragment fragment = MenuFragment.newInstance(row.getNext(), overlay);
+            MenuFragment fragment = MenuFragment.newInstance(row.getNext());
             fragments.put(position, fragment);
             return fragment;
             //} else {

@@ -30,17 +30,9 @@ import java.io.Serializable;
 import java.util.EmptyStackException;
 
 public class MainTabFragment extends Fragment {
-    public interface OverlayController extends Serializable {
-        void showOverlay();
-
-        void hideOverlay();
-    }
-
     ViewPagerAdapter pagerAdapter;
     ViewPager2 viewPager;
     TabLayout tabLayout;
-    ProgressBar progressBar;
-    private FrameLayout overlay;
 
     @Nullable
     @Override
@@ -53,48 +45,16 @@ public class MainTabFragment extends Fragment {
         tabLayout = new TabLayout(requireContext());
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         viewPager = new ViewPager2(requireContext());
-        progressBar = new ProgressBar(requireContext());
-        FrameLayout.LayoutParams progressParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        progressParams.gravity = Gravity.CENTER;
-        progressBar.setLayoutParams(progressParams);
-        progressBar.setVisibility(View.VISIBLE);
 
-
-        // Overlay with ProgressBar (spinner)
-        overlay = new FrameLayout(requireContext());
-        overlay.setLayoutParams(new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-        ));
-        overlay.setBackgroundColor(Color.parseColor("#88FFFFFF"));
-        overlay.setClickable(true); // block touches below
-        overlay.addView(progressBar);
         ((ViewGroup) view).addView(tabLayout, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         ((ViewGroup) view).addView(viewPager, new LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f));
-        ((ViewGroup) view).addView(overlay);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Menu menu = MenuUtil.createAppMenus();
-        pagerAdapter = new ViewPagerAdapter(this, menu, new OverlayController() {
-
-            @Override
-            public void showOverlay() {
-                overlay.setVisibility(View.VISIBLE);
-                System.out.println("visible");
-            }
-
-            @Override
-            public void hideOverlay() {
-                overlay.setVisibility(View.GONE);
-                System.out.println("invisible");
-            }
-        });
+        pagerAdapter = new ViewPagerAdapter(this, menu);
         viewPager.setAdapter(pagerAdapter);
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> {
