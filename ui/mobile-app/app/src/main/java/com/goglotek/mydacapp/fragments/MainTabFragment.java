@@ -29,6 +29,8 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.io.Serializable;
 import java.util.EmptyStackException;
 
+import timber.log.Timber;
+
 public class MainTabFragment extends Fragment {
     ViewPagerAdapter pagerAdapter;
     ViewPager2 viewPager;
@@ -80,7 +82,7 @@ public class MainTabFragment extends Fragment {
                     .commit();
 
         } catch (EmptyStackException e) {
-            e.printStackTrace();
+            Timber.e(e, e.getMessage());
         }
     }
 }

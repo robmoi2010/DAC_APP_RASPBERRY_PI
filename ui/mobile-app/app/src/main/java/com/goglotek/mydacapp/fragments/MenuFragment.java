@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import timber.log.Timber;
+
 public class MenuFragment extends Fragment {
     private RecyclerView recyclerView;
     private DataAdapter adapter;
@@ -161,10 +163,10 @@ public class MenuFragment extends Fragment {
                         updateAdapter();
                     });
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Timber.e(e, e.getMessage());
                 }
             } catch (GoglotekException e) {
-                e.printStackTrace();
+                Timber.e(e, e.getMessage());
             }
         });
     }
@@ -202,7 +204,7 @@ public class MenuFragment extends Fragment {
                 }
                 dt = MenuUtil.getDataProcessor(menu.getRoot()).updateServerData(localIndex);
             } catch (GoglotekException e) {
-                e.printStackTrace();
+                Timber.e(e, e.getMessage());
             }
             final List<DataRow> finalList = dt;
             requireActivity().runOnUiThread(() -> {

@@ -12,6 +12,8 @@ import com.goglotek.mydacapp.fragments.MenuFragment;
 import com.goglotek.mydacapp.menu.DataRow;
 import com.goglotek.mydacapp.menu.Menu;
 
+import timber.log.Timber;
+
 public class ViewPagerAdapter extends FragmentStateAdapter {
     private Menu menu;
     private SparseArray<MenuFragment> fragments = new SparseArray<>();
@@ -45,7 +47,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
 //            return fragment;
 //        }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e, e.getMessage());
         }
         return null;
     }

@@ -1,6 +1,8 @@
 from model.model import ResponseModel
 from registry.register import get_instance
+from services.utils.services_util import SOUND_MODE_DISPLAY_NAME, VOLUME_DISPLAY_NAME
 from system.sound_modes import SOUND_MODE
+from system.system_util import SOUND_MODE_ID
 from volume import system_volume
 from volume.volume_util import VOLUME_ALGORITHM, VOLUME_DEVICE
 
@@ -90,4 +92,25 @@ def create_volume_device_response(volume: system_volume):
         display_name=VOLUME_DEVICE.ALPS.name,
     )
     list.append(r2)
+    return list
+
+def create_home_data(volume):
+    list = []
+    # get current volume
+    current = volume.get_percentage_volume(volume.get_current_volume())
+    device: VOLUME_DEVICE = volume.get_current_volume_device()
+    id = "CURRENT_VOLUME"
+    list.append(
+        ResponseModel(key=id, value=str(current), display_name=VOLUME_DISPLAY_NAME)
+    )
+
+    # get current sound mode
+    mode = sound_modes.get_current_sound_mode()
+    list.append(
+        ResponseModel(
+            key=SOUND_MODE_ID,
+            value=mode.name,
+            display_name=SOUND_MODE_DISPLAY_NAME,
+        )
+    )
     return list

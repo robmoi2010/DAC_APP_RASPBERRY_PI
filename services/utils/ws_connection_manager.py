@@ -17,11 +17,18 @@ class WSConnectionManager:
         self.logger = logging.getLogger(__name__)
 
     async def connect(self, type: WS_TYPE, websocket: WebSocket):
-        self.connections[type.name] = websocket
+        if type.name not in self.connections:
+            self.connections[type.name] = [websocket]
+        else:
+            self.connections[type.name].append(websocket)
         await websocket.accept()
 
     async def send_data(self, type: WS_TYPE, message: str):
         try:
-            await self.connections[type.name].send_text(message)
+            for conn in self.connections[type.name]:
+                try:
+                    await conn.send_text(message)
+                except Exception as e:
+                    self.logger.error(e)
         except Exception as e:
             self.logger.error(e)
