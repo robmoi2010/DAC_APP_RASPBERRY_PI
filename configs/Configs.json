@@ -128,7 +128,7 @@
     },
     "SYSTEM": {
         "MASTER_VOLUME_DEVICE": "MUSES",
-        "STORAGE": 1
+        "STORAGE": 2
     },
     "ALPS": {
         "ADC_MIN_VALUE": 0,

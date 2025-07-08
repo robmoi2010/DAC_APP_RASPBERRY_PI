@@ -1,6 +1,7 @@
 import logging
 
 from repo.mongo_storage import MongoStorage
+from repo.sql_storage import SqlStorage
 from ui.app import App
 import registry.register as register
 from dac.ess_dac import Dac
@@ -30,7 +31,7 @@ def initialize_device():
     except Exception as e:
         logger.error(e)
     try:
-        storage: MongoStorage = register.get_instance("mongostorage")
+        storage: SqlStorage = register.get_instance("sqlstorage")
         storage.initialize()
         pass
     except Exception as e:
