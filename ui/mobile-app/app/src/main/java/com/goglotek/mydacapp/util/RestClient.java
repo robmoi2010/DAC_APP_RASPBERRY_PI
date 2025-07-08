@@ -29,7 +29,6 @@ public class RestClient {
         if (client == null) {
             client = new OkHttpClient();
         }
-
         Request request = new Request.Builder().url(url).get().addHeader("Content-type", "application/json").build();
         try (Response response = client.newCall(request).execute()) {
             return response.body().string();

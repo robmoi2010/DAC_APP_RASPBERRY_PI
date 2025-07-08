@@ -20,30 +20,37 @@ def create_output_response(type):  # 0 mains 1 subwoofer
 
     list = []
     r0 = ResponseModel(
-        key="0", value="" + is_selected(current_output, 0), display_name="COAX_OUTPUT"
+        key="0",
+        value="" + is_selected(current_output, 0),
+        description="Coaxial output",
+        display_name="COAX_OUTPUT",
     )
     list.append(r0)
     r1 = ResponseModel(
         key="1",
         value="" + is_selected(current_output, 1),
+        description="I2S output port 0",
         display_name="I2S_OUTPUT0",
     )
     list.append(r1)
     r2 = ResponseModel(
         key="2",
         value="" + is_selected(current_output, 2),
+        description="I2S output port 1",
         display_name="I2S_OUTPUT1",
     )
     list.append(r2)
     r3 = ResponseModel(
         key="3",
         value="" + is_selected(current_output, 3),
+        description="I2S output port 2",
         display_name="I2S_OUTPUT2",
     )
     list.append(r3)
     r4 = ResponseModel(
         key="4",
         value="" + is_selected(current_output, 4),
+        description="I2S output port 3",
         display_name="I2S_OUTPUT3",
     )
     list.append(r4)
@@ -59,30 +66,36 @@ def create_input_response():
     current_input = dsp.get_current_input()
     list = []
     r0 = ResponseModel(
-        key="0", value="" + is_selected(current_input, 0), display_name="Toslink"
+        key="0", value="" + is_selected(current_input, 0), 
+        description="Toslink input",
+        display_name="Toslink"
     )
     list.append(r0)
     r1 = ResponseModel(
         key="1",
         value="" + is_selected(current_input, 1),
+        description="I2S input port 0",
         display_name="I2S_INPUT0",
     )
     list.append(r1)
     r2 = ResponseModel(
         key="2",
         value="" + is_selected(current_input, 2),
+        description="I2S input port 1",
         display_name="I2S_INPUT1",
     )
     list.append(r2)
     r3 = ResponseModel(
         key="3",
         value="" + is_selected(current_input, 3),
+        description="I2S input port 2",
         display_name="I2S_INPUT2",
     )
     list.append(r3)
     r4 = ResponseModel(
         key="4",
         value="" + is_selected(current_input, 4),
+        description="I2S input port 3",
         display_name="I2S_INPUT3",
     )
     list.append(r4)

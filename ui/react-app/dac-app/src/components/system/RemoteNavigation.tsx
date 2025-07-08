@@ -10,10 +10,10 @@ type indexMap = {
     url: string
 }
 const RemoteNavigation = () => {
-    const index = useSelector((state) => state.navigationIndex.value);
+    const index = useSelector((state:{ navigationIndex: { value: number } }) => state.navigationIndex.value);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const indexMap: indexMap[] = useSelector((state) => state.indexUrlMap.value);
+    const indexMap: indexMap[] = useSelector((state:{ indexUrlMap: { value: {index:number, url:string}[] } }) => state.indexUrlMap.value);
     // setup websocket for ir remote commands
     const { lastMessage } = useWebSocket(
         Config["IR_REMOTE_WS_URL"],

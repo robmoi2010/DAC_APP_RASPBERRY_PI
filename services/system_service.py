@@ -1,7 +1,9 @@
-from system.system_util import BUTTON, SOUND_MODE_ID
+import json
+from system.system_util import BUTTON
 from model.model import RequestModel, ResponseModel
 from system.sound_modes import SOUND_MODE
 from services.utils.system_util import (
+    create_home_data,
     create_sound_mode_response,
     create_volume_algorithm_response,
     create_volume_device_response,
@@ -12,13 +14,12 @@ from fastapi import WebSocket, APIRouter
 import asyncio
 from registry.register import get_instance
 from volume.volume_util import (
-    CURRENT_ALPS_VOLUME_ID,
     VOLUME_ALGORITHM,
     VOLUME_DEVICE,
     CURRENT_MUSES_VOLUME_ID,
     CURRENT_VOLUME_ID,
 )
-from services.utils.services_util import SOUND_MODE_DISPLAY_NAME, VOLUME_DISPLAY_NAME
+from services.utils.services_util import VOLUME_DISPLAY_NAME
 from volume.volume_util import VOL_DIRECTION
 from system.ir_remote_router import IrRemoteRouter
 
@@ -71,7 +72,6 @@ async def update_volume_algorithm(request: RequestModel):
 
 @system_app.get("/volume_device")
 async def get_volume_device():
-    print(volume)
     return create_volume_device_response(volume)
 
 
@@ -98,6 +98,12 @@ async def update_volume_device(request: RequestModel):
 @system_app.websocket("/ws")
 async def home_websocket(websocket: WebSocket):
     await connection_manager.connect(WS_TYPE.HOME_DATA, websocket)
+
+    logging.info("sending initial web socket home data...")
+    # Send current home data on initial connection
+    list = create_home_data(volume)
+    data = [dt.model_dump() for dt in list]
+    await connection_manager.send_data(WS_TYPE.HOME_DATA, json.dumps(data))
     try:
         while True:
             await asyncio.sleep(1)
@@ -108,6 +114,7 @@ async def home_websocket(websocket: WebSocket):
 @system_app.websocket("/ws/ir_remote")
 async def ir_remote_websocket(websocket: WebSocket):
     await connection_manager.connect(WS_TYPE.IR_REMOTE, websocket)
+
     try:
         while True:
             await asyncio.sleep(1)
@@ -130,25 +137,7 @@ async def current_volume():
 
 @system_app.get("/home")
 async def home():
-    list = []
-    # get current volume
-    current = volume.get_percentage_volume(volume.get_current_volume())
-    device: VOLUME_DEVICE = volume.get_current_volume_device()
-    id = "CURRENT_VOLUME"
-    list.append(
-        ResponseModel(key=id, value=str(current), display_name=VOLUME_DISPLAY_NAME)
-    )
-
-    # get current sound mode
-    mode = sound_modes.get_current_sound_mode()
-    list.append(
-        ResponseModel(
-            key=SOUND_MODE_ID,
-            value=mode.name,
-            display_name=SOUND_MODE_DISPLAY_NAME,
-        )
-    )
-    return list
+    return create_home_data(volume)
 
 
 @system_app.put("/volume/update")
@@ -159,13 +148,13 @@ async def update_volume(response: ResponseModel):
 
 @system_app.get("/volume/up")
 async def volume_up():
-    vol=await volume.update_volume(VOL_DIRECTION.UP)
+    vol = await volume.update_volume(VOL_DIRECTION.UP)
     return ResponseModel(key="0", value=str(vol), display_name="")
 
 
 @system_app.get("/volume/down")
 async def volume_down():
-    vol=await volume.update_volume(VOL_DIRECTION.DOWN)
+    vol = await volume.update_volume(VOL_DIRECTION.DOWN)
     return ResponseModel(key="0", value=str(vol), display_name="")
 
 

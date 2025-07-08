@@ -5,7 +5,6 @@ from ui.app import App
 import registry.register as register
 from dac.ess_dac import Dac
 import uvicorn
-#from alps.alps_pot import AlpsPot
 
 app_window = None
 logger = logging.getLogger(__name__)

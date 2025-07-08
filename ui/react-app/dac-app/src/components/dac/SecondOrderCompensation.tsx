@@ -1,7 +1,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import DataRow from "../DataRow";
-import Header from "../header";
+import Header from "../Header";
 import PaddingRow from "../PaddingRow";
 import Page from "../Page";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
@@ -15,9 +15,9 @@ import type { Dispatch } from "redux";
 
 const SecondOrderCompensation = () => {
     const navigate: NavigateFunction = useNavigate();
-    const index = useSelector((state) => state.navigationIndex.value);
-    const selectedIndex = useSelector((state) => state.selectedIndex.value);
-    const componentsData = useSelector((state) => state.dynamicComponentsData.value);
+    const index = useSelector((state:{ navigationIndex: { value: number } }) => state.navigationIndex.value);
+    const selectedIndex = useSelector((state:{ selectedIndex: { value: number } }) => state.selectedIndex.value);
+    const componentsData = useSelector((state:{ dynamicComponentsData: { value: [] } }) => state.dynamicComponentsData.value);
     const dispatch = useDispatch();
     useEffect(() => {
         const indexMap: indexMapType[] = [];
@@ -41,10 +41,10 @@ const generateComponents = (data: responseDataType[], index: number, navigate: N
     components.push(<Header text="2ND Order Compensation" />);
     components.push(<PaddingRow />);
     data.forEach(x => {
-        components.push(<DataRow selected={x?.value == "1"} onClick={() => handleSelection(Number(x.key), dispatch)} text={x?.display_name} type={1} active={index == Number(x?.key)} />);
+        components.push(<DataRow selected={x?.value == "1"} onClick={() => handleSelection(Number(x.key), dispatch)} text={x?.display_name} type={1} active={index == Number(x?.key)} description={x?.description}/>);
         components.push(<PaddingRow />);
     });
-    components.push(<DataRow selected={false} onClick={() => navigate("/ThdCompensation")} text="Back" type={2} active={index == data.length} />);
+    components.push(<DataRow selected={false} onClick={() => navigate("/ThdCompensation")} text="Back" type={2} active={index == data.length} description=""/>);
     return components;
 }
 const handleSelection = (selection: number, dispatch: Dispatch) => {
@@ -55,8 +55,8 @@ const handleSelection = (selection: number, dispatch: Dispatch) => {
 const processData = (data: Promise<responseDataType>, dispatch: Dispatch) => {
     const components: responseDataType[] = [];
     data.then(dt => {
-        components.push({ key: "0", value: (dt.value == "1") ? "1" : "0", display_name: "Enable" });
-        components.push({ key: "1", value: (dt.value == "0") ? "1" : "0", display_name: "Disable" });
+        components.push({ key: "0", value: (dt.value == "1") ? "1" : "0", display_name: "Enable", description:"" });
+        components.push({ key: "1", value: (dt.value == "0") ? "1" : "0", display_name: "Disable", description:"" });
         dispatch(setComponentsData(components));
     });
 }

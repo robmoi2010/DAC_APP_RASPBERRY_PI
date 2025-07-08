@@ -1,11 +1,10 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import DataRow from "../DataRow";
-import Header from "../header";
+import Header from "../Header";
 import PaddingRow from "../PaddingRow";
 import Page from "../Page";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
-import { getFilters, updateFilter } from "../../services/DacService";
 import { type ReactElement, useEffect } from "react";
 import { type responseDataType } from "../../utils/types";
 import type { Dispatch } from "redux";
@@ -15,12 +14,14 @@ import { getInputOptions, updateInput } from "../../services/DspService";
 
 const Input = () => {
     const navigate = useNavigate();
-    const index = useSelector((state) => state.navigationIndex.value);
-    const selectedIndex = useSelector((state) => state.selectedIndex.value);
-    const componentsData = useSelector((state) => state.dynamicComponentsData.value);
+    const index = useSelector((state:{ navigationIndex: { value: number } }) => state.navigationIndex.value);
+    const selectedIndex = useSelector((state:{ selectedIndex: { value: number } }) => state.selectedIndex.value);
+    const componentsData = useSelector((state:{ dynamicComponentsData: { value: [] } }) => state.dynamicComponentsData.value);
     const dispatch = useDispatch();
     //initial data load
     useEffect(() => {
+        //clear previous data if present before fetching new data
+        dispatch(setComponentsData([]));
         loadDynamicData(getInputOptions(), dispatch, "/DspSettings");
     }, []);
     //capture selected index update and send value to server
@@ -36,10 +37,10 @@ const generateComponents = (data: responseDataType[], index: number, navigate: N
     components.push(<Header text="Select Input" />);
     components.push(<PaddingRow />);
     data.forEach(x => {
-        components.push(<DataRow selected={x?.value == "1"} onClick={() => dataSelection(Number(x?.key), dispatch)} text={x?.display_name} type={1} active={index == Number(x?.key)} />);
+        components.push(<DataRow selected={x?.value == "1"} onClick={() => dataSelection(Number(x?.key), dispatch)} text={x?.display_name} type={1} active={index == Number(x?.key)} description={x?.description}/>);
         components.push(<PaddingRow />);
     });
-    components.push(<DataRow selected={false} onClick={() => navigate("/DspSettings")} text="Back" type={2} active={index == data.length} />);
+    components.push(<DataRow selected={false} onClick={() => navigate("/DspSettings")} text="Back" type={2} active={index == data.length} description=""/>);
     return components;
 }
 const dataSelection = (selection: number, dispatch: Dispatch) => {
@@ -49,7 +50,4 @@ const dataSelection = (selection: number, dispatch: Dispatch) => {
         }
     );
 }
-
-
-
 export default Input;

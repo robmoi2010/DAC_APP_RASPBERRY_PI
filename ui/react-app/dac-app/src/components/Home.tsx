@@ -1,5 +1,4 @@
 import { VolumeGauge } from './VolumeGauge';
-import DataRow from './DataRow';
 import PaddingRow from './PaddingRow';
 import { useDispatch, useSelector } from 'react-redux';
 import Page from './Page';
@@ -12,9 +11,10 @@ import { addMessage } from '../state-repo/slices/webSocketSlice';
 import Config from '../configs/Config.json';
 import { useNavigate } from 'react-router-dom';
 import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
-import Header from './header';
+import Header from './Header';
 import VolumeSlider from './VolumeSlider';
 import { ClientType } from '../utils/types';
+import { Box, Button } from '@chakra-ui/react';
 
 
 const Home = () => {
@@ -86,7 +86,7 @@ const Home = () => {
 
    const components = [
       <PaddingRow />,
-      <Header text={homeData} />,
+      <div style={{ paddingLeft: "125px" }}><Header text={homeData} /></div>,
       <PaddingRow />,
       <div style={{ paddingLeft: '125px' }}>
          <VolumeGauge volume={volume} />
@@ -94,9 +94,9 @@ const Home = () => {
          <VolumeSlider volume={volume} />
       </div>,
       <PaddingRow />,
-      <DataRow selected={false} onClick={() => navigate(handleSettingsOnclick(clientType))} text="Settings" type={1} active={false} />
+      <Button variant="outline" style={{ 'width': '500px' }} onClick={() => navigate(handleSettingsOnclick(clientType))}>Settings</Button>
    ];
-   return <Page items={components} />;
+   return <Box>{components}</Box>;
 }
 const handleSettingsOnclick = (clientType: ClientType): string => {
    if (clientType == ClientType.DEVICE) {

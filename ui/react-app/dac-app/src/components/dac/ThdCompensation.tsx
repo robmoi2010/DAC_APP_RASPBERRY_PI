@@ -1,7 +1,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import DataRow from "../DataRow";
-import Header from "../header";
+import Header from "../Header";
 import PaddingRow from "../PaddingRow";
 import Page from "../Page";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 const ThdCompensation = () => {
     const navigate = useNavigate();
-    const index = useSelector((state) => state.navigationIndex.value);
+    const index = useSelector((state:{ navigationIndex: { value: number } }) => state.navigationIndex.value);
     const dispatch = useDispatch();
     useEffect(() => {
         const indexMap = [
@@ -24,11 +24,11 @@ const ThdCompensation = () => {
     const components = [
         <Header text="Thd Compensation" />,
         < PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/SecondOrderCompensation")} text="2ND Order" type={1} active={index == 0} />,
+        <DataRow selected={false} onClick={() => navigate("/SecondOrderCompensation")} text="2ND Order" type={1} active={index == 0} description=""/>,
         <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/ThirdOrderCompensation")} text="3RD Order" type={1} active={index == 1} />,
+        <DataRow selected={false} onClick={() => navigate("/ThirdOrderCompensation")} text="3RD Order" type={1} active={index == 1} description=""/>,
         <PaddingRow />,
-        <DataRow selected={false} onClick={() => navigate("/DacSettings")} text="Back" type={2} active={index == 2} />,
+        <DataRow selected={false} onClick={() => navigate("/DacSettings")} text="Back" type={2} active={index == 2} description=""/>,
     ];
     return <Page items={components} />
 }

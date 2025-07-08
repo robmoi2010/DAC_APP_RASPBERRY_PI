@@ -34,6 +34,8 @@ import com.google.android.material.slider.Slider;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import timber.log.Timber;
+
 public class HomeFragment extends Fragment {
     SpeedView volumeView;
     Slider volumeSlider;
@@ -44,6 +46,7 @@ public class HomeFragment extends Fragment {
     Handler handler = new Handler(Looper.getMainLooper());
     Runnable debouncedRunnable = null;
     int debounceDelayMs = 300;
+    boolean isVolumeSliderWsUpdate = false;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -74,11 +77,15 @@ public class HomeFragment extends Fragment {
     }
 
     private void handleSettingsOnclick() {
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, new AppFragment())
-                .addToBackStack(null)
-                .commit();
+        try {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new MainTabFragment())
+                    .addToBackStack(null)
+                    .commit();
+        } catch (Exception e) {
+            Timber.e(e, e.getMessage());
+        }
     }
 
     private void populateHomeData(Home home, boolean isWsData) {
@@ -109,6 +116,7 @@ public class HomeFragment extends Fragment {
                     volumeView.setTrembleData(0, 0);
                     volumeView.speedTo(volume, 200);
                     if (!updatingSliderVolume) {
+                        isVolumeSliderWsUpdate = true;
                         volumeSlider.setValue(volume);
                     }
                     if (!isWsData) {
@@ -117,13 +125,17 @@ public class HomeFragment extends Fragment {
                     }
                 });
             } catch (GoglotekException e) {
-                e.printStackTrace();
+                Timber.e(e, e.getMessage());
             }
         });
     }
 
     private void handleVolumeSliderOnchange(int newVal) {
-
+        //if slider change was as a result of websocket update, don't process the event and reset the flag
+        if (isVolumeSliderWsUpdate) {
+            isVolumeSliderWsUpdate = false;
+            return;
+        }
         if (newVal != previousSliderVolume) {
             VolumeDirection direction = null;
             if (newVal > previousSliderVolume) {
@@ -159,7 +171,7 @@ public class HomeFragment extends Fragment {
                         updatingSliderVolume = false;
                     });
                 } catch (GoglotekException e) {
-                    e.printStackTrace();
+                    Timber.e(e, e.getMessage());
                 }
             });
         }
@@ -176,7 +188,17 @@ public class HomeFragment extends Fragment {
                     Home home = Home.getInstance(rsp);
                     populateHomeData(home, true);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Timber.e(e, e.getMessage());
+                }
+            }
+
+            @Override
+            public void postDelayed(WebSocketClient client, long delay) {
+                try {
+                    Thread.sleep(delay);
+                    client.connect();
+                } catch (InterruptedException e) {
+                    Timber.e(e, e.getMessage());
                 }
             }
         });

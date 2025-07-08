@@ -16,7 +16,7 @@ public class ThirdOrderProcessor implements DynamicDataProcessor {
 
     @Override
     public List<DataRow> loadData() throws GoglotekException {
-        String data = DacService.getThirdOrderStatus();
+       String data = DacService.getThirdOrderStatus();
         return processServerToggleData(data);
     }
 

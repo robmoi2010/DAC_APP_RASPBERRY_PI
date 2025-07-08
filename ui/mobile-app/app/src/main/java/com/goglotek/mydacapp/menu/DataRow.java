@@ -1,6 +1,8 @@
 package com.goglotek.mydacapp.menu;
 
-public interface DataRow {
+import java.io.Serializable;
+
+public interface DataRow extends Serializable {
     public Menu getNext();
 
     public String getText();
@@ -24,5 +26,6 @@ public interface DataRow {
     public void setType(RowDataType type);
 
     public RowDataType getType();
-    public boolean equals(Object obj) ;
+
+    public boolean equals(Object obj);
 }

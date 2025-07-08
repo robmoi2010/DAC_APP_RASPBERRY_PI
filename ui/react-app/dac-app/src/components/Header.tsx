@@ -1,6 +1,5 @@
 import { Badge } from "@radix-ui/themes"
-function Header(props)
-{
-    return <Badge>{props.text}</Badge>
+function Header({ text }: { text: string }) {
+    return <div></div>;
 }
 export default Header

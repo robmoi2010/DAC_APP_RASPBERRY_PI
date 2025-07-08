@@ -9,6 +9,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.goglotek.mydacapp.R;
 
+import timber.log.Timber;
+
 public abstract class DacAppActivity extends AppCompatActivity {
     protected abstract Fragment getFragment();
 
