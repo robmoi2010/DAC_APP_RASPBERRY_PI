@@ -41,6 +41,8 @@ public class MenuUtil {
     private final static String DSP_MAIN_OUTPUT_NAME = "MainOutput";
     private final static String DSP_SUBWOOFER_OUTPUT_NAME = "SubwooferOutput";
     private final static String DPLL_BANDWIDTH_NAME = "DpllBandwidth";
+    private static final String BASIC_DAC_SETTINGS_NAME = "Basic";
+    private static final String ADVANCED_DAC_SETTINGS_NAME = "Advanced";
 
 
     public static Stack<Menu> menuStack = new Stack<>();
@@ -161,6 +163,12 @@ public class MenuUtil {
         if (name == DPLL_BANDWIDTH_NAME) {
             return createDynamicDataMenu(root);
         }
+        if (name == BASIC_DAC_SETTINGS_NAME) {
+            return createBasicDacSettingsMenu(root);
+        }
+        if (name == ADVANCED_DAC_SETTINGS_NAME) {
+            return createAdvancedDacSettingsMenu(root);
+        }
         return null;
     }
 
@@ -191,11 +199,31 @@ public class MenuUtil {
     public static Menu createDacSettingsMenu(DataRow root) {
         Menu menu = new AppMenu();
         List<DataRow> rows = new ArrayList<>();
+        rows.add(createRow(BASIC_DAC_SETTINGS_NAME, RowDataType.TEXT));
+        rows.add(createRow(ADVANCED_DAC_SETTINGS_NAME, RowDataType.TEXT));
+        menu.setRows(rows);
+        menu.setDataType(MenuDataType.STATIC);
+        menu.setRoot(root);
+        return menu;
+    }
+
+    public static Menu createBasicDacSettingsMenu(DataRow root) {
+        Menu menu = new AppMenu();
+        List<DataRow> rows = new ArrayList<>();
         rows.add(createRow(VOLUME_SETTINGS_NAME, RowDataType.TEXT));
         rows.add(createRow(FILTERS_NAME, RowDataType.TEXT));
-        rows.add(createRow(DAC_MODES_NAME, RowDataType.TEXT));
         rows.add(createRow(VOLUME_MODES_NAME, RowDataType.TEXT));
+        menu.setRows(rows);
+        menu.setDataType(MenuDataType.STATIC);
+        menu.setRoot(root);
+        return menu;
+    }
+
+    public static Menu createAdvancedDacSettingsMenu(DataRow root) {
+        Menu menu = new AppMenu();
+        List<DataRow> rows = new ArrayList<>();
         rows.add(createRow(THD_COMPENSATION_NAME, RowDataType.TEXT));
+        rows.add(createRow(DAC_MODES_NAME, RowDataType.TEXT));
         rows.add(createRow(OVERSAMPLING_NAME, RowDataType.TEXT));
         rows.add(createRow(DPLL_BANDWIDTH_NAME, RowDataType.TEXT));
         menu.setRows(rows);

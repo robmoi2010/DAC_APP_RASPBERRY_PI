@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
         //get current volume and other home data from server
         populateHomeData(null, false);
         //creates a web socket to listen for server changes in volume and update the ui.
-        createHomeDataWebSocketListener(view);
+        createHomeDataWebSocketListener();
         return view;
     }
 
@@ -227,7 +227,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void createHomeDataWebSocketListener(View view) {
+    private void createHomeDataWebSocketListener() {
         WebSocketClient client = new WebSocketClient(Config.getConfig("BASE_URL") + "system/ws", new WebsocketHandler() {
             @Override
             public void handleIncomingMessage(String message) {
