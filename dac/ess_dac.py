@@ -1,7 +1,15 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+import json
+import threading
+import time
 import configs.app_config as app_config
-from registry.register import register, get_instance
+from model.model import ResponseModel
+import registry.register as reg
+from registry.register import register
 from dac.dac_comm import DacComm
 from repo.storage import Storage
+from services.utils.ws_connection_manager import WS_TYPE, WSConnectionManager
 
 config2 = app_config.getConfig()["DAC"]
 config = config2["ADDR"]
@@ -10,9 +18,12 @@ DAC_I2C_ADDR = config["I2C_ADDR"]
 
 @register
 class Dac:
-    def __init__(self, dac_comm: DacComm, storage: Storage):
+    def __init__(
+        self, dac_comm: DacComm, storage: Storage, ws_connection: WSConnectionManager
+    ):
         self.dac_comm = dac_comm
         self.storage = storage
+        self.ws_connection = ws_connection
 
     def enable_dac_analog_section(self):
         addr = config["SYS_CONFIG"]
@@ -86,7 +97,7 @@ class Dac:
         self.enable_dac_analog_section()
         # setup dac for i2s master mode
         self.set_i2s_master_mode()
-
+        
     def set_dac_mode(
         self,
         mode,
@@ -219,3 +230,19 @@ class Dac:
         else:
             # code for registry access and enabling oversampling here
             self.storage.write("OVERSAMPLING_ENABLED", 1)
+
+    def get_dpll_bandwidth(self):  # Dac digital phase locked loop setting
+        return self.storage.read("DPLL_BANDWIDTH")
+
+    def set_dpll_bandwidth(
+        self, value
+    ):  # The lower the value the better the jitter reduction at stability cost.
+        if value < 1 or value > 15:  # out of range(1-15) 4d
+            return
+        # code for accessing register and setting the dpll bandwidth value here
+
+        self.storage.write("DPLL_BANDWIDTH", value)
+
+    
+
+    

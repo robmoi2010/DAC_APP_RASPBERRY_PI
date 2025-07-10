@@ -44,11 +44,15 @@ public class AppFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new DataAdapter(new ArrayList<>(), (row) ->
                 handleRowOnclick(row)
-                , (isChecked, row) -> handleSwitchChange(isChecked, row));
+                , (isChecked, row) -> handleSwitchChange(isChecked, row), (current, row)->handleSliderChange(current, row));
         recyclerView.setAdapter(adapter);
         header = view.findViewById(R.id.header_title);
         updateUI();
         return view;
+    }
+
+    private void handleSliderChange(int current, DataRow row) {
+
     }
 
     @Override

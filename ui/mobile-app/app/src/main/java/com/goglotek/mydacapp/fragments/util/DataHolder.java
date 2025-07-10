@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,13 +18,19 @@ import com.goglotek.mydacapp.R;
 import com.goglotek.mydacapp.menu.DataRow;
 import com.goglotek.mydacapp.menu.RowDataType;
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.slider.LabelFormatter;
+import com.google.android.material.slider.Slider;
+
+import java.util.Map;
 
 public class DataHolder extends RecyclerView.ViewHolder {
     DataAdapter.onSwitchChangeListener onSwitchChangeListener;
+    DataAdapter.onSliderChangeListener onSliderChangeListener;
 
-    public DataHolder(View view, DataAdapter.onSwitchChangeListener onSwitchChangeListener) {
+    public DataHolder(View view, DataAdapter.onSwitchChangeListener onSwitchChangeListener, DataAdapter.onSliderChangeListener onSliderChangeListener) {
         super(view);
         this.onSwitchChangeListener = onSwitchChangeListener;
+        this.onSliderChangeListener = onSliderChangeListener;
     }
 
     public void bind(final DataRow dataRow, final DataAdapter.OnItemClickListener listener) {
@@ -32,6 +39,9 @@ public class DataHolder extends RecyclerView.ViewHolder {
             SwitchCompat switchBtn = createSwitch(dataRow.isSelected(), dataRow);
             switchBtn.setChecked(dataRow.isSelected());
             layout.addView(switchBtn);
+        } else if (dataRow.getType() == RowDataType.NUMBER) {
+            Slider slider = createSlider(dataRow);
+            layout.addView(slider);
         } else {
             if (dataRow.isSelected()) {
                 layout.addView(createCheckBox(dataRow.isSelected()));
@@ -87,7 +97,7 @@ public class DataHolder extends RecyclerView.ViewHolder {
             defaultSwitch.setText("Off");
         }
         defaultSwitch.setChecked(checked);
-        
+
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -99,5 +109,46 @@ public class DataHolder extends RecyclerView.ViewHolder {
             onSwitchChangeListener.handleSwitchChange(isChecked, row);
         });
         return defaultSwitch;
+    }
+
+    private Slider createSlider(DataRow row) {
+        int min = 0;
+        int max = 0;
+        int step = 0;
+        for (Map<String, String> map : row.getRowOptions()) {
+            if (map.containsKey("MIN")) {
+                min = Integer.parseInt(map.get("MIN"));
+            }
+            if (map.containsKey("MAX")) {
+                max = Integer.parseInt(map.get("MAX"));
+            }
+            if (map.containsKey("STEP")) {
+                step = Integer.parseInt(map.get("STEP"));
+            }
+        }
+        Slider slider = new Slider(itemView.getContext());
+        slider.setValueFrom(min);
+        slider.setValueTo(max);
+        slider.setStepSize(step);
+        slider.setValue(Integer.parseInt(row.getText()));
+        slider.setLabelBehavior(LabelFormatter.LABEL_FLOATING);
+        slider.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+                                            @Override
+                                            public void onStartTrackingTouch(@NonNull Slider slider) {
+
+                                            }
+
+                                            @Override
+                                            public void onStopTrackingTouch(@NonNull Slider slider) {
+                                                onSliderChangeListener.handleSliderChange((int) slider.getValue(), row);
+                                            }
+                                        }
+        );
+
+        return slider;
     }
 }

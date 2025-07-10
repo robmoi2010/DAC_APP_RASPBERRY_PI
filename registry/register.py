@@ -1,8 +1,10 @@
 import inspect
+import threading
 
 
 registry = {}
 instances = {}
+_singleton_lock = threading.RLock()
 
 
 def register(cls):
@@ -25,20 +27,21 @@ def get_dependencies(nm):
 
 
 def get_instance(name, composed_obj: list[str] = None, force_new=False):
-    if name not in registry:
-        raise ValueError(f"No class registered under name '{name}'")
-    if name not in instances or force_new:
-        if composed_obj is None:
-            # get object dependencies for automatic dependency injection
-            dependencies = get_dependencies(name)
-            if dependencies is not None and len(dependencies) > 0:
-                composed_obj = dependencies
-        if composed_obj is not None:
-            # create objects from the list of names
-            obj = []
-            for ob in composed_obj:
-                obj.append(get_instance(ob))
-            instances[name] = registry[name](*obj)
-        else:
-            instances[name] = registry[name]()
-    return instances[name]
+    with _singleton_lock:
+        if name not in registry:
+            raise ValueError(f"No class registered under name '{name}'")
+        if name not in instances or force_new:
+            if composed_obj is None:
+                # get object dependencies for automatic dependency injection
+                dependencies = get_dependencies(name)
+                if dependencies is not None and len(dependencies) > 0:
+                    composed_obj = dependencies
+            if composed_obj is not None:
+                # create objects from the list of names
+                obj = []
+                for ob in composed_obj:
+                    obj.append(get_instance(ob))
+                instances[name] = registry[name](*obj)
+            else:
+                instances[name] = registry[name]()
+        return instances[name]

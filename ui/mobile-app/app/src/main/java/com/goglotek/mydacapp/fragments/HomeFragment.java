@@ -99,8 +99,8 @@ public class HomeFragment extends Fragment {
                     homeLocal = home;
                 }
                 Home finalHomeLocal = homeLocal;
-                ((Activity) getContext()).runOnUiThread(() -> {
-                    int volume = 0;
+                requireActivity().runOnUiThread(() -> {
+                    Integer volume = null;
                     StringBuilder sb = new StringBuilder();
                     Response[] data = finalHomeLocal != null ? finalHomeLocal.getData() : null;
                     if (data != null) {
@@ -108,26 +108,74 @@ public class HomeFragment extends Fragment {
                             if (rsp.getKey().equals(Config.getConfig("CURRENT_VOLUME_ID"))) {
                                 volume = Integer.parseInt(rsp.getValue());
                             } else {
-                                sb.append(" " + rsp.getDisplayName()).append(": ").append(rsp.getValue());
+                                sb.append(" " + rsp.getDisplayName().trim()).append(":").append(rsp.getValue().trim()).append("\n");
                             }
                         }
                     }
                     volumeView = volumeView == null ? ((Activity) getContext()).findViewById(R.id.speedView) : volumeView;
                     volumeView.setTrembleData(0, 0);
-                    volumeView.speedTo(volume, 200);
+                    if (volume != null) {
+                        volumeView.speedTo(volume, 200);
+                    }
                     if (!updatingSliderVolume) {
-                        isVolumeSliderWsUpdate = true;
-                        volumeSlider.setValue(volume);
+                        if (volume != null) {
+                            isVolumeSliderWsUpdate = true;
+                            volumeSlider.setValue(volume);
+                        }
                     }
-                    if (!isWsData) {
-                        homeData = homeData == null ? ((Activity) getContext()).findViewById((R.id.home_data)) : homeData;
-                        homeData.setText(sb.toString());
-                    }
+                    homeData = homeData == null ? ((Activity) getContext()).findViewById((R.id.home_data)) : homeData;
+                    homeData.setText(processHomeText(homeData.getText().toString(), sb.toString()));
                 });
             } catch (GoglotekException e) {
                 Timber.e(e, e.getMessage());
             }
         });
+    }
+
+    private String processHomeText(String currentText, String serverText) {//updates only fields received from server and keeps current fields not in server payload
+        if (serverText.trim().isEmpty()) {
+            return currentText;
+        }
+        String[] txt = serverText.trim().split("\n");
+        String buffer = "";
+        String processedText = "";
+        while (currentText.length() > 0) {
+            if (!currentText.contains(":")) {
+                break;
+            }
+            buffer = currentText.substring(0, currentText.indexOf(":")).trim();
+            boolean found = false;
+            for (int i = 0; i < txt.length; i++) {
+                if (txt[i] != null) {
+                    if (txt[i].contains(buffer.trim())) {
+                        processedText += txt[i].trim() + " ";
+                        found = true;
+                        txt[i] = null;
+                    }
+                }
+            }
+            currentText = currentText.substring(buffer.length() + 1).trim();
+            String text = "";
+            if (currentText.contains(" ")) {
+                text = currentText.substring(0, currentText.indexOf(" "));
+            } else {
+                text = currentText.substring(0);
+            }
+            if (!found) {
+                processedText += buffer.trim() + ":" + text.trim() + " ";
+            }
+            if (currentText.length() > text.length()) {
+                currentText = currentText.substring(text.length() + 1);
+            } else {
+                currentText = "";
+            }
+        }
+        for (int i = 0; i < txt.length; i++) {
+            if (txt[i] != null) {
+                processedText += txt[i];
+            }
+        }
+        return processedText.trim();
     }
 
     private void handleVolumeSliderOnchange(int newVal) {
@@ -167,7 +215,7 @@ public class HomeFragment extends Fragment {
                             break;
                         }
                     }
-                    ((Activity) getContext()).runOnUiThread(() -> {
+                    requireActivity().runOnUiThread(() -> {
                         updatingSliderVolume = false;
                     });
                 } catch (GoglotekException e) {

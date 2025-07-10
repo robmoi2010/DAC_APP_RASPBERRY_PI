@@ -1,5 +1,9 @@
 package com.goglotek.mydacapp.menu;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 public class MenuRow implements DataRow {
     private Menu next;
     private String text;
@@ -7,6 +11,7 @@ public class MenuRow implements DataRow {
     private boolean selected;
     private int index;
     private RowDataType type;
+    private List<Map<String, String>> rowOptions;
 
     @Override
     public Menu getNext() {
@@ -75,5 +80,15 @@ public class MenuRow implements DataRow {
         }
         DataRow other = (DataRow) obj;
         return this.type == other.getType() && this.selected == other.isSelected() && this.name == other.getName() && this.text == other.getText();
+    }
+
+    @Override
+    public List<Map<String, String>> getRowOptions() {
+        return this.rowOptions;
+    }
+
+    @Override
+    public void setRowOptions(List<Map<String, String>> options) {
+        this.rowOptions = options;
     }
 }

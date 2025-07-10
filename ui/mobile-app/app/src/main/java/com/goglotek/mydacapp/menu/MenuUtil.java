@@ -1,6 +1,7 @@
 package com.goglotek.mydacapp.menu;
 
 import com.goglotek.mydacapp.dataprocessors.DacModesProcessor;
+import com.goglotek.mydacapp.dataprocessors.DpllBandwidthProcessor;
 import com.goglotek.mydacapp.dataprocessors.DspInputProcessor;
 import com.goglotek.mydacapp.dataprocessors.DspMainOutputProcessor;
 import com.goglotek.mydacapp.dataprocessors.DspSubwooferOutputProcessor;
@@ -39,6 +40,7 @@ public class MenuUtil {
     private final static String THIRD_ORDER_NAME = "ThirdOrder";
     private final static String DSP_MAIN_OUTPUT_NAME = "MainOutput";
     private final static String DSP_SUBWOOFER_OUTPUT_NAME = "SubwooferOutput";
+    private final static String DPLL_BANDWIDTH_NAME = "DpllBandwidth";
 
 
     public static Stack<Menu> menuStack = new Stack<>();
@@ -156,6 +158,9 @@ public class MenuUtil {
         if (name == SOUND_MODES_NAME) {
             return createDynamicDataMenu(root);
         }
+        if (name == DPLL_BANDWIDTH_NAME) {
+            return createDynamicDataMenu(root);
+        }
         return null;
     }
 
@@ -192,6 +197,7 @@ public class MenuUtil {
         rows.add(createRow(VOLUME_MODES_NAME, RowDataType.TEXT));
         rows.add(createRow(THD_COMPENSATION_NAME, RowDataType.TEXT));
         rows.add(createRow(OVERSAMPLING_NAME, RowDataType.TEXT));
+        rows.add(createRow(DPLL_BANDWIDTH_NAME, RowDataType.TEXT));
         menu.setRows(rows);
         menu.setDataType(MenuDataType.STATIC);
         menu.setRoot(root);
@@ -202,21 +208,12 @@ public class MenuUtil {
     public static String textFromName(String name) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < name.length(); i++) {
-            if (found(capitalLetters, name.charAt(i)) && i != 0) {
+            if (Character.isUpperCase(name.charAt(i)) && i != 0) {
                 sb.append(" ");
             }
             sb.append(name.charAt(i));
         }
         return sb.toString();
-    }
-
-    private static boolean found(char[] caps, char i) {
-        for (char c : caps) {
-            if (c == i) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static DynamicDataProcessor getDataProcessor(DataRow root) {
@@ -259,9 +256,11 @@ public class MenuUtil {
         if (name == SOUND_MODES_NAME) {
             return SoundModesProcessor.getInstance();
         }
-        if (name==VOLUME_ALGORITHM_NAME)
-        {
+        if (name == VOLUME_ALGORITHM_NAME) {
             return VolumeAlgorithmProcessor.getInstance();
+        }
+        if (name == DPLL_BANDWIDTH_NAME) {
+            return DpllBandwidthProcessor.getInstance();
         }
         return null;
     }

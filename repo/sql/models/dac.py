@@ -25,6 +25,7 @@ class Dac(Base):
     THIRD_ORDER_ENABLE_COEFFICIENTS_3 = Column(Integer)
     THIRD_ORDER_ENABLE_COEFFICIENTS_4 = Column(Integer)
     OVERSAMPLING_ENABLED = Column(Integer)
+    DPLL_BANDWIDTH = Column(Integer)
 
 
 Base.metadata.create_all(bind=engine)

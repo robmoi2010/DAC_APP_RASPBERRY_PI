@@ -134,3 +134,14 @@ def create_volume_modes_response():
     )
     list.append(r1)
     return list
+
+
+def create_dpll_bandwidth_response():
+    bandwidth = dac.get_dpll_bandwidth()
+    r = ResponseModel(
+        key="0",
+        value=str(bandwidth),
+        description="Digital Phase Locked Loop bandwidth setting. The lower the value, the less the jitter but more unstable for sources with bad clocks. Set to the lowest stable value for your source by experiment.",
+        display_name="DPLL Bandwidth",
+    )
+    return r

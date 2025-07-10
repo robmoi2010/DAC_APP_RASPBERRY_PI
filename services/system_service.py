@@ -1,4 +1,6 @@
 import json
+import threading
+from dac import DacMetadata
 from system.system_util import BUTTON
 from model.model import RequestModel, ResponseModel
 from system.sound_modes import SOUND_MODE
@@ -8,6 +10,7 @@ from services.utils.system_util import (
     create_volume_algorithm_response,
     create_volume_device_response,
 )
+from system.ir_remote_router import IrRemoteRouter
 from services.utils.ws_connection_manager import WS_TYPE, WSConnectionManager
 import logging
 from fastapi import WebSocket, APIRouter
@@ -21,17 +24,20 @@ from volume.volume_util import (
 )
 from services.utils.services_util import VOLUME_DISPLAY_NAME
 from volume.volume_util import VOL_DIRECTION
-from system.ir_remote_router import IrRemoteRouter
 
-connection_manager: WSConnectionManager = get_instance("wsconnectionmanager")
+
 system_app = APIRouter(prefix="/system")
-ir_router: IrRemoteRouter = get_instance("irremoterouter")
 logging.basicConfig(
     level=logging.ERROR, format="[%(levelname)s] %(filename)s:%(lineno)d - %(message)s"
 )
 
+
+connection_manager: WSConnectionManager = get_instance("wsconnectionmanager")
 volume = get_instance("volume")
 sound_modes = get_instance("soundmode")
+dac_metadata: DacMetadata = get_instance("dacmetadata")
+metadata_thread_started = False
+ir_router: IrRemoteRouter = get_instance("irremoterouter")
 
 
 @system_app.get("/sound_mode")
@@ -97,6 +103,7 @@ async def update_volume_device(request: RequestModel):
 
 @system_app.websocket("/ws")
 async def home_websocket(websocket: WebSocket):
+    await websocket.accept()
     await connection_manager.connect(WS_TYPE.HOME_DATA, websocket)
 
     logging.info("sending initial web socket home data...")
@@ -104,6 +111,12 @@ async def home_websocket(websocket: WebSocket):
     list = create_home_data(volume)
     data = [dt.model_dump() for dt in list]
     await connection_manager.send_data(WS_TYPE.HOME_DATA, json.dumps(data))
+
+    # poll dac for spdif metadata e.g audio bit rate and bit depth
+    # create the backgrtound thread once
+    if not dac_metadata.polling_started():
+        thread = threading.Thread(target=dac_metadata.poll_audio_metadata, daemon=True)
+        thread.start()
     try:
         while True:
             await asyncio.sleep(1)
@@ -113,8 +126,9 @@ async def home_websocket(websocket: WebSocket):
 
 @system_app.websocket("/ws/ir_remote")
 async def ir_remote_websocket(websocket: WebSocket):
+    websocket.accept()
+    
     await connection_manager.connect(WS_TYPE.IR_REMOTE, websocket)
-
     try:
         while True:
             await asyncio.sleep(1)

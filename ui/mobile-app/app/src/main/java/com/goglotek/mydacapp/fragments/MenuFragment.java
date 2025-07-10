@@ -119,7 +119,7 @@ public class MenuFragment extends Fragment {
         if (menu.getDataType() == MenuDataType.DYNAMIC) {
             adapter = new DataAdapter(new ArrayList<>(), (row) ->
                     handleRowOnclick(row)
-                    , (isChecked, row) -> handleSwitchChange(isChecked, row));
+                    , (isChecked, row) -> handleSwitchChange(isChecked, row), (current, row) -> handleSliderChange(current, row));
             recyclerView.setAdapter(adapter);
             overlay.setVisibility(View.VISIBLE);
             loadData();
@@ -179,6 +179,10 @@ public class MenuFragment extends Fragment {
 
     private void handleRowOnclick(DataRow row) {
         updateServerData(row);
+    }
+
+    private void handleSliderChange(int current, DataRow row) {
+        updateServerData(current, false, false);
     }
 
     private void handleSwitchChange(boolean isChecked, DataRow row) {

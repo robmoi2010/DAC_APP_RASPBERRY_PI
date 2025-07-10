@@ -1,6 +1,5 @@
 import logging
 
-from repo.mongo_storage import MongoStorage
 from repo.sql_storage import SqlStorage
 from ui.app import App
 import registry.register as register
@@ -33,7 +32,6 @@ def initialize_device():
     try:
         storage: SqlStorage = register.get_instance("sqlstorage")
         storage.initialize()
-        pass
     except Exception as e:
         logger.error(e)
     try:

@@ -15,6 +15,7 @@ import java.util.List;
 public class DataAdapter extends RecyclerView.Adapter<DataHolder> {
     private OnItemClickListener listener;
     private onSwitchChangeListener switchChangeListener;
+    private onSliderChangeListener sliderChangeListener;
     private List<DataRow> rows;
 
     public interface OnItemClickListener {
@@ -25,18 +26,23 @@ public class DataAdapter extends RecyclerView.Adapter<DataHolder> {
         public void handleSwitchChange(boolean isChecked, DataRow row);
     }
 
-    public DataAdapter(List<DataRow> rows, OnItemClickListener listener, onSwitchChangeListener switchListener) {
+    public interface onSliderChangeListener {
+        public void handleSliderChange(int current, DataRow row);
+    }
+
+    public DataAdapter(List<DataRow> rows, OnItemClickListener listener, onSwitchChangeListener switchListener, onSliderChangeListener sliderChangeListener) {
         super();
         this.listener = listener;
         this.rows = rows;
         this.switchChangeListener = switchListener;
+        this.sliderChangeListener = sliderChangeListener;
     }
 
     @Override
     public DataHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.list_item_data, parent, false);
-        return new DataHolder(view, this.switchChangeListener);
+        return new DataHolder(view, this.switchChangeListener, this.sliderChangeListener);
     }
 
     @Override

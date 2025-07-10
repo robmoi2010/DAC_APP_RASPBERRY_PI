@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from registry.register import get_instance
 from services.utils.dac_util import (
     create_dac_mode_response,
+    create_dpll_bandwidth_response,
     create_filter_response,
     create_volume_modes_response,
 )
@@ -75,7 +76,9 @@ async def is_second_order_enabled():
 async def update_second_order_status(request: RequestModel):
     try:
         dac.enable_disable_second_order_compensation(int(request.value))
-        response = ResponseModel(key="0", value=request.value, display_name=request.value)
+        response = ResponseModel(
+            key="0", value=request.value, display_name=request.value
+        )
         return response
     except Exception as e:
         logger.error(e)
@@ -141,5 +144,19 @@ async def update_dac_mode(request: RequestModel):
     try:
         dac.set_dac_mode(int(request.value))
         return create_dac_mode_response()
+    except Exception as e:
+        logger.error(e)
+
+
+@dac_app.get("/dpll_bandwidth")
+async def get_dpll_bandwidth():
+    return create_dpll_bandwidth_response()
+
+
+@dac_app.put("/dpll_bandwidth")
+async def update_dpll_bandwidth(request: RequestModel):
+    try:
+        dac.set_dpll_bandwidth(int(request.value))
+        return create_dpll_bandwidth_response()
     except Exception as e:
         logger.error(e)
