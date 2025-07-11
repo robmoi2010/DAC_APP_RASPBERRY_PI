@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.goglotek.mydacapp.R;
+import com.goglotek.mydacapp.App;
+import com.goglotek.mydacapp.dataprocessors.GenericDataProcessor;
 import com.goglotek.mydacapp.exceptions.GoglotekException;
 import com.goglotek.mydacapp.fragments.util.DataAdapter;
 import com.goglotek.mydacapp.fragments.util.ViewPagerAdapter;
@@ -29,11 +31,14 @@ import com.goglotek.mydacapp.menu.DataRow;
 import com.goglotek.mydacapp.menu.Menu;
 import com.goglotek.mydacapp.menu.MenuDataType;
 import com.goglotek.mydacapp.menu.MenuUtil;
+import com.goglotek.mydacapp.models.WebClientType;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -50,6 +55,7 @@ public class MenuFragment extends Fragment {
     private boolean initDataLoaded = false;
     private ProgressBar progressBar;
     private FrameLayout overlay;
+    private GenericDataProcessor dataProcessor;
 
     public MenuFragment() {
 
@@ -103,6 +109,7 @@ public class MenuFragment extends Fragment {
         layout.addView(overlay);
 
         if (menu.getDataType() == MenuDataType.DYNAMIC) {
+            dataProcessor = getDataProcessor(menu);
             View view = inflater.inflate(R.layout.app, container, false);
             recyclerView = new RecyclerView(requireContext());
             recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -151,12 +158,73 @@ public class MenuFragment extends Fragment {
         }
     }
 
+    private GenericDataProcessor getDataProcessor(Menu menu) {
+        String name = menu.getRoot().getName();
+
+        if (name == MenuUtil.VOLUME_SETTINGS_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_STATUS));
+        }
+        if (name == MenuUtil.FILTERS_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.FILTERS));
+        }
+        if (name == MenuUtil.DAC_MODES_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.DAC_MODES));
+        }
+        if (name == MenuUtil.VOLUME_MODES_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_MODES));
+        }
+        if (name == MenuUtil.SECOND_ORDER_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.SECOND_ORDER));
+        }
+        if (name == MenuUtil.THIRD_ORDER_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.THIRD_ORDER));
+        }
+        if (name == MenuUtil.OVERSAMPLING_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.OVERSAMPLING));
+        }
+        if (name == MenuUtil.DSP_INPUT_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.DSP_INPUT));
+        }
+        if (name == MenuUtil.DSP_MAIN_OUTPUT_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.MAINS_OUTPUT));
+        }
+        if (name == MenuUtil.DSP_SUBWOOFER_OUTPUT_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.SUBWOOFER_OUTPUT));
+        }
+        if (name == MenuUtil.VOLUME_DEVICE_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_DEVICE));
+        }
+        if (name == MenuUtil.SOUND_MODES_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.SOUND_MODES));
+        }
+        if (name == MenuUtil.VOLUME_ALGORITHM_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_ALGORITHM));
+        }
+        if (name == MenuUtil.DPLL_BANDWIDTH_NAME) {
+            List<Map<String, String>> options = new ArrayList<>();
+            Map<String, String> min = new HashMap<>();
+            min.put("MIN", "1");
+            options.add(min);
+
+            Map<String, String> max = new HashMap<>();
+            max.put("MAX", "15");
+            options.add(max);
+
+            Map<String, String> step = new HashMap<>();
+            step.put("STEP", "1");
+            options.add(step);
+
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.DPLL_BANDWIDTH), options);
+        }
+        return null;
+    }
+
     private void loadData() {
 
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
             try {
-                final List<DataRow> rows = MenuUtil.getDataProcessor(menu.getRoot()).loadData();
+                final List<DataRow> rows = dataProcessor.loadData(menu.getRoot().getType());
                 try {
                     requireActivity().runOnUiThread(() -> {
                         menu.setRows(rows);
@@ -206,7 +274,7 @@ public class MenuFragment extends Fragment {
                         localIndex = 0;
                     }
                 }
-                dt = MenuUtil.getDataProcessor(menu.getRoot()).updateServerData(localIndex);
+                dt = dataProcessor.updateServer(localIndex, menu.getRoot().getType());
             } catch (GoglotekException e) {
                 Timber.e(e, e.getMessage());
             }

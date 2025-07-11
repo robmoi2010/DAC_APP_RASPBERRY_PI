@@ -34,4 +34,9 @@ async def middleware(
     request: Request, call_next
 ):  # for future cross-cutting functionality
     response = await call_next(request)
+    try:
+        # log client ips and destination endpoint
+        pass
+    except Exception as e:
+        pass
     return response

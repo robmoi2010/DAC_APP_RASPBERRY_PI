@@ -5,26 +5,24 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.anastr.speedviewlib.SpeedView;
 import com.goglotek.mydacapp.R;
+import com.goglotek.mydacapp.App;
+import com.goglotek.mydacapp.dataprocessors.GenericDataProcessor;
 import com.goglotek.mydacapp.exceptions.GoglotekException;
-import com.goglotek.mydacapp.menu.Menu;
-import com.goglotek.mydacapp.menu.MenuUtil;
+import com.goglotek.mydacapp.exceptions.NullDataException;
 import com.goglotek.mydacapp.models.Home;
 import com.goglotek.mydacapp.models.Response;
-import com.goglotek.mydacapp.service.SystemService;
+import com.goglotek.mydacapp.models.WebClientType;
 import com.goglotek.mydacapp.util.Config;
 import com.goglotek.mydacapp.util.VolumeDirection;
 import com.goglotek.mydacapp.util.WebSocketClient;
@@ -47,6 +45,9 @@ public class HomeFragment extends Fragment {
     Runnable debouncedRunnable = null;
     int debounceDelayMs = 300;
     boolean isVolumeSliderWsUpdate = false;
+    private GenericDataProcessor homeDataProcessor;
+    private GenericDataProcessor volumeUpProcessor;
+    private GenericDataProcessor volumeDownProcessor;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -69,10 +70,18 @@ public class HomeFragment extends Fragment {
             };
             handler.postDelayed(debouncedRunnable, debounceDelayMs);
         });
+
+        //initialize data processors
+        homeDataProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.HOME_DATA));
+        volumeUpProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_UP));
+        volumeDownProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_DOWN));
+
         //get current volume and other home data from server
         populateHomeData(null, false);
         //creates a web socket to listen for server changes in volume and update the ui.
         createHomeDataWebSocketListener();
+
+
         return view;
     }
 
@@ -88,13 +97,27 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private Home getHomeData() throws GoglotekException {
+        try {
+            Response[] dt = homeDataProcessor.sendGetArrayResponse();
+            if (dt != null) {
+                Home home = Home.getInstance(dt);
+                return home;
+            } else {
+                throw new NullDataException("Null data from server");
+            }
+        } catch (Exception e) {
+            throw new GoglotekException(e.getMessage(), e);
+        }
+    }
+
     private void populateHomeData(Home home, boolean isWsData) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
                 Home homeLocal = null;
                 if (home == null) {
-                    homeLocal = SystemService.getHomeData();
+                    homeLocal = getHomeData();
                 } else {
                     homeLocal = home;
                 }
@@ -199,7 +222,8 @@ public class HomeFragment extends Fragment {
                     int count = 0;
                     int volume;
                     while (true) {
-                        volume = SystemService.updateVolume(finalDirection);
+                        String data = (finalDirection == VolumeDirection.UP) ? volumeUpProcessor.sendGet().getValue() : volumeDownProcessor.sendGet().getValue();
+                        volume = Integer.parseInt(data);
                         if (finalDirection == VolumeDirection.UP) {
                             if (volume >= newVal) {
                                 break;
