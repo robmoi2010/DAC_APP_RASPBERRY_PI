@@ -2,6 +2,7 @@ package com.goglotek.mydacapp.fragments;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -45,6 +46,7 @@ public class HomeFragment extends Fragment {
     Runnable debouncedRunnable = null;
     int debounceDelayMs = 300;
     boolean isVolumeSliderWsUpdate = false;
+    private AlertDialog dialog;
     private GenericDataProcessor homeDataProcessor;
     private GenericDataProcessor volumeUpProcessor;
     private GenericDataProcessor volumeDownProcessor;
@@ -57,6 +59,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         View view = inflater.inflate(R.layout.home, container, false);
+        dialog = new AlertDialog.Builder(container.getContext()).create();
         settings = view.findViewById(R.id.settingsBtn);
         settings.setOnClickListener((View) -> handleSettingsOnclick());
         volumeSlider = view.findViewById(R.id.slider);
@@ -93,6 +96,8 @@ public class HomeFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         } catch (Exception e) {
+            dialog.setMessage(e.getMessage());
+            dialog.show();
             Timber.e(e, e.getMessage());
         }
     }
@@ -150,6 +155,10 @@ public class HomeFragment extends Fragment {
                     homeData.setText(processHomeText(homeData.getText().toString(), sb.toString()));
                 });
             } catch (GoglotekException e) {
+                requireActivity().runOnUiThread(() -> {
+                    dialog.setMessage(e.getMessage());
+                    dialog.show();
+                });
                 Timber.e(e, e.getMessage());
             }
         });
@@ -260,6 +269,8 @@ public class HomeFragment extends Fragment {
                     Home home = Home.getInstance(rsp);
                     populateHomeData(home, true);
                 } catch (Exception e) {
+                    dialog.setMessage(e.getMessage());
+                    dialog.show();
                     Timber.e(e, e.getMessage());
                 }
             }
@@ -270,6 +281,8 @@ public class HomeFragment extends Fragment {
                     Thread.sleep(delay);
                     client.connect();
                 } catch (InterruptedException e) {
+                    dialog.setMessage(e.getMessage());
+                    dialog.show();
                     Timber.e(e, e.getMessage());
                 }
             }

@@ -35,7 +35,7 @@ async def middleware(
 ):  # for future cross-cutting functionality
     response = await call_next(request)
     try:
-        # log client ips and destination endpoint
+        # log client ips and destination endpoint. Handle basic authentication here...
         pass
     except Exception as e:
         pass

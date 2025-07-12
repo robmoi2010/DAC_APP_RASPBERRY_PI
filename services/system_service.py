@@ -111,9 +111,10 @@ async def home_websocket(websocket: WebSocket):
     list = create_home_data(volume)
     data = [dt.model_dump() for dt in list]
     await connection_manager.send_data(WS_TYPE.HOME_DATA, json.dumps(data))
-
+    
+    # start polling only when at-least one client establishes ws connection
     # poll dac for spdif metadata e.g audio bit rate and bit depth
-    # create the backgrtound thread once
+    # create the background thread once
     if not dac_metadata.polling_started():
         thread = threading.Thread(target=dac_metadata.poll_audio_metadata, daemon=True)
         thread.start()
