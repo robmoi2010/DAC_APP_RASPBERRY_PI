@@ -3,6 +3,7 @@ package com.goglotek.mydacapp.fragments;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -35,6 +36,7 @@ public class MainTabFragment extends Fragment {
     ViewPagerAdapter pagerAdapter;
     ViewPager2 viewPager;
     TabLayout tabLayout;
+    AlertDialog dialog;
 
     @Nullable
     @Override
@@ -44,6 +46,7 @@ public class MainTabFragment extends Fragment {
             @Nullable Bundle savedInstanceState
     ) {
         View view = inflater.inflate(R.layout.fragment_tabs, container, false);
+        dialog = new AlertDialog.Builder(container.getContext()).create();
         tabLayout = new TabLayout(requireContext());
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         viewPager = new ViewPager2(requireContext());
@@ -82,6 +85,8 @@ public class MainTabFragment extends Fragment {
                     .commit();
 
         } catch (EmptyStackException e) {
+            dialog.setMessage(e.getMessage());
+            dialog.show();
             Timber.e(e, e.getMessage());
         }
     }

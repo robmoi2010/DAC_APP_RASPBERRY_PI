@@ -11,6 +11,7 @@ public class MenuRow implements DataRow {
     private boolean selected;
     private int index;
     private RowDataType type;
+    private String description;
     private List<Map<String, String>> rowOptions;
 
     @Override
@@ -90,5 +91,15 @@ public class MenuRow implements DataRow {
     @Override
     public void setRowOptions(List<Map<String, String>> options) {
         this.rowOptions = options;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

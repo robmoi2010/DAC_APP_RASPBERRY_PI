@@ -34,4 +34,8 @@ public interface DataRow extends Serializable {
     public List<Map<String, String>> getRowOptions();
 
     public void setRowOptions(List<Map<String, String>> options);
+
+    public String getDescription();
+
+    public void setDescription(String description);
 }

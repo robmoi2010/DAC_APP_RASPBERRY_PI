@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -50,6 +51,9 @@ public class HomeFragment extends Fragment {
     private GenericDataProcessor homeDataProcessor;
     private GenericDataProcessor volumeUpProcessor;
     private GenericDataProcessor volumeDownProcessor;
+    private ImageView volumePlus;
+    private ImageView volumeMinus;
+    private final int VOLUME_BTN_STEPS = 1;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -74,11 +78,50 @@ public class HomeFragment extends Fragment {
             handler.postDelayed(debouncedRunnable, debounceDelayMs);
         });
 
+        volumePlus = view.findViewById(R.id.volumePlus);
+        volumeMinus = view.findViewById(R.id.volumeMinus);
+
+
         //initialize data processors
         homeDataProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.HOME_DATA));
         volumeUpProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_UP));
         volumeDownProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_DOWN));
 
+        //set volume buttons event listeners
+        volumePlus.setOnClickListener((v) -> {
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    int current = (int) volumeSlider.getValue();
+                    int ret = Integer.parseInt(volumeUpProcessor.sendGet().getValue());
+                    while (ret < current + VOLUME_BTN_STEPS) {
+                        ret = Integer.parseInt(volumeUpProcessor.sendGet().getValue());
+                    }
+                } catch (GoglotekException e) {
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.setMessage(e.getMessage());
+                        dialog.show();
+                        Timber.e(e, e.getMessage());
+                    });
+                }
+            });
+        });
+        volumeMinus.setOnClickListener((v) -> {
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    int current = (int) volumeSlider.getValue();
+                    int ret = Integer.parseInt(volumeDownProcessor.sendGet().getValue());
+                    while (ret > current - VOLUME_BTN_STEPS) {
+                        ret = Integer.parseInt(volumeDownProcessor.sendGet().getValue());
+                    }
+                } catch (GoglotekException e) {
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.setMessage(e.getMessage());
+                        dialog.show();
+                        Timber.e(e, e.getMessage());
+                    });
+                }
+            });
+        });
         //get current volume and other home data from server
         populateHomeData(null, false);
         //creates a web socket to listen for server changes in volume and update the ui.
@@ -153,6 +196,7 @@ public class HomeFragment extends Fragment {
                     }
                     homeData = homeData == null ? ((Activity) getContext()).findViewById((R.id.home_data)) : homeData;
                     homeData.setText(processHomeText(homeData.getText().toString(), sb.toString()));
+                    isVolumeSliderWsUpdate=false;
                 });
             } catch (GoglotekException e) {
                 requireActivity().runOnUiThread(() -> {

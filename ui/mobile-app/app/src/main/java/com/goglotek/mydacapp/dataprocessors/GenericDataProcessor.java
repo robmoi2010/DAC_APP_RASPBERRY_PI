@@ -149,6 +149,7 @@ public class GenericDataProcessor {
                     if (this.options != null) {
                         row.setRowOptions(options);
                     }
+                    row.setDescription(r.getDescription());
                     rows.add(row);
                 }
             } catch (JsonProcessingException e) {

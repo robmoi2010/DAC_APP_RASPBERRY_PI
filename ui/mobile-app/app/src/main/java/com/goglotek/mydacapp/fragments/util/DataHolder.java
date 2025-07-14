@@ -1,11 +1,14 @@
 package com.goglotek.mydacapp.fragments.util;
 
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.goglotek.mydacapp.R;
 import com.goglotek.mydacapp.menu.DataRow;
 import com.goglotek.mydacapp.menu.RowDataType;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.slider.LabelFormatter;
 import com.google.android.material.slider.Slider;
@@ -34,7 +39,15 @@ public class DataHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(final DataRow dataRow, final DataAdapter.OnItemClickListener listener) {
-        LinearLayout layout = createLinearLayout();
+        LinearLayout layout = createLinearLayout(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ), LinearLayout.VERTICAL, Gravity.CENTER);
+        LinearLayout detailsLayout = createLinearLayout(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ), LinearLayout.VERTICAL, Gravity.CENTER);
+        ImageView detailsImg = createImageView();
         if (dataRow.getType() == RowDataType.TOGGLE) {
             SwitchCompat switchBtn = createSwitch(dataRow.isSelected(), dataRow);
             switchBtn.setChecked(dataRow.isSelected());
@@ -43,27 +56,78 @@ public class DataHolder extends RecyclerView.ViewHolder {
             Slider slider = createSlider(dataRow);
             layout.addView(slider);
         } else {
+            LinearLayout cardLayout = createLinearLayout(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ), LinearLayout.VERTICAL, Gravity.CENTER);
             if (dataRow.isSelected()) {
-                layout.addView(createCheckBox(dataRow.isSelected()));
+                cardLayout.addView(createCheckBox(dataRow.isSelected()));
             }
-            layout.addView(createTextView(dataRow.getText()));
+            cardLayout.addView(createTextView(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ), dataRow.getText(), Color.BLACK));
+            MaterialButton button = createButton("Select");
+            button.setOnClickListener(v -> {
+                listener.onItemClick(dataRow);
+            });
+            cardLayout.addView(button);
+
+            detailsImg.setOnClickListener(V -> {
+                toggleDetailsView(detailsLayout, detailsImg);
+            });
+            cardLayout.addView(detailsImg);
+            layout.addView(cardLayout);
+
+            detailsLayout.addView(createTextView(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ), dataRow.getDescription(), Color.GRAY));
+            detailsLayout.setVisibility(View.GONE);
+
+            layout.addView(detailsLayout);
         }
         ((ViewGroup) itemView).removeAllViews();
         ((ViewGroup) itemView).addView(layout);
-        itemView.setOnClickListener(v -> listener.onItemClick(dataRow));
     }
 
-    private TextView createTextView(String text) {
+    private void toggleDetailsView(LinearLayout detailsLayout, ImageView arrow) {
+        boolean visible = detailsLayout.getVisibility() == View.VISIBLE;
+        detailsLayout.setVisibility(visible ? View.GONE : View.VISIBLE);
+        arrow.animate().rotation(visible ? 0 : 180).setDuration(200).start();
+    }
+
+    private TextView createTextView(ViewGroup.LayoutParams params, String text, int textColor) {
         TextView textView = new TextView(itemView.getContext());
         textView.setTextSize(18);
         textView.setText(text);
         textView.setPadding(20, 20, 20, 20);
-        textView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
+        textView.setLayoutParams(params);
         textView.setFocusable(false);
+        textView.setTextColor(textColor);
         return textView;
+    }
+
+    private MaterialButton createButton(String text) {
+        MaterialButton button = new MaterialButton(itemView.getContext());
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        button.setLayoutParams(params);
+        button.setBackgroundColor(Color.TRANSPARENT);
+        button.setRippleColor(ColorStateList.valueOf(Color.TRANSPARENT));
+        button.setElevation(0f);
+        button.setStateListAnimator(null);
+        button.setStrokeColor(ColorStateList.valueOf(Color.BLUE)); // outline color
+        button.setStrokeWidth(1); // border thickness
+        button.setText(text);
+        button.setCornerRadius(16);
+        button.setAllCaps(false);
+        button.setTextColor(Color.GRAY);
+        button.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        return button;
     }
 
     private CheckBox createCheckBox(boolean checked) {
@@ -71,17 +135,15 @@ public class DataHolder extends RecyclerView.ViewHolder {
         checkBox.setChecked(checked);
         checkBox.setEnabled(false);
         checkBox.setFocusable(false);
-        checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.teal_700)));
+        checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
         return checkBox;
     }
 
-    private LinearLayout createLinearLayout() {
+    private LinearLayout createLinearLayout(ViewGroup.LayoutParams params, int orientation, int gravity) {
         LinearLayout linearLayout = new LinearLayout(itemView.getContext());
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
+        linearLayout.setOrientation(orientation);
+        linearLayout.setGravity(gravity);
+        linearLayout.setLayoutParams(params);
         linearLayout.setPadding(24, 24, 24, 24);
         return linearLayout;
     }
@@ -103,7 +165,6 @@ public class DataHolder extends RecyclerView.ViewHolder {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        //params.gravity = Gravity.CENTER;
         defaultSwitch.setLayoutParams(params);
         defaultSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             onSwitchChangeListener.handleSwitchChange(isChecked, row);
@@ -150,5 +211,18 @@ public class DataHolder extends RecyclerView.ViewHolder {
         );
 
         return slider;
+    }
+
+    private ImageView createImageView() {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 50, 0, 0);
+        ImageView arrow = new ImageView(itemView.getContext());
+        arrow.setImageResource(R.drawable.angle_small_down_green);
+        arrow.setRotation(0f);
+        arrow.setLayoutParams(params);
+        return arrow;
     }
 }

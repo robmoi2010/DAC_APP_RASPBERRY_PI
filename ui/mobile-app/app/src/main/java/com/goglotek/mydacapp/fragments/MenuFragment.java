@@ -3,6 +3,7 @@ package com.goglotek.mydacapp.fragments;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -56,6 +57,7 @@ public class MenuFragment extends Fragment {
     private ProgressBar progressBar;
     private FrameLayout overlay;
     private GenericDataProcessor dataProcessor;
+    private AlertDialog dialog;
 
     public MenuFragment() {
 
@@ -122,6 +124,7 @@ public class MenuFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        dialog = new AlertDialog.Builder(requireContext()).create();
         menu = (Menu) getArguments().getSerializable("menu");
         if (menu.getDataType() == MenuDataType.DYNAMIC) {
             adapter = new DataAdapter(new ArrayList<>(), (row) ->
@@ -232,9 +235,17 @@ public class MenuFragment extends Fragment {
                     });
                 } catch (Exception e) {
                     Timber.e(e, e.getMessage());
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.setMessage(e.getMessage());
+                        dialog.show();
+                    });
                 }
             } catch (GoglotekException e) {
                 Timber.e(e, e.getMessage());
+                requireActivity().runOnUiThread(() -> {
+                    dialog.setMessage(e.getMessage());
+                    dialog.show();
+                });
             }
         });
     }
@@ -276,6 +287,10 @@ public class MenuFragment extends Fragment {
                 }
                 dt = dataProcessor.updateServer(localIndex, menu.getRoot().getType());
             } catch (GoglotekException e) {
+                requireActivity().runOnUiThread(() -> {
+                    dialog.setMessage(e.getMessage());
+                    dialog.show();
+                });
                 Timber.e(e, e.getMessage());
             }
             final List<DataRow> finalList = dt;
