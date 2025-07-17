@@ -1,5 +1,5 @@
 
 function PaddingRow() {
-    return <div style={{ padding: '5px' }} />
+    return <div style={{ margin: '5px' }} />
 }
 export default PaddingRow

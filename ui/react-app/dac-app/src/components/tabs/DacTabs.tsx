@@ -4,8 +4,9 @@ import DacModes from '../dac/DacModes';
 import VolumeModes from '../dac/VolumeModes';
 import { Box, Fieldset, Tabs } from '@chakra-ui/react';
 import DynamicSwitch from '../DynamicSwitch';
-import { IconVolume, IconSettings, IconFilter, IconWaveSine, IconStairsUp } from '@tabler/icons-react';
-import { getOversamplingStatus, getSecondOrderStatus, getThirdOrderStatus, getVolumeDisableStatus, updateOversamplingStatus, updateSecondOrderStatus, updateThirdOrderStatus, updateVolumeStatus } from '../../services/DacService';
+import { IconVolume, IconSettings, IconFilter, IconWaveSine, IconStairsUp, IconLock } from '@tabler/icons-react';
+import { getDpllBandwidth, getOversamplingStatus, getSecondOrderStatus, getThirdOrderStatus, getVolumeDisableStatus, updateDpllBandwidth, updateOversamplingStatus, updateSecondOrderStatus, updateThirdOrderStatus, updateVolumeStatus } from '../../services/DacService';
+import DynamicSlider from '../DynamicSlider';
 
 const DacTabs = () => {
     return (
@@ -17,6 +18,7 @@ const DacTabs = () => {
                 <Tabs.Trigger value="VolumeModes"><IconVolume />Volume Modes</Tabs.Trigger>
                 <Tabs.Trigger value="ThdCompensation"><IconWaveSine />Thd Compensation</Tabs.Trigger>
                 <Tabs.Trigger value="Oversampling"><IconStairsUp />Oversampling</Tabs.Trigger>
+                <Tabs.Trigger value="DpllBandwidth"><IconLock />Dpll Bandwidth</Tabs.Trigger>
             </Tabs.List>
             <div>
                 <Tabs.Content value="VolumeSettings">
@@ -88,6 +90,16 @@ const DacTabs = () => {
                         p={4}
                     >
                         <DynamicSwitch index={0} dataFunction={getOversamplingStatus} updateFunction={updateOversamplingStatus} tooltipText="Oversampling on/off" />
+                    </Box>
+                </Tabs.Content >
+                <Tabs.Content value="DpllBandwidth">
+                    <Box
+                        height="500px"
+                        overflowY="auto"
+                        width="800px"
+                        p={4}
+                    >
+                        <DynamicSlider min={1} max={15} step={1} index={0} dataFunction={getDpllBandwidth} updateFunction={updateDpllBandwidth} tooltipText="Dpll bandwidth (1-15)" />
                     </Box>
                 </Tabs.Content >
             </div>

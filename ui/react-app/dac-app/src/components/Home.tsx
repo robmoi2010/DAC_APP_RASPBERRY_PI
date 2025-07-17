@@ -11,7 +11,6 @@ import { addMessage } from '../state-repo/slices/webSocketSlice';
 import Config from '../configs/Config.json';
 import { useNavigate } from 'react-router-dom';
 import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
-import Header from './Header';
 import VolumeSlider from './VolumeSlider';
 import { ClientType } from '../utils/types';
 import { Box, Button } from '@chakra-ui/react';
@@ -23,7 +22,6 @@ const Home = () => {
    const clientType = useSelector((state: { clientType: { value: ClientType } }) => state.clientType.value);
    const dispatch = useDispatch();
    const navigate = useNavigate();
-   console.log(clientType);
 
    // initial data load to display
    useEffect(() => {
@@ -42,7 +40,7 @@ const Home = () => {
                   row += d.display_name;
                   row += ":";
                   row += d.value;
-                  row += "   ";
+                  row += " ";
                }
             });
          }
@@ -73,12 +71,13 @@ const Home = () => {
             }
             else {
                genDt += d.display_name;
-               genDt += ": ";
+               genDt += ":";
                genDt += d.value;
+               genDt += "\n";
             }
          });
          if (genDt != "") {
-            dispatch(setHomeData(genDt));
+            dispatch(setHomeData(processWsHomeData(homeData, genDt)));
          }
       }
 
@@ -86,7 +85,7 @@ const Home = () => {
 
    const components = [
       <PaddingRow />,
-      <div style={{ paddingLeft: "125px" }}><Header text={homeData} /></div>,
+      <div style={{ paddingLeft: "120px" }}>{homeData}</div>,
       <PaddingRow />,
       <div style={{ paddingLeft: '125px' }}>
          <VolumeGauge volume={volume} />
@@ -105,5 +104,60 @@ const handleSettingsOnclick = (clientType: ClientType): string => {
    else {
       return "/Tabs";
    }
+}
+const processWsHomeData = (homeData: string, wsData: string) => {
+   if (wsData == null || wsData.length == 0) {
+      return homeData;
+   }
+   let ret = "";
+   homeData=homeData.trim()
+   const data: string[] = wsData.split("\n");
+   const hd: string[] = contains(" ", homeData) ? homeData.split(" ") : [homeData];
+   hd.forEach((d: string) => {
+      const key = d.split(":")[0];
+      let i;
+      let has = false;
+      for (i = 0; i < data.length; i++) {
+         if (contains(key.trim(), data[i].trim())) {
+            has = true;
+            ret += data[i] + " ";
+            data[i] = "";
+            break;
+         }
+      }
+      if (!has) {
+         ret += d + " "
+      }
+   });
+   data.forEach(l => {
+      if (l != "") {
+         ret += l + " ";
+      }
+   });
+   return ret.trim();
+}
+const contains = (key: string, data: string) => {//trim key and data at the calling function.
+   let i = 0;
+   let j = 0;
+   let match = false
+   while (i < key.length) {
+      if (j >= data.length) {
+         break;
+      }
+      if (key.charAt(i) == data.charAt(j)) {
+         match = true;
+         i++;
+      }
+      else {
+         match = false;
+         i = 0;
+      }
+      if (match && i >= key.length) {
+         return true;
+      }
+      j++;
+   }
+   return false;
+
 }
 export default Home;

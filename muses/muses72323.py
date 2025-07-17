@@ -44,7 +44,6 @@ class Muses72323(AbstractVolume):
             ):  # skip processing if volume is already at Minimum
                 return 0
             curr_volume -= self.STEP
-            print("after step:" + str(curr_volume))
         self.update_chip_volume(curr_volume, volume_algorithm)
         self.persist_volume(curr_volume)
         # return new percentage volume for ui update
@@ -58,9 +57,8 @@ class Muses72323(AbstractVolume):
             vol = get_logarithmic_volume_level(
                 abs(vol), self.MIN_VOLUME, self.MAX_VOLUME
             )
-        print("prev_val:", str(vol))
         vol = self.map_db_to_reg_binary(vol)
-        print("new val:" + str(vol))
+    
         master_channel = config["MASTER_CHANNEL"]
         lsb_addr = None
         if master_channel == "R":
@@ -68,10 +66,9 @@ class Muses72323(AbstractVolume):
         else:
             lsb_addr = config["L_VOLUME_ADDR_REGISTER"]
         msb_addr = format(int(vol), "09b")  # Convert to 9 bit binary
-        print("msb:" + msb_addr)
-        print("lsb:" + lsb_addr)
+        
         data = msb_addr + lsb_addr
-        print(data)
+        
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)
@@ -85,7 +82,7 @@ class Muses72323(AbstractVolume):
         z_cross = config["ZERO_CROSS_DETECTION"]
         lsb_addr = config["SETTINGS_ADDR"]
         data = link_channels + l_gain + r_gain + z_cross + lsb_addr
-        print("data:" + data)
+     
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)
@@ -99,10 +96,9 @@ class Muses72323(AbstractVolume):
         else:
             lsb_addr = config["L_VOLUME_ADDR_REGISTER"]
         msb_addr = "000000000"
-        print("msb:" + msb_addr)
-        print("lsb:" + lsb_addr)
+     
         data = msb_addr + lsb_addr
-        print(data)
+      
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)

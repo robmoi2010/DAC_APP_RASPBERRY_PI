@@ -22,7 +22,6 @@ import com.goglotek.mydacapp.App;
 import com.goglotek.mydacapp.dataprocessors.GenericDataProcessor;
 import com.goglotek.mydacapp.exceptions.GoglotekException;
 import com.goglotek.mydacapp.exceptions.NullDataException;
-import com.goglotek.mydacapp.models.Home;
 import com.goglotek.mydacapp.models.Response;
 import com.goglotek.mydacapp.models.WebClientType;
 import com.goglotek.mydacapp.util.Config;
@@ -42,7 +41,7 @@ public class HomeFragment extends Fragment {
     Button settings;
     TextView homeData;
     int previousSliderVolume;
-    boolean updatingSliderVolume = false;
+    boolean isManualSliderChange = false;
     Handler handler = new Handler(Looper.getMainLooper());
     Runnable debouncedRunnable = null;
     int debounceDelayMs = 300;
@@ -145,58 +144,45 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private Home getHomeData() throws GoglotekException {
-        try {
-            Response[] dt = homeDataProcessor.sendGetArrayResponse();
-            if (dt != null) {
-                Home home = Home.getInstance(dt);
-                return home;
-            } else {
-                throw new NullDataException("Null data from server");
-            }
-        } catch (Exception e) {
-            throw new GoglotekException(e.getMessage(), e);
-        }
-    }
 
-    private void populateHomeData(Home home, boolean isWsData) {
+    private void populateHomeData(Response[] resp, boolean isWsData) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
-                Home homeLocal = null;
-                if (home == null) {
-                    homeLocal = getHomeData();
+                Response[] respLocal = null;
+                if (respLocal == null) {
+                    respLocal = homeDataProcessor.sendGetArrayResponse();
                 } else {
-                    homeLocal = home;
+                    respLocal = resp;
                 }
-                Home finalHomeLocal = homeLocal;
+                Response[] finalRespLocal = respLocal;
                 requireActivity().runOnUiThread(() -> {
                     Integer volume = null;
                     StringBuilder sb = new StringBuilder();
-                    Response[] data = finalHomeLocal != null ? finalHomeLocal.getData() : null;
-                    if (data != null) {
-                        for (Response rsp : finalHomeLocal.getData()) {
-                            if (rsp.getKey().equals(Config.getConfig("CURRENT_VOLUME_ID"))) {
-                                volume = Integer.parseInt(rsp.getValue());
-                            } else {
-                                sb.append(" " + rsp.getDisplayName().trim()).append(":").append(rsp.getValue().trim()).append("\n");
-                            }
+                    if (finalRespLocal == null) {
+                        return;
+                    }
+                    for (Response rsp : finalRespLocal) {
+                        if (rsp.getKey().equals(Config.getConfig("CURRENT_VOLUME_ID"))) {
+                            volume = Integer.parseInt(rsp.getValue());
+                        } else {
+                            sb.append(" " + rsp.getDisplayName().trim()).append(":").append(rsp.getValue().trim()).append("\n");
                         }
                     }
-                    volumeView = volumeView == null ? ((Activity) getContext()).findViewById(R.id.speedView) : volumeView;
+                    volumeView = volumeView == null ? requireActivity().findViewById(R.id.speedView) : volumeView;
                     volumeView.setTrembleData(0, 0);
                     if (volume != null) {
                         volumeView.speedTo(volume, 200);
                     }
-                    if (!updatingSliderVolume) {
+                    if (!isManualSliderChange) {
                         if (volume != null) {
                             isVolumeSliderWsUpdate = true;
                             volumeSlider.setValue(volume);
                         }
                     }
-                    homeData = homeData == null ? ((Activity) getContext()).findViewById((R.id.home_data)) : homeData;
+                    homeData = homeData == null ? requireActivity().findViewById((R.id.home_data)) : homeData;
                     homeData.setText(processHomeText(homeData.getText().toString(), sb.toString()));
-                    isVolumeSliderWsUpdate=false;
+                    isVolumeSliderWsUpdate = false;
                 });
             } catch (GoglotekException e) {
                 requireActivity().runOnUiThread(() -> {
@@ -268,7 +254,7 @@ public class HomeFragment extends Fragment {
                 direction = VolumeDirection.DOWN;
             }
             VolumeDirection finalDirection = direction;
-            updatingSliderVolume = true;
+            isManualSliderChange = true;
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 try {
@@ -293,7 +279,7 @@ public class HomeFragment extends Fragment {
                         }
                     }
                     requireActivity().runOnUiThread(() -> {
-                        updatingSliderVolume = false;
+                        isManualSliderChange = false;
                     });
                 } catch (GoglotekException e) {
                     Timber.e(e, e.getMessage());
@@ -310,8 +296,7 @@ public class HomeFragment extends Fragment {
             public void handleIncomingMessage(String message) {
                 try {
                     Response[] rsp = new ObjectMapper().readValue(message, Response[].class);
-                    Home home = Home.getInstance(rsp);
-                    populateHomeData(home, true);
+                    populateHomeData(rsp, true);
                 } catch (Exception e) {
                     dialog.setMessage(e.getMessage());
                     dialog.show();

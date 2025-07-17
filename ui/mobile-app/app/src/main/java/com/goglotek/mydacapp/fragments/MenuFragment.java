@@ -6,6 +6,8 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +60,7 @@ public class MenuFragment extends Fragment {
     private FrameLayout overlay;
     private GenericDataProcessor dataProcessor;
     private AlertDialog dialog;
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public MenuFragment() {
 
@@ -131,9 +134,7 @@ public class MenuFragment extends Fragment {
                     handleRowOnclick(row)
                     , (isChecked, row) -> handleSwitchChange(isChecked, row), (current, row) -> handleSliderChange(current, row));
             recyclerView.setAdapter(adapter);
-            overlay.setVisibility(View.VISIBLE);
             loadData();
-            overlay.setVisibility(View.GONE);
             initDataLoaded = true;
         } else {
             pagerAdapter = new ViewPagerAdapter(this, menu);
@@ -145,9 +146,7 @@ public class MenuFragment extends Fragment {
                             if (frag != null) {
                                 if (frag.menu.getDataType() == MenuDataType.DYNAMIC) {
                                     if (!initDataLoaded) {
-                                        overlay.setVisibility(View.VISIBLE);
                                         frag.loadData();
-                                        overlay.setVisibility(View.GONE);
                                     }
                                 }
                             }
@@ -223,10 +222,10 @@ public class MenuFragment extends Fragment {
     }
 
     private void loadData() {
-
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
             try {
+                mainHandler.post(() ->overlay.setVisibility(View.VISIBLE));
                 final List<DataRow> rows = dataProcessor.loadData(menu.getRoot().getType());
                 try {
                     requireActivity().runOnUiThread(() -> {
@@ -246,6 +245,8 @@ public class MenuFragment extends Fragment {
                     dialog.setMessage(e.getMessage());
                     dialog.show();
                 });
+            } finally {
+                mainHandler.post(() ->overlay.setVisibility(View.GONE));
             }
         });
     }

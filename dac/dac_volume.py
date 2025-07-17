@@ -67,7 +67,6 @@ class DacVolume(AbstractVolume):
         # if logarithmic is set adjust volume to logarithmic scale
         if volume_algorithm == VOLUME_ALGORITHM.LOGARITHMIC:
             vol = get_logarithmic_volume_level(vol, DAC_MIN_VOL, DAC_MAX_VOL)
-            print("vol:" + str(vol))
         # hold both channels
         hold_addr = addrConfig["DAC_SPDIF_SEL_ADDR"]
         hold_mask = 0b00001000

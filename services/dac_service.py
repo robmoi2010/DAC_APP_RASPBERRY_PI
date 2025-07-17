@@ -1,3 +1,4 @@
+import time
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from registry.register import get_instance
@@ -131,6 +132,7 @@ async def update_filter(request: RequestModel):
 
 @dac_app.get("/filters")
 async def get_filters():
+    # time.sleep(5)
     return create_filter_response()
 
 

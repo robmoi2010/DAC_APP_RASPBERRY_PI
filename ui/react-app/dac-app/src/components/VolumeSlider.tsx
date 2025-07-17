@@ -5,7 +5,7 @@ const VolumeSlider = ({ volume }: { volume: number }) => {
     return (
         <Slider.Root
             value={[volume]}
-            onValueChange={(number) => handleVolumeChange(volume, number)} // note this expects array
+            onValueChange={(number) => handleVolumeChange(volume, number)}
             max={100}
             step={1}
             aria-label="Volume"
