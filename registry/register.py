@@ -36,12 +36,12 @@ def get_instance(name, composed_obj: list[str] = None, force_new=False):
                 dependencies = get_dependencies(name)
                 if dependencies is not None and len(dependencies) > 0:
                     composed_obj = dependencies
-            if composed_obj is not None:
-                # create objects from the list of names
-                obj = []
-                for ob in composed_obj:
-                    obj.append(get_instance(ob))
-                instances[name] = registry[name](*obj)
-            else:
-                instances[name] = registry[name]()
+                else:
+                    composed_obj=[]
+            # create objects from the list of names
+            obj = []
+            for ob in composed_obj:
+                obj.append(get_instance(ob))
+            instances[name] = registry[name](*obj)
         return instances[name]
+    

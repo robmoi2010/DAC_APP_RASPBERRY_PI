@@ -31,7 +31,7 @@ CURRENT_ALPS_VOLUME_ID = "CURRENT_ALPS_VOLUME"
 
 
 def map_value(x, in_min, in_max, out_min, out_max):
-    return ((x - in_min) * (out_max - out_min)) / ((in_max - in_min) + out_min)
+    return ((x - in_min) * (out_max - out_min)) // ((in_max - in_min) + out_min)
 
 
 def get_logarithmic_volume_level(vol, minimum, maximum):
@@ -49,17 +49,3 @@ def get_logarithmic_volume_level(vol, minimum, maximum):
     adjusted = minimum - int(round(log_scaled * minimum))
     return adjusted
 
-
-async def update_ui_volume(self, device: VOLUME_DEVICE, connection_manager, volume):
-    list = []
-    id = None
-    if device == VOLUME_DEVICE.DAC:
-        id = CURRENT_VOLUME_ID
-    elif device == VOLUME_DEVICE.MUSES:
-        id = CURRENT_MUSES_VOLUME_ID
-    response = ResponseModel(
-        key=id, value=str(volume), display_name=VOLUME_DISPLAY_NAME
-    )
-    list.append(response)
-    data = [dt.model_dump() for dt in list]
-    await self.connection_manager.send_data(WS_TYPE.HOME_DATA, json.dumps(data))

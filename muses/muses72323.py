@@ -106,7 +106,7 @@ class Muses72323(AbstractVolume):
 
     def get_percentage_volume(self, vol):
         p_vol = map_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
-        return int(p_vol)
+        return p_vol
 
     def map_db_to_reg_binary(self, vol):
         vol = abs(vol)

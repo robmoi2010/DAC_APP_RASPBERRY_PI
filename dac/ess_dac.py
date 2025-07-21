@@ -143,7 +143,7 @@ class Dac:
         reg_2_addr = config["THD_2ND_ORDER_2"]
         reg_3_addr = config["THD_2ND_ORDER_3"]
         reg_4_addr = config["THD_2ND_ORDER_4"]
-        print("abc:" + str(active))
+       
         if selected == 0:  # disable
             data = 0b00000000
             # store reg values for enabling the setting if not stored yet

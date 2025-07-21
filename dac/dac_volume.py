@@ -144,7 +144,7 @@ class DacVolume(AbstractVolume):
 
     def get_percentage_volume(self, vol):
         val = map_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
-        return int(val)
+        return val
 
     def persist_volume(self, volume):
         self.storage.write(CURRENT_VOLUME_ID, volume)

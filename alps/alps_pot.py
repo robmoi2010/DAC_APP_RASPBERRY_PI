@@ -1,6 +1,7 @@
 from time import sleep
 from gpiozero import Motor
 import configs.app_config as app_config
+from dac.dac_volume import DacVolume
 from registry.register import register
 from repo.storage import Storage
 from services.utils.ws_connection_manager import WSConnectionManager
@@ -59,7 +60,8 @@ class AlpsPot(AbstractVolume):
 
     def mute(self):
         # mute at the dac level
-        pass
+        volume: DacVolume = register.get_instance("dacvolume")
+        volume.mute()
 
     def get_percentage_volume(self, vol):
         return vol
