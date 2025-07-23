@@ -1,7 +1,6 @@
 import { VolumeGauge } from './VolumeGauge';
 import PaddingRow from './PaddingRow';
 import { useDispatch, useSelector } from 'react-redux';
-import Page from './Page';
 import { getHomeData } from '../services/SystemService';
 import { setVolume } from '../state-repo/slices/volumeSlice';
 import { useEffect } from 'react';
@@ -25,6 +24,7 @@ const Home = () => {
 
    // initial data load to display
    useEffect(() => {
+      // console.log(contains(" ", "abc de"));
       const indexMap = [
          { index: 0, url: "/Settings" }];
       dispatch(setIndexUrlMap(indexMap));
@@ -110,7 +110,7 @@ const processWsHomeData = (homeData: string, wsData: string) => {
       return homeData;
    }
    let ret = "";
-   homeData=homeData.trim()
+   homeData = homeData.trim()
    const data: string[] = wsData.split("\n");
    const hd: string[] = contains(" ", homeData) ? homeData.split(" ") : [homeData];
    hd.forEach((d: string) => {
@@ -137,27 +137,30 @@ const processWsHomeData = (homeData: string, wsData: string) => {
    return ret.trim();
 }
 const contains = (key: string, data: string) => {//trim key and data at the calling function.
-   let i = 0;
-   let j = 0;
-   let match = false
-   while (i < key.length) {
-      if (j >= data.length) {
-         break;
-      }
-      if (key.charAt(i) == data.charAt(j)) {
-         match = true;
-         i++;
-      }
-      else {
-         match = false;
-         i = 0;
-      }
-      if (match && i >= key.length) {
+   if (key.length == 0 || data.length == 0) {
+      return false;
+   }
+   return eq(0, key, 0, data, 0);
+}
+const eq = (currentKeyIndex: number, key: string, currentDataIndex: number, data: string, resetCount: number) => {
+   if (key[currentKeyIndex] == data[currentDataIndex]) {
+      if (key.length - 1 <= currentKeyIndex) {
          return true;
       }
-      j++;
+      else {
+         return eq(++currentKeyIndex, key, ++currentDataIndex, data, resetCount);
+      }
    }
-   return false;
-
+   else {
+      if (data.length - 1 <= currentDataIndex) {
+         return false;
+      }
+      else {
+         resetCount++;
+         currentDataIndex = resetCount;
+         currentKeyIndex = 0;
+         return eq(currentKeyIndex, key, currentDataIndex, data, resetCount);
+      }
+   }
 }
 export default Home;

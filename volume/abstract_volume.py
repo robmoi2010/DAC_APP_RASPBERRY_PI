@@ -6,8 +6,6 @@ from registry.register import register
 from services.utils.services_util import VOLUME_DISPLAY_NAME
 from services.utils.ws_connection_manager import WS_TYPE
 from volume.volume_util import (
-    CURRENT_MUSES_VOLUME_ID,
-    CURRENT_VOLUME_ID,
     VOL_DIRECTION,
     VOLUME_ALGORITHM,
     VOLUME_DEVICE,
