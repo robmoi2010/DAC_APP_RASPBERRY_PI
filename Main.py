@@ -1,6 +1,10 @@
 import logging
+import os
+import shutil
+import unittest
 
 from repo.sql_storage import SqlStorage
+from tests.volume import test_volume_util
 from ui.app import App
 import registry.register as register
 from dac.ess_dac import Dac
@@ -41,7 +45,12 @@ def initialize_device():
         logger.error(e)
 
 
+def run_tests():
+    test_volume_util.TestVolumeUtil().test_map_value()
+
+
 if __name__ == "__main__":
     initialize_device()
+    run_tests()
     uvicorn.run("services.root_service:app", host="0.0.0.0", port=8000, reload=True)
     get_app_window()

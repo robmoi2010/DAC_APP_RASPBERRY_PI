@@ -1,25 +1,19 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-interface NumberArrayState {
-    items: number[];
+interface MapState {
+    items: { [key: string]: number };
 }
-const initialState: NumberArrayState = {
-    items: [],
+const initialState: MapState = {
+    items: {}
 };
 export const sliderValuesSlice = createSlice({
     name: "sliderValues",
     initialState,
     reducers: {
-        setSliderValues: (state, action) => {
-            state.items = action.payload
+        updateSliderValue: (state, action: PayloadAction<{ key: string; value: number }>) => {
+            const { key, value } = action.payload;
+            state.items[key] = value;
         },
-        updateSliderValue: (state, action: PayloadAction<{ index: number; value: number }>) => {
-            const { index, value } = action.payload;
-            state.items[index] = value;
-        },
-        addSliderValue: (state, action: PayloadAction<number>) => {
-            state.items.push(action.payload);
-        }
     }
 });
-export const { setSliderValues, updateSliderValue, addSliderValue } = sliderValuesSlice.actions;
+export const { updateSliderValue } = sliderValuesSlice.actions;
 export default sliderValuesSlice.reducer;

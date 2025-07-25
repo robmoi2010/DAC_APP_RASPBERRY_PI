@@ -1,54 +1,67 @@
-import { addSliderValue, updateSliderValue } from "../state-repo/slices/sliderValuesSlice";
+import { HStack, Slider } from "@chakra-ui/react";
+import { updateSliderValue } from "../state-repo/slices/sliderValuesSlice";
 import type { responseDataType } from "../utils/types";
-import * as Slider from '@radix-ui/react-slider';
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { Dispatch } from "redux";
 
 type Props = {
-    dataFunction: () => Promise<responseDataType>;
+    dataFunction?: () => Promise<responseDataType>;
     updateFunction: (data: string) => Promise<responseDataType>;
-    tooltipText: string;
-    index: number; //for multiple sliders on same page, differentiates values
-    min:number;
-    max:number;
-    step:number
+    tooltipText?: string;
+    min: number;
+    max: number;
+    step: number;
+    label: string;
+    width: string;
+    color: string;
+    value?: number;
+    id: string;
+
 };
-const DynamicSlider = ({ dataFunction, updateFunction, tooltipText, index, min, max, step }: Props) => {
-    const sliderValues = useSelector((state: { sliderValues: { items: number[] } }) => state.sliderValues.items);
+const DynamicSlider = ({ dataFunction, updateFunction, tooltipText, min, max, step, label, width, color, value,id}: Props) => {
+    
+    const sliderValue = useSelector((state: { sliderValues: { items: { [key: string]: number } } }) => state.sliderValues.items)[id];
     const dispatch = useDispatch();
     useEffect(() => {
-        dataFunction().then(data => {
-            if (sliderValues.length - 1 >= index) {
-                dispatch(updateSliderValue({ index: index, value: Number(data?.value) }));
+        if (value == null && String(value).length > 0) {
+            if (dataFunction != null) {
+                dataFunction().then(data => {
+                    dispatch(updateSliderValue({ key: id, value: Number(data?.value) }));
+                });
             }
-            else {
-                dispatch(addSliderValue(Number(data?.value)));
+        }
+        else {
+            if (value != null) {
+                dispatch(updateSliderValue({ key: id, value: value }));
             }
-        });
+        }
     }, []);
-    return (<Slider.Root
-        value={[sliderValues[index]]}
-        onValueChange={(number) => handleChange(dispatch, number, updateFunction, index)}
-        max={max}
-        step={step}
-        min={min}
-        aria-label="Dpll Bandwidth"
-        className="relative flex items-center select-none touch-none w-64 h-5"
-    >
-        <Slider.Track className="bg-gray-300 relative grow rounded-full h-1">
-            <Slider.Range className="absolute bg-blue-500 rounded-full h-full" />
-        </Slider.Track>
-        <Slider.Thumb className="block w-4 h-4 bg-white border border-gray-400 rounded-full shadow hover:bg-gray-100" />
+    useEffect(() => {
+        if (value != null) {
+            if (value != sliderValue) {
+                dispatch(updateSliderValue({ key: id, value: value }));
+            }
+        }
+    }, [value]);
+    return (<Slider.Root colorPalette={color} width={width} value={[sliderValue != null ? sliderValue : 0]} onValueChangeEnd={(e) => handleChange(dispatch, e.value, updateFunction, id)} step={step} min={min} max={max} size="lg" onValueChange={(e) => dispatch(updateSliderValue({ key: id, value: e.value[0] }))}>
+        <HStack justify="space-between">
+            <Slider.Label>{label}</Slider.Label>
+            <Slider.ValueText />
+        </HStack>
+        <Slider.Control>
+            <Slider.Track>
+                <Slider.Range />
+            </Slider.Track>
+            <Slider.Thumbs />
+        </Slider.Control>
     </Slider.Root>);
 }
-
-const handleChange = (dispatch:Dispatch, number: number[], updateFunction: (data: string) => Promise<responseDataType>, index:number) => {
-    console.log(number);
+const handleChange = (dispatch: Dispatch, number: number[], updateFunction: (data: string) => Promise<responseDataType>, key: string) => {
     const data = { key: "" + number[0], value: "" + number[0] };
-    updateFunction(JSON.stringify(data)).then(dt=>{
-          dispatch(updateSliderValue({index:index, value:Number(dt.value)}))
-        }
+    updateFunction(JSON.stringify(data)).then(dt => {
+        dispatch(updateSliderValue({ key: key, value: Number(dt.value) }))
+    }
     );
 }
 export default DynamicSlider;

@@ -16,6 +16,7 @@ ws_lock = threading.RLock()
 
 @register
 class WSConnectionManager:
+    """Web-socket connection manager class. Manages all web socket connection types."""
 
     def __init__(self):
         self.connections = {}

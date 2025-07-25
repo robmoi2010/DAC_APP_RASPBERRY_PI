@@ -2,7 +2,7 @@ import tkinter as tk
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 from tkinter import messagebox
-from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
+from ui.styles import SELECTED_COLOR, UNSELECTED_COLOR
 from registry.register import register, get_instance
 
 volume = get_instance("volume")

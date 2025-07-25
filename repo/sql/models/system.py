@@ -10,6 +10,7 @@ class System(Base):
     CURRENT_VOLUME_DEVICE = Column(Integer)
     VOLUME_ALGORITHM = Column(Integer)
     CURRENT_ALPS_VOLUME = Column(Integer)
+    VOLUME_RAMP_ENABLED = Column(Integer)
 
 
 Base.metadata.create_all(bind=engine)

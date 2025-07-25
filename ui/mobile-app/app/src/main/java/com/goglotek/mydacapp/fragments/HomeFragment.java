@@ -90,10 +90,13 @@ public class HomeFragment extends Fragment {
         volumePlus.setOnClickListener((v) -> {
             Executors.newSingleThreadExecutor().execute(() -> {
                 try {
-                    int current = (int) volumeSlider.getValue();
-                    int ret = Integer.parseInt(volumeUpProcessor.sendGet().getValue());
+                    float current = volumeSlider.getValue();
+                    if (current >= 100) {
+                        return;
+                    }
+                    float ret = Float.parseFloat(volumeUpProcessor.sendGet().getValue());
                     while (ret < current + VOLUME_BTN_STEPS) {
-                        ret = Integer.parseInt(volumeUpProcessor.sendGet().getValue());
+                        ret = Float.parseFloat(volumeUpProcessor.sendGet().getValue());
                     }
                 } catch (GoglotekException e) {
                     requireActivity().runOnUiThread(() -> {
@@ -107,10 +110,13 @@ public class HomeFragment extends Fragment {
         volumeMinus.setOnClickListener((v) -> {
             Executors.newSingleThreadExecutor().execute(() -> {
                 try {
-                    int current = (int) volumeSlider.getValue();
-                    int ret = Integer.parseInt(volumeDownProcessor.sendGet().getValue());
+                    float current = volumeSlider.getValue();
+                    if (current <= 0) {
+                        return;
+                    }
+                    float ret = Float.parseFloat(volumeDownProcessor.sendGet().getValue());
                     while (ret > current - VOLUME_BTN_STEPS) {
-                        ret = Integer.parseInt(volumeDownProcessor.sendGet().getValue());
+                        ret = Float.parseFloat(volumeDownProcessor.sendGet().getValue());
                     }
                 } catch (GoglotekException e) {
                     requireActivity().runOnUiThread(() -> {
@@ -150,21 +156,21 @@ public class HomeFragment extends Fragment {
         executor.execute(() -> {
             try {
                 Response[] respLocal = null;
-                if (respLocal == null) {
+                if (resp == null) {
                     respLocal = homeDataProcessor.sendGetArrayResponse();
                 } else {
                     respLocal = resp;
                 }
                 Response[] finalRespLocal = respLocal;
                 requireActivity().runOnUiThread(() -> {
-                    Integer volume = null;
+                    Float volume = null;
                     StringBuilder sb = new StringBuilder();
                     if (finalRespLocal == null) {
                         return;
                     }
                     for (Response rsp : finalRespLocal) {
                         if (rsp.getKey().equals(Config.getConfig("CURRENT_VOLUME_ID"))) {
-                            volume = Integer.parseInt(rsp.getValue());
+                            volume = Float.parseFloat(rsp.getValue());
                         } else {
                             sb.append(" " + rsp.getDisplayName().trim()).append(":").append(rsp.getValue().trim()).append("\n");
                         }
@@ -259,10 +265,10 @@ public class HomeFragment extends Fragment {
             executor.execute(() -> {
                 try {
                     int count = 0;
-                    int volume;
+                    float volume;
                     while (true) {
                         String data = (finalDirection == VolumeDirection.UP) ? volumeUpProcessor.sendGet().getValue() : volumeDownProcessor.sendGet().getValue();
-                        volume = Integer.parseInt(data);
+                        volume = Float.parseFloat(data);
                         if (finalDirection == VolumeDirection.UP) {
                             if (volume >= newVal) {
                                 break;

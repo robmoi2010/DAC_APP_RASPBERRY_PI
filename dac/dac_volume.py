@@ -10,7 +10,7 @@ from volume.volume_util import (
     CURRENT_VOLUME_ID,
     VOLUME_DEVICE,
     get_logarithmic_volume_level,
-    map_value,
+    remap_value,
 )
 from repo.storage import Storage
 
@@ -98,6 +98,9 @@ class DacVolume(AbstractVolume):
             ):  # skip processing if volume is already at Minimum
                 return 0
             currVol += steps  # dacs higher value=decrease
+        return self.process_new_volume(currVol, volume_algorithm)
+
+    def process_new_volume(self, currVol, volume_algorithm: VOLUME_ALGORITHM):
         self.set_volume(currVol, volume_algorithm)
         self.persist_volume(currVol)
         # return new volume as percentage for ui update
@@ -143,7 +146,7 @@ class DacVolume(AbstractVolume):
             self.storage.write(DAC_MUTED_ID, 1)
 
     def get_percentage_volume(self, vol):
-        val = map_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
+        val = remap_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
         return val
 
     def persist_volume(self, volume):
@@ -156,3 +159,15 @@ class DacVolume(AbstractVolume):
         return super().update_ui_volume(
             VOLUME_DEVICE.DAC, self.connection_manager, volume
         )
+
+    def get_volume_from_percentage(self, percentage):
+        return remap_value(percentage, 0, 100, DAC_MIN_VOL, DAC_MAX_VOL)
+
+    def get_max_volume(self):
+        return DAC_MAX_VOL
+
+    def get_min_volume(self):
+        return DAC_MIN_VOL
+
+    def is_volume_more_than(self, volume1, volume2):  # higher volume=lower value
+        return volume1 < volume2

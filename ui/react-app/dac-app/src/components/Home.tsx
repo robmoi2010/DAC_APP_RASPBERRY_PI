@@ -1,18 +1,19 @@
 import { VolumeGauge } from './VolumeGauge';
 import PaddingRow from './PaddingRow';
 import { useDispatch, useSelector } from 'react-redux';
-import { getHomeData } from '../services/SystemService';
+import { decreaseVolume, getHomeData, increaseVolume, updateVolume } from '../services/SystemService';
 import { setVolume } from '../state-repo/slices/volumeSlice';
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { setHomeData } from '../state-repo/slices/homeDataSlice';
 import useWebSocket from 'react-use-websocket';
 import { addMessage } from '../state-repo/slices/webSocketSlice';
 import Config from '../configs/Config.json';
 import { useNavigate } from 'react-router-dom';
 import { setIndexUrlMap } from '../state-repo/slices/indexUrlMap';
-import VolumeSlider from './VolumeSlider';
 import { ClientType } from '../utils/types';
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, HStack, VStack } from '@chakra-ui/react';
+import DynamicSlider from './DynamicSlider';
+import { IconMinus, IconPlus } from '@tabler/icons-react';
 
 
 const Home = () => {
@@ -67,6 +68,7 @@ const Home = () => {
          let genDt = "";
          data.forEach(d => {
             if (d.key.trim() == "CURRENT_VOLUME") {
+               console.log(".......");
                dispatch(setVolume(d.value));
             }
             else {
@@ -77,32 +79,76 @@ const Home = () => {
             }
          });
          if (genDt != "") {
-            dispatch(setHomeData(processWsHomeData(homeData, genDt)));
+            const newData = processWsHomeData(homeData, genDt);
+            if (newData.trim() != homeData.trim()) {
+               dispatch(setHomeData(newData));
+            }
          }
       }
 
-   }, [lastMessage, dispatch]);
+   }, [lastMessage]);
 
    const components = [
-      <PaddingRow />,
-      <div style={{ paddingLeft: "120px" }}>{homeData}</div>,
-      <PaddingRow />,
-      <div style={{ paddingLeft: '125px' }}>
-         <VolumeGauge volume={volume} />
-         <PaddingRow />
-         <VolumeSlider volume={volume} />
-      </div>,
-      <PaddingRow />,
-      <Button variant="outline" style={{ 'width': '500px' }} onClick={() => navigate(handleSettingsOnclick(clientType))}>Settings</Button>
+      <VStack>
+         <div>{homeData}</div>
+         <VolumeGaugeMemo volume={volume} />
+         <HStack>
+            <Button onClick={() => handleBtnVolume(0, volume, 1)} variant='outline'><IconMinus /></Button>
+            <VolumeSlider volume={volume} />
+            <Button onClick={() => handleBtnVolume(1, volume, 1)} variant='outline'><IconPlus /></Button>
+         </HStack>
+         <Button variant="outline" style={{ 'width': '600px' }} onClick={() => navigate(handleSettingsOnclick(clientType))}>Settings</Button>
+      </VStack>
    ];
    return <Box>{components}</Box>;
 }
+const VolumeGaugeMemo = memo(({ volume }: { volume: number }) => {
+   return <VolumeGauge volume={volume} />;
+}, (prevProps, nextProps) => {
+   return prevProps.volume === nextProps.volume;
+});
+const VolumeSlider = memo(({ volume }: { volume: number }) => {
+   return <DynamicSlider id={Home.name + "0"} value={volume} color="green" width="500px" label="Volume" min={0} max={100} step={1} updateFunction={updateVolume} tooltipText="set volume" />
+}, (prevProps, nextProps) => {
+   return prevProps.volume === nextProps.volume;
+});
 const handleSettingsOnclick = (clientType: ClientType): string => {
    if (clientType == ClientType.DEVICE) {
       return "/Settings";
    }
    else {
       return "/Tabs";
+   }
+}
+const handleBtnVolume = async (direction: number, volume: number, step: number) => {
+   //direction: 0 decrease 1 increase
+   if (direction == 0) {
+      let ret: number;
+      ret = await decreaseVolume().then(data => {
+         return Number(data?.value);
+      })
+      if (ret <= 0) {
+         return;
+      }
+      while (ret > volume - step) {
+         ret = await decreaseVolume().then(data => {
+            return Number(data?.value);
+         })
+      }
+   }
+   else {
+      let ret: number;
+      ret = await increaseVolume().then(data => {
+         return Number(data?.value);
+      })
+      if (ret >= 100) {
+         return;
+      }
+      while (ret < volume + step) {
+         ret = await increaseVolume().then(data => {
+            return Number(data?.value);
+         })
+      }
    }
 }
 const processWsHomeData = (homeData: string, wsData: string) => {

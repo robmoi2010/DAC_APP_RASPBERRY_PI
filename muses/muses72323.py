@@ -9,7 +9,7 @@ from volume.volume_util import (
     CURRENT_MUSES_VOLUME_ID,
     VOLUME_DEVICE,
     get_logarithmic_volume_level,
-    map_value,
+    remap_value,
 )
 import configs.app_config as configuration
 from muses.muses_comm import MusesComm
@@ -44,10 +44,7 @@ class Muses72323(AbstractVolume):
             ):  # skip processing if volume is already at Minimum
                 return 0
             curr_volume -= self.STEP
-        self.update_chip_volume(curr_volume, volume_algorithm)
-        self.persist_volume(curr_volume)
-        # return new percentage volume for ui update
-        return self.get_percentage_volume(curr_volume)
+        return self.process_new_volume(curr_volume, volume_algorithm)
 
     def update_chip_volume(self, vol, volume_algorithm: VOLUME_ALGORITHM):
         # if logarithmic is set adjust volume to logarithmic scale
@@ -58,7 +55,7 @@ class Muses72323(AbstractVolume):
                 abs(vol), self.MIN_VOLUME, self.MAX_VOLUME
             )
         vol = self.map_db_to_reg_binary(vol)
-    
+
         master_channel = config["MASTER_CHANNEL"]
         lsb_addr = None
         if master_channel == "R":
@@ -66,9 +63,9 @@ class Muses72323(AbstractVolume):
         else:
             lsb_addr = config["L_VOLUME_ADDR_REGISTER"]
         msb_addr = format(int(vol), "09b")  # Convert to 9 bit binary
-        
+
         data = msb_addr + lsb_addr
-        
+
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)
@@ -82,7 +79,7 @@ class Muses72323(AbstractVolume):
         z_cross = config["ZERO_CROSS_DETECTION"]
         lsb_addr = config["SETTINGS_ADDR"]
         data = link_channels + l_gain + r_gain + z_cross + lsb_addr
-     
+
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)
@@ -96,16 +93,16 @@ class Muses72323(AbstractVolume):
         else:
             lsb_addr = config["L_VOLUME_ADDR_REGISTER"]
         msb_addr = "000000000"
-     
+
         data = msb_addr + lsb_addr
-      
+
         l_pin = config["R_CHANNEL_CS_PIN"]
         r_pin = config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)
         self.comm.spi_write(l_pin, data)
 
     def get_percentage_volume(self, vol):
-        p_vol = map_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
+        p_vol = remap_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
         return p_vol
 
     def map_db_to_reg_binary(self, vol):
@@ -140,3 +137,29 @@ class Muses72323(AbstractVolume):
         return super().update_ui_volume(
             VOLUME_DEVICE.MUSES, self.connection_manager, volume
         )
+
+    def process_new_volume(self, currVol, volume_algorithm: VOLUME_ALGORITHM):
+        self.update_chip_volume(currVol, volume_algorithm)
+        self.persist_volume(currVol)
+        # return new percentage volume for ui update
+        return self.get_percentage_volume(currVol)
+
+    def get_volume_from_percentage(self, percentage):
+        return remap_value(
+            percentage,
+            0,
+            100,
+            self.MIN_VOLUME,
+            self.MAX_VOLUME,
+            float_range=True,
+            decimal_places=2,
+        )
+
+    def get_max_volume(self, percentage):
+        return self.MAX_VOLUME
+
+    def get_min_volume(self, percentage):
+        return self.MIN_VOLUME
+
+    def is_volume_more_than(self, volume1, volume2):  # higher volume=higher value
+        return volume1 > volume2

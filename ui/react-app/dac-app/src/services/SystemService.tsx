@@ -23,8 +23,17 @@ export const updateSoundMode = (data: string) => {
     return sendPut(Config["BASE_URL"] + "system/sound_mode", data);
 }
 export const increaseVolume = () => {
-    return sendGet(Config["BASE_URL"] + "system/volume/up")
+    return sendGet(Config["BASE_URL"] + "system/volume/up");
 }
 export const decreaseVolume = () => {
-    return sendGet(Config["BASE_URL"] + "system/volume/down")
+    return sendGet(Config["BASE_URL"] + "system/volume/down");
+}
+export const updateVolume = (data: string) => {
+    return sendPut(Config["BASE_URL"] + "system/volume", data);
+}
+export const getVolumeRamp = () => {
+    return sendGet(Config["BASE_URL"] + "system/volume_ramp");
+}
+export const updateVolumeRamp = (data: string) => {
+    return sendPut(Config["BASE_URL"] + "system/volume_ramp", data);
 }

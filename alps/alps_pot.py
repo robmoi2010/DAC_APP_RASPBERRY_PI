@@ -11,7 +11,7 @@ from volume.volume_util import (
     VOL_DIRECTION,
     VOLUME_ALGORITHM,
     VOLUME_DEVICE,
-    map_value,
+    remap_value,
 )
 
 
@@ -40,12 +40,11 @@ class AlpsPot(AbstractVolume):
         if current < 0:
             current = 0
         # self.update_motor_volume_position(direction, current)
-        self.persist_volume(current)
-        return current
+        return self.process_new_volume(current, volume_algorithm)
 
     def update_motor_volume_position(self, direction: VOL_DIRECTION, volume):
         # remap volume from 0-100 to adc min-max
-        adc_value = map_value(
+        adc_value = remap_value(
             volume, 0, 100, self.config["ADC_MIN_VALUE"], self.config["ADC_MAX_VALUE"]
         )
         current_pot_value = self.get_current_adc_pot_value()
@@ -86,13 +85,11 @@ class AlpsPot(AbstractVolume):
         # poll for manual rotation of volume knob and update volume displayed in the ui.
         current = self.get_current_adc_pot_value()
         current_volume = self.get_current_volume()
-        new_volume = map_value(
+        new_volume = remap_value(
             current, self.config["ADC_MIN_VALUE"], self.config["ADC_MAX_VALUE"], 0, 100
         )
         if current_volume != new_volume:
-            self.persist_volume(new_volume)
-            self.update_ui_volume(new_volume)
-
+            self.process_new_volume(new_volume, None)
         sleep(self.config["POLL_MILLIS"] / 1000)
 
     def get_current_adc_pot_value(self):
@@ -109,3 +106,19 @@ class AlpsPot(AbstractVolume):
 
     def is_volume_disabled(self):
         pass
+
+    def process_new_volume(self, currVol, volume_algorithm: VOLUME_ALGORITHM):
+        self.persist_volume(currVol)
+        self.update_ui_volume(currVol)
+
+    def get_volume_from_percentage(self, percentage):
+        pass
+
+    def get_max_volume(self, percentage):
+        return 100
+
+    def get_min_volume(self, percentage):
+        return 0
+
+    def is_volume_more_than(self, volume1, volume2):
+        return volume1 > volume2

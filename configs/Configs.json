@@ -52,11 +52,11 @@
     },
     "IR_REMOTE": {
         "BUTTON_HASH": {
-            "VOL_UP": [
+            "VOLUME_UP": [
                 "FF629D",
                 "FF689D"
             ],
-            "VOL_DOWN": [
+            "VOLUME_DOWN": [
                 "FFE21D",
                 "FFE31D"
             ],

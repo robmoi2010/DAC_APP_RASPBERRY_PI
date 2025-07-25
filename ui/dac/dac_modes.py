@@ -4,7 +4,7 @@ from registry.register import register, get_instance
 from tkinter import messagebox
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
-from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
+from ui.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
 dac: Dac = get_instance("dac")
 

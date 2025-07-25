@@ -111,7 +111,7 @@ async def home_websocket(websocket: WebSocket):
     list = create_home_data(volume)
     data = [dt.model_dump() for dt in list]
     await connection_manager.send_data(WS_TYPE.HOME_DATA, json.dumps(data))
-    
+
     # start polling only when at-least one client establishes ws connection
     # poll dac for spdif metadata e.g audio bit rate and bit depth
     # create the background thread once
@@ -128,7 +128,7 @@ async def home_websocket(websocket: WebSocket):
 @system_app.websocket("/ws/ir_remote")
 async def ir_remote_websocket(websocket: WebSocket):
     websocket.accept()
-    
+
     await connection_manager.connect(WS_TYPE.IR_REMOTE, websocket)
     try:
         while True:
@@ -155,10 +155,10 @@ async def home():
     return create_home_data(volume)
 
 
-@system_app.put("/volume/update")
-async def update_volume(response: ResponseModel):
-    volume.update_volume(response.value)
-    return response
+@system_app.put("/volume")
+async def update_volume(request: RequestModel):
+    vol = await volume.set_volume_from_ui(int(request.value))
+    return ResponseModel(key="0", value=str(vol), display_name="")
 
 
 @system_app.get("/volume/up")
@@ -186,3 +186,24 @@ async def ir_nav_up():
 @system_app.get("/down")
 async def ir_nav_down():
     await ir_router.handle_ws_routing(BUTTON.DOWN)
+
+
+@system_app.get("/volume_ramp")
+async def is_volume_ramp_enabled():
+    active = volume.is_volume_ramp_enabled()
+    ret = "0"
+    if active:
+        ret = "1"
+    return ResponseModel(key="0", value=ret, display_name=ret)
+
+
+@system_app.put("/volume_ramp")
+async def update_volume_ramp(request: RequestModel):
+    try:
+        volume.update_volume_ramp(int(request.value))
+        response = ResponseModel(
+            key="0", value=request.value, display_name=request.value
+        )
+        return response
+    except Exception as e:
+        logging.error(e)

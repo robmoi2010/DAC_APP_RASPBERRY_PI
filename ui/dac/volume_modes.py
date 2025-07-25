@@ -4,7 +4,7 @@ from tkinter import messagebox
 from registry.register import get_instance
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
-from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
+from ui.styles import SELECTED_COLOR, UNSELECTED_COLOR
 from system.volume_encoder import VolumeEncoder
 
 

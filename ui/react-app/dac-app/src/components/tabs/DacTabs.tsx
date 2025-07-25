@@ -28,7 +28,7 @@ const DacTabs = () => {
                         width="800px"
                         p={4}
                     >
-                        <DynamicSwitch index={0} dataFunction={getVolumeDisableStatus} updateFunction={updateVolumeStatus} tooltipText="Dac volume on/off" />
+                        <DynamicSwitch id={DacTabs.name+"volumesettings"} dataFunction={getVolumeDisableStatus} updateFunction={updateVolumeStatus} tooltipText="Dac volume on/off" />
                     </Box>
                 </Tabs.Content>
                 <Tabs.Content value="Filters">
@@ -71,13 +71,13 @@ const DacTabs = () => {
                         <Fieldset.Root>
                             <Fieldset.Legend>Second Order</Fieldset.Legend>
                             <Fieldset.Content>
-                                <DynamicSwitch index={0} dataFunction={getSecondOrderStatus} updateFunction={updateSecondOrderStatus} tooltipText="2nd order on/off" />
+                                <DynamicSwitch id={DacTabs.name+"secondorder"} dataFunction={getSecondOrderStatus} updateFunction={updateSecondOrderStatus} tooltipText="2nd order on/off" />
                             </Fieldset.Content>
                         </Fieldset.Root>
                         <Fieldset.Root>
                             <Fieldset.Legend>Third Order</Fieldset.Legend>
                             <Fieldset.Content>
-                                <DynamicSwitch index={1} dataFunction={getThirdOrderStatus} updateFunction={updateThirdOrderStatus} tooltipText="3rd order on/off" />
+                                <DynamicSwitch id={DacTabs.name+"thirdorder"} dataFunction={getThirdOrderStatus} updateFunction={updateThirdOrderStatus} tooltipText="3rd order on/off" />
                             </Fieldset.Content>
                         </Fieldset.Root>
                     </Box>
@@ -89,7 +89,7 @@ const DacTabs = () => {
                         width="800px"
                         p={4}
                     >
-                        <DynamicSwitch index={0} dataFunction={getOversamplingStatus} updateFunction={updateOversamplingStatus} tooltipText="Oversampling on/off" />
+                        <DynamicSwitch id={DacTabs.name+"oversampling"} dataFunction={getOversamplingStatus} updateFunction={updateOversamplingStatus} tooltipText="Oversampling on/off" />
                     </Box>
                 </Tabs.Content >
                 <Tabs.Content value="DpllBandwidth">
@@ -99,7 +99,7 @@ const DacTabs = () => {
                         width="800px"
                         p={4}
                     >
-                        <DynamicSlider min={1} max={15} step={1} index={0} dataFunction={getDpllBandwidth} updateFunction={updateDpllBandwidth} tooltipText="Dpll bandwidth (1-15)" />
+                        <DynamicSlider id={DacTabs.name + "0"} color="green" width="500px" label="Dpll Bandwidth" min={1} max={15} step={1} dataFunction={getDpllBandwidth} updateFunction={updateDpllBandwidth} tooltipText="Dpll bandwidth (1-15)" />
                     </Box>
                 </Tabs.Content >
             </div>

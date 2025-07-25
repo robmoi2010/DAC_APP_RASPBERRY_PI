@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import dsp.io as output
-from util.styles import UNSELECTED_COLOR, SELECTED_COLOR
+from ui.styles import UNSELECTED_COLOR, SELECTED_COLOR
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 from registry.register import get_instance
