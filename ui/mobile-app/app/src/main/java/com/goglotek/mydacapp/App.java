@@ -118,5 +118,11 @@ public class App extends Application {
 
         WebClient client17 = WebClient.getInstance("dac/volume_modes", "", "dac/volume_modes", WebClientType.VOLUME_MODES);
         webClientMap.put(WebClientType.VOLUME_MODES, client17);
+
+        WebClient client18 = WebClient.getInstance("system/volume_ramp", "", "system/volume_ramp", WebClientType.VOLUME_RAMP);
+        webClientMap.put(WebClientType.VOLUME_RAMP, client18);
+
+        WebClient client19 = WebClient.getInstance("", "", "system/volume", WebClientType.VOLUME_UPDATE);
+        webClientMap.put(WebClientType.VOLUME_UPDATE, client19);
     }
 }

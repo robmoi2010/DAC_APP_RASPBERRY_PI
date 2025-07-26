@@ -202,6 +202,9 @@ public class MenuFragment extends Fragment {
         if (name == MenuUtil.VOLUME_ALGORITHM_NAME) {
             return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_ALGORITHM));
         }
+        if (name == MenuUtil.VOLUME_RAMP_NAME) {
+            return GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_RAMP));
+        }
         if (name == MenuUtil.DPLL_BANDWIDTH_NAME) {
             List<Map<String, String>> options = new ArrayList<>();
             Map<String, String> min = new HashMap<>();
@@ -225,7 +228,7 @@ public class MenuFragment extends Fragment {
         ExecutorService service = Executors.newSingleThreadExecutor();
         service.execute(() -> {
             try {
-                mainHandler.post(() ->overlay.setVisibility(View.VISIBLE));
+                mainHandler.post(() -> overlay.setVisibility(View.VISIBLE));
                 final List<DataRow> rows = dataProcessor.loadData(menu.getRoot().getType());
                 try {
                     requireActivity().runOnUiThread(() -> {
@@ -246,7 +249,7 @@ public class MenuFragment extends Fragment {
                     dialog.show();
                 });
             } finally {
-                mainHandler.post(() ->overlay.setVisibility(View.GONE));
+                mainHandler.post(() -> overlay.setVisibility(View.GONE));
             }
         });
     }

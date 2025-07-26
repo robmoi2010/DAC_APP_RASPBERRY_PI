@@ -9,6 +9,7 @@ import selectedIndexSlice from "./slices/selectedIndexSlice";
 import clientTypeSlice from "./slices/clientTypeSlice";
 import switchCheckedSlice from "./slices/switchCheckedSlice";
 import sliderValuesSlice from "./slices/sliderValuesSlice";
+import updateSliderValuesSlice  from "./slices/updateSliderValuesSlice";
 export default configureStore({
     reducer:
     {
@@ -22,6 +23,7 @@ export default configureStore({
         selectedIndex: selectedIndexSlice,
         clientType:clientTypeSlice,
         switchChecked:switchCheckedSlice,
-        sliderValues:sliderValuesSlice
+        sliderValues:sliderValuesSlice,
+        updateSliderValues:updateSliderValuesSlice
     }
 });

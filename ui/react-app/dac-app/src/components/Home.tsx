@@ -25,7 +25,6 @@ const Home = () => {
 
    // initial data load to display
    useEffect(() => {
-      // console.log(contains(" ", "abc de"));
       const indexMap = [
          { index: 0, url: "/Settings" }];
       dispatch(setIndexUrlMap(indexMap));
@@ -68,7 +67,6 @@ const Home = () => {
          let genDt = "";
          data.forEach(d => {
             if (d.key.trim() == "CURRENT_VOLUME") {
-               console.log(".......");
                dispatch(setVolume(d.value));
             }
             else {
@@ -158,13 +156,13 @@ const processWsHomeData = (homeData: string, wsData: string) => {
    let ret = "";
    homeData = homeData.trim()
    const data: string[] = wsData.split("\n");
-   const hd: string[] = contains(" ", homeData) ? homeData.split(" ") : [homeData];
+   const hd: string[] = homeData.includes(" ") ? homeData.split(" ") : [homeData];
    hd.forEach((d: string) => {
       const key = d.split(":")[0];
       let i;
       let has = false;
       for (i = 0; i < data.length; i++) {
-         if (contains(key.trim(), data[i].trim())) {
+         if (data[i].includes(key)) {
             has = true;
             ret += data[i] + " ";
             data[i] = "";
@@ -181,32 +179,5 @@ const processWsHomeData = (homeData: string, wsData: string) => {
       }
    });
    return ret.trim();
-}
-const contains = (key: string, data: string) => {//trim key and data at the calling function.
-   if (key.length == 0 || data.length == 0) {
-      return false;
-   }
-   return eq(0, key, 0, data, 0);
-}
-const eq = (currentKeyIndex: number, key: string, currentDataIndex: number, data: string, resetCount: number) => {
-   if (key[currentKeyIndex] == data[currentDataIndex]) {
-      if (key.length - 1 <= currentKeyIndex) {
-         return true;
-      }
-      else {
-         return eq(++currentKeyIndex, key, ++currentDataIndex, data, resetCount);
-      }
-   }
-   else {
-      if (data.length - 1 <= currentDataIndex) {
-         return false;
-      }
-      else {
-         resetCount++;
-         currentDataIndex = resetCount;
-         currentKeyIndex = 0;
-         return eq(currentKeyIndex, key, currentDataIndex, data, resetCount);
-      }
-   }
 }
 export default Home;

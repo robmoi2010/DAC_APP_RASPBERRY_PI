@@ -25,6 +25,7 @@ public class MenuUtil {
     public final static String DPLL_BANDWIDTH_NAME = "DpllBandwidth";
     public static final String BASIC_DAC_SETTINGS_NAME = "Basic";
     public static final String ADVANCED_DAC_SETTINGS_NAME = "Advanced";
+    public static final String VOLUME_RAMP_NAME = "VolumeRamp";
 
 
     //public static Stack<Menu> menuStack = new Stack<>();
@@ -150,6 +151,9 @@ public class MenuUtil {
         if (name == ADVANCED_DAC_SETTINGS_NAME) {
             return createAdvancedDacSettingsMenu(root);
         }
+        if (name == VOLUME_RAMP_NAME) {
+            return createDynamicDataMenu(root);
+        }
         return null;
     }
 
@@ -159,6 +163,7 @@ public class MenuUtil {
         rows.add(createRow(VOLUME_DEVICE_NAME, RowDataType.TEXT));
         rows.add(createRow(VOLUME_ALGORITHM_NAME, RowDataType.TEXT));
         rows.add(createRow(SOUND_MODES_NAME, RowDataType.TEXT));
+        rows.add(createRow(VOLUME_RAMP_NAME, RowDataType.TOGGLE));
         menu.setRows(rows);
         menu.setDataType(MenuDataType.STATIC);
         menu.setRoot(root);

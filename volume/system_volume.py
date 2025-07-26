@@ -48,34 +48,18 @@ class Volume:
                 0,
                 100,
             )
-            current_algorithm = self.get_current_volume_algorithm()
             if percentage_volume < current_volume:  # volume decrease
-                if percentage_volume <= 0:
-                    return
-                v = self.default_volume.update_volume(
-                    VOL_DIRECTION.DOWN, current_algorithm
-                )
-                while v > percentage_volume:
-                    v = self.default_volume.update_volume(
-                        VOL_DIRECTION.DOWN, current_algorithm
-                    )
-            elif percentage_volume > current_volume:
-                if percentage_volume >= 100:
-                    return
-                v = self.default_volume.update_volume(
-                    VOL_DIRECTION.UP, current_algorithm
-                )
-                while v < percentage_volume:
-                    v = self.default_volume.update_volume(
-                        VOL_DIRECTION.UP, current_algorithm
-                    )
-            # update ui volume after volume ramp, might change in future
-            try:
-                await self.default_volume.update_ui_volume(percentage_volume)
-            except Exception as e:
-                pass
+                if current_volume <= 0:
+                    return 0
+                while current_volume > percentage_volume:
+                    current_volume = await self.update_volume(VOL_DIRECTION.DOWN)
+            elif percentage_volume > current_volume:  # volume increase
+                if current_volume >= 100:
+                    return 100
+                while current_volume < percentage_volume:
+                    current_volume = await self.update_volume(VOL_DIRECTION.UP)
             return percentage_volume
-        else:
+        else:  # No volume ramp, set volume to new value and depend on hardware ramp for dac volume.
             vol = self.default_volume.process_new_volume(
                 self.default_volume.get_volume_from_percentage(percentage_volume),
                 self.get_current_volume_algorithm(),
@@ -86,7 +70,7 @@ class Volume:
                 pass
             return vol
 
-    async def update_volume(self, direction):
+    async def update_volume(self, direction: VOL_DIRECTION):
         vol = self.default_volume.update_volume(
             direction, self.get_current_volume_algorithm()
         )

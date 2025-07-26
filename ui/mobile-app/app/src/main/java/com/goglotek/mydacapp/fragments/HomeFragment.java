@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,16 +68,17 @@ public class HomeFragment extends Fragment {
         settings.setOnClickListener((View) -> handleSettingsOnclick());
         volumeSlider = view.findViewById(R.id.slider);
         previousSliderVolume = (int) volumeSlider.getValue();
-        volumeSlider.addOnChangeListener((slider, newVal, b) -> {
-            if (debouncedRunnable != null) {
-                handler.removeCallbacks(debouncedRunnable);
-            }
-            debouncedRunnable = () -> {
-                handleVolumeSliderOnchange((int) newVal);
-            };
-            handler.postDelayed(debouncedRunnable, debounceDelayMs);
-        });
+        volumeSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+                                                  @Override
+                                                  public void onStartTrackingTouch(@NonNull Slider slider) {
+                                                  }
 
+                                                  @Override
+                                                  public void onStopTrackingTouch(@NonNull Slider slider) {
+                                                       handleVolumeSliderOnchange((int)slider.getValue());
+                                                  }
+                                              }
+        );
         volumePlus = view.findViewById(R.id.volumePlus);
         volumeMinus = view.findViewById(R.id.volumeMinus);
 
@@ -253,37 +255,13 @@ public class HomeFragment extends Fragment {
             return;
         }
         if (newVal != previousSliderVolume) {
-            VolumeDirection direction = null;
-            if (newVal > previousSliderVolume) {
-                direction = VolumeDirection.UP;
-            } else {
-                direction = VolumeDirection.DOWN;
-            }
-            VolumeDirection finalDirection = direction;
             isManualSliderChange = true;
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 try {
-                    int count = 0;
-                    float volume;
-                    while (true) {
-                        String data = (finalDirection == VolumeDirection.UP) ? volumeUpProcessor.sendGet().getValue() : volumeDownProcessor.sendGet().getValue();
-                        volume = Float.parseFloat(data);
-                        if (finalDirection == VolumeDirection.UP) {
-                            if (volume >= newVal) {
-                                break;
-                            }
-                        } else {
-                            if (volume <= newVal) {
-                                break;
-                            }
-                        }
-                        //just in case there is an issue, the loop wont run forever
-                        count++;
-                        if (count > 2000) {
-                            break;
-                        }
-                    }
+                    GenericDataProcessor processor=GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_UPDATE));
+                    Response r=new Response();
+                    processor.updateServer(newVal);
                     requireActivity().runOnUiThread(() -> {
                         isManualSliderChange = false;
                     });
@@ -293,7 +271,6 @@ public class HomeFragment extends Fragment {
             });
         }
         previousSliderVolume = newVal;
-
     }
 
     private void createHomeDataWebSocketListener() {

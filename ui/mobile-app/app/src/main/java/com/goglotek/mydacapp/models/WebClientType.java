@@ -19,4 +19,6 @@ public enum WebClientType {
     DSP_INPUT,
     MAINS_OUTPUT,
     SUBWOOFER_OUTPUT,
+    VOLUME_RAMP,
+    VOLUME_UPDATE
 }

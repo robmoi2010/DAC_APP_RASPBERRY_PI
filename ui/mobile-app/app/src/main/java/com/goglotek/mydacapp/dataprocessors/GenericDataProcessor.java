@@ -7,6 +7,7 @@ import com.goglotek.mydacapp.menu.DataRow;
 import com.goglotek.mydacapp.menu.MenuRow;
 import com.goglotek.mydacapp.menu.MenuUtil;
 import com.goglotek.mydacapp.menu.RowDataType;
+import com.goglotek.mydacapp.models.Request;
 import com.goglotek.mydacapp.models.Response;
 import com.goglotek.mydacapp.models.WebClient;
 import com.goglotek.mydacapp.util.Config;
@@ -108,12 +109,12 @@ public class GenericDataProcessor {
     }
 
     public List<DataRow> updateServer(int data) throws GoglotekException {
-        String payload = generateResponseData(data);
+        String payload = generateRequestData(data);
         return processServerData(put(payload));
     }
 
     public List<DataRow> updateServer(int data, RowDataType type) throws GoglotekException {
-        String payload = generateResponseData(data);
+        String payload = generateRequestData(data);
         return processServerData(put(payload), type);
     }
 
@@ -159,8 +160,8 @@ public class GenericDataProcessor {
         return rows;
     }
 
-    private String generateResponseData(int data) throws GoglotekException {
-        Response r = new Response("" + data, "" + data, "");
+    private String generateRequestData(int data) throws GoglotekException {
+        Request r = new Request("" + data, "" + data);
         try {
             return new ObjectMapper().writeValueAsString(r);
         } catch (JsonProcessingException e) {
