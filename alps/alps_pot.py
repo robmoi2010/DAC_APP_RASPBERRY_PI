@@ -114,10 +114,10 @@ class AlpsPot(AbstractVolume):
     def get_volume_from_percentage(self, percentage):
         pass
 
-    def get_max_volume(self, percentage):
+    def get_max_volume(self):
         return 100
 
-    def get_min_volume(self, percentage):
+    def get_min_volume(self):
         return 0
 
     def is_volume_more_than(self, volume1, volume2):

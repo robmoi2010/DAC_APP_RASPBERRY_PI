@@ -155,10 +155,10 @@ class Muses72323(AbstractVolume):
             decimal_places=2,
         )
 
-    def get_max_volume(self, percentage):
+    def get_max_volume(self):
         return self.MAX_VOLUME
 
-    def get_min_volume(self, percentage):
+    def get_min_volume(self):
         return self.MIN_VOLUME
 
     def is_volume_more_than(self, volume1, volume2):  # higher volume=higher value

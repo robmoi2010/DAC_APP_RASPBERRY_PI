@@ -20,6 +20,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -55,7 +57,6 @@ public class MenuFragment extends Fragment {
     private ViewPagerAdapter pagerAdapter;
     private ViewPager2 viewPager;
     private TabLayout tabLayout;
-    private boolean initDataLoaded = false;
     private ProgressBar progressBar;
     private FrameLayout overlay;
     private GenericDataProcessor dataProcessor;
@@ -134,30 +135,21 @@ public class MenuFragment extends Fragment {
                     handleRowOnclick(row)
                     , (isChecked, row) -> handleSwitchChange(isChecked, row), (current, row) -> handleSliderChange(current, row));
             recyclerView.setAdapter(adapter);
-            loadData();
-            initDataLoaded = true;
         } else {
             pagerAdapter = new ViewPagerAdapter(this, menu);
-            viewPager.registerOnPageChangeCallback(
-                    new ViewPager2.OnPageChangeCallback() {
-                        @Override
-                        public void onPageSelected(int position) {
-                            MenuFragment frag = pagerAdapter.getFragment(position);
-                            if (frag != null) {
-                                if (frag.menu.getDataType() == MenuDataType.DYNAMIC) {
-                                    if (!initDataLoaded) {
-                                        frag.loadData();
-                                    }
-                                }
-                            }
-                        }
-                    }
-            );
             viewPager.setAdapter(pagerAdapter);
             new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
                 tab.setText(menu.getRows().get(position).getText());
             }).attach();
         }
+        getViewLifecycleOwner().getLifecycle().addObserver(new DefaultLifecycleObserver() {
+            @Override
+            public void onResume(@NonNull LifecycleOwner owner) {
+                if (menu.getDataType() == MenuDataType.DYNAMIC) {
+                    loadData();
+                }
+            }
+        });
     }
 
     private GenericDataProcessor getDataProcessor(Menu menu) {
@@ -255,7 +247,6 @@ public class MenuFragment extends Fragment {
     }
 
     private void updateAdapter() {
-
         adapter.updateItems(menu.getRows());
         header.setText(menu.getRoot() != null ? menu.getRoot().getText() : "Settings");
     }

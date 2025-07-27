@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.anastr.speedviewlib.SpeedView;
 import com.goglotek.mydacapp.R;
@@ -23,6 +24,9 @@ import com.goglotek.mydacapp.App;
 import com.goglotek.mydacapp.dataprocessors.GenericDataProcessor;
 import com.goglotek.mydacapp.exceptions.GoglotekException;
 import com.goglotek.mydacapp.exceptions.NullDataException;
+import com.goglotek.mydacapp.menu.Menu;
+import com.goglotek.mydacapp.menu.MenuUtil;
+import com.goglotek.mydacapp.models.Request;
 import com.goglotek.mydacapp.models.Response;
 import com.goglotek.mydacapp.models.WebClientType;
 import com.goglotek.mydacapp.util.Config;
@@ -75,7 +79,7 @@ public class HomeFragment extends Fragment {
 
                                                   @Override
                                                   public void onStopTrackingTouch(@NonNull Slider slider) {
-                                                       handleVolumeSliderOnchange((int)slider.getValue());
+                                                      handleVolumeSliderOnchange((int) slider.getValue());
                                                   }
                                               }
         );
@@ -259,13 +263,15 @@ public class HomeFragment extends Fragment {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 try {
-                    GenericDataProcessor processor=GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_UPDATE));
-                    Response r=new Response();
-                    processor.updateServer(newVal);
+                    GenericDataProcessor processor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_UPDATE));
+                    Request r = new Request("0", "" + newVal);
+                    processor.sendPut(new ObjectMapper().writeValueAsString(r));
                     requireActivity().runOnUiThread(() -> {
                         isManualSliderChange = false;
                     });
                 } catch (GoglotekException e) {
+                    Timber.e(e, e.getMessage());
+                } catch (JsonProcessingException e) {
                     Timber.e(e, e.getMessage());
                 }
             });
