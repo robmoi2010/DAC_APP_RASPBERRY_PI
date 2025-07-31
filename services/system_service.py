@@ -127,8 +127,7 @@ async def home_websocket(websocket: WebSocket):
 
 @system_app.websocket("/ws/ir_remote")
 async def ir_remote_websocket(websocket: WebSocket):
-    websocket.accept()
-
+    await websocket.accept()
     await connection_manager.connect(WS_TYPE.IR_REMOTE, websocket)
     try:
         while True:

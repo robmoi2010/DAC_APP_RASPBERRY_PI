@@ -28,7 +28,7 @@ import MainTab from './tabs/MainTab';
 
 function Router() {
     const port = window.location.port;
-    const clientType = (port == "5174") ? ClientType.DEVICE : ClientType.WEB;
+    const clientType = (port == "5173") ? ClientType.DEVICE : ClientType.WEB;
     const dispatch = useDispatch();
     dispatch(setClientType(clientType));
     if (clientType == ClientType.DEVICE) {
