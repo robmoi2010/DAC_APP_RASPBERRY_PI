@@ -3,7 +3,7 @@ from enum import Enum
 from registry.register import register
 from repo.file_storage import FileStorage
 from repo.mongo_storage import MongoStorage
-import configs.app_config as app_config
+from configs.app_config import Config
 from repo.sql_storage import SqlStorage
 
 
@@ -20,8 +20,9 @@ class Storage:
         file_storage: FileStorage,
         mongo_storage: MongoStorage,
         sql_storage: SqlStorage,
+        config:Config
     ):
-        default_db = app_config.getConfig()["SYSTEM"]["STORAGE"]
+        default_db = config.config["SYSTEM"]["STORAGE"]
         if default_db == STORAGE.FILE.value:
             self.default_storage = file_storage
         elif default_db == STORAGE.MONGODB.value:

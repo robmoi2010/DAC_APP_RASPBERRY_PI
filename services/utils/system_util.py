@@ -1,12 +1,10 @@
 from model.model import ResponseModel
-from registry.register import get_instance
 from services.utils.services_util import SOUND_MODE_DISPLAY_NAME, VOLUME_DISPLAY_NAME
 from system.sound_modes import SOUND_MODE
 from system.system_util import SOUND_MODE_ID
 from volume import system_volume
 from volume.volume_util import VOLUME_ALGORITHM, VOLUME_DEVICE
 
-sound_modes = get_instance("soundmode")
 
 
 def is_selected(current_item, index):
@@ -16,8 +14,8 @@ def is_selected(current_item, index):
     return selected
 
 
-def create_sound_mode_response():
-    current: SOUND_MODE = sound_modes.get_current_sound_mode()
+def create_sound_mode_response(sound_mode):
+    current: SOUND_MODE = sound_mode.get_current_sound_mode()
     list = []
     r0 = ResponseModel(
         key="0",
@@ -34,9 +32,10 @@ def create_sound_mode_response():
     )
     list.append(r1)
     r2 = ResponseModel(
-        key="2", value=is_selected(current.value, 2), 
+        key="2",
+        value=is_selected(current.value, 2),
         description="Mains and subwoofer digital signals are dsp processed and filters, EQ and time alignment are applied to them.",
-        display_name=SOUND_MODE.DSP.name
+        display_name=SOUND_MODE.DSP.name,
     )
     list.append(r2)
     return list
@@ -94,7 +93,8 @@ def create_volume_device_response(volume: system_volume):
     list.append(r2)
     return list
 
-def create_home_data(volume):
+
+def create_home_data(volume, sound_modes):
     list = []
     # get current volume
     current = volume.get_percentage_volume(volume.get_current_volume())

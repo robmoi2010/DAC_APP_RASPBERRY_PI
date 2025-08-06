@@ -1,5 +1,6 @@
 from enum import Enum
-from registry.register import register, get_instance
+from registry.register import register
+from repo.storage import Storage
 
 CURRENT_INPUT_ID = "CURRENT_INPUT"
 CURRENT_MAIN_OUTPUT_ID = "CURRENT_MAIN_OUTPUT"
@@ -22,29 +23,26 @@ class Output(Enum):
     I2S_OUTPUT3 = 4
 
 
-storage = get_instance("storage")
-
-
 @register
 class DspIO:
-    def __init__(self):
-        pass
+    def __init__(self, storage: Storage):
+        self.storage = storage
 
     def update_current_input(self, input):
         # Store current input to storage
-        storage.write(CURRENT_INPUT_ID, int(input))
+        self.storage.write(CURRENT_INPUT_ID, int(input))
 
     def get_current_input(self):
-        return storage.read(CURRENT_INPUT_ID)
+        return self.storage.read(CURRENT_INPUT_ID)
 
     def update_main_output(self, output):
-        storage.write(CURRENT_MAIN_OUTPUT_ID, int(output))
+        self.storage.write(CURRENT_MAIN_OUTPUT_ID, int(output))
 
     def get_current_main_output(self):
-        return storage.read(CURRENT_MAIN_OUTPUT_ID)
+        return self.storage.read(CURRENT_MAIN_OUTPUT_ID)
 
     def update_subwoofer_output(self, output):
-        storage.write(CURRENT_SUBWOOFER_ID, int(output))
+        self.storage.write(CURRENT_SUBWOOFER_ID, int(output))
 
     def get_current_subwoofer_output(self):
-        return storage.read(CURRENT_SUBWOOFER_ID)
+        return self.storage.read(CURRENT_SUBWOOFER_ID)

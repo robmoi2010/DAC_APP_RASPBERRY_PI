@@ -12,10 +12,8 @@ from volume.volume_util import (
     VOLUME_RAMP_ENABLED_ID,
     remap_value,
 )
-import configs.app_config as configuration
 from repo.storage import Storage
 
-config = configuration.getConfig()
 LOG_CURVE = 0.6
 VOLUME_RAMP_STEP = 1
 
@@ -23,7 +21,11 @@ VOLUME_RAMP_STEP = 1
 @register
 class Volume:
     def __init__(
-        self, muses: Muses72323, dac_volume: DacVolume, storage: Storage, alps: AlpsPot
+        self,
+        muses: Muses72323,
+        dac_volume: DacVolume,
+        storage: Storage,
+        alps: AlpsPot
     ):
         self.storage = storage
         default = self.get_current_volume_device()
@@ -38,7 +40,6 @@ class Volume:
         return self.storage.read(CURRENT_DEVICE_ID)
 
     async def set_volume_from_ui(self, percentage_volume):
-
         # if volume ramp is enabled, ramp volume gradually to the new value
         if self.is_volume_ramp_enabled():
             current_volume = remap_value(

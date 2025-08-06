@@ -1,5 +1,5 @@
-from registry.register import get_instance
-import configs.app_config as app_config
+
+from configs.app_config import Config
 from registry.register import register
 from dac.dac_comm import DacComm
 from services.utils.ws_connection_manager import WSConnectionManager
@@ -17,9 +17,6 @@ from repo.storage import Storage
 DAC_MIN_VOL = 255
 DAC_MAX_VOL = 0
 LOG_CURVE = 6
-config = app_config.getConfig()
-
-addrConfig = config["DAC"]["ADDR"]
 DISABLE_VOLUME_ID = "DISABLE_VOLUME"
 DAC_MUTED_ID = "DAC_MUTED"
 
@@ -31,7 +28,10 @@ class DacVolume(AbstractVolume):
         dac_comm: DacComm,
         storage: Storage,
         connection_manager: WSConnectionManager,
+        config: Config,
     ):
+        self.config = config.config
+        self.addrConfig = self.config["DAC"]["ADDR"]
         self.dac_comm = dac_comm
         self.storage = storage
         self.connection_manager = connection_manager
@@ -68,15 +68,15 @@ class DacVolume(AbstractVolume):
         if volume_algorithm == VOLUME_ALGORITHM.LOGARITHMIC:
             vol = get_logarithmic_volume_level(vol, DAC_MIN_VOL, DAC_MAX_VOL)
         # hold both channels
-        hold_addr = addrConfig["DAC_SPDIF_SEL_ADDR"]
+        hold_addr = self.addrConfig["DAC_SPDIF_SEL_ADDR"]
         hold_mask = 0b00001000
         data = self.dac_comm.read(hold_addr)
         data = data | hold_mask
         self.dac_comm.write(hold_addr, data)
 
         # update volume of both channels
-        volume_1_addr = addrConfig["VOLUME_CH1"]
-        volume_2_addr = addrConfig["VOLUME_CH2"]
+        volume_1_addr = self.addrConfig["VOLUME_CH1"]
+        volume_2_addr = self.addrConfig["VOLUME_CH2"]
         # volume_data = format(vol, "08b")
         # dac_comm.write(volume_1_addr, volume_data)
         # dac_comm.write(volume_2_addr, volume_data)
@@ -87,7 +87,7 @@ class DacVolume(AbstractVolume):
 
     def update_volume(self, direction, volume_algorithm: VOLUME_ALGORITHM):
         currVol = self.get_current_volume()
-        steps = config["DAC"]["VOLUME"]["VOLUME_STEPS"]  # get volume steps from config
+        steps = self.config["DAC"]["VOLUME"]["VOLUME_STEPS"]  # get volume steps from config
         if direction == VOL_DIRECTION.UP:  # volume increase
             if currVol <= DAC_MAX_VOL:  # skip processing if volume is already at Max
                 return 100
@@ -123,14 +123,14 @@ class DacVolume(AbstractVolume):
             return 1  # enabled
 
     def mute_dac(self):
-        mute_addr = addrConfig["DAC_MUTE"]
+        mute_addr = self.addrConfig["DAC_MUTE"]
         mute_mask = 0b00000011
         data = self.dac_comm.read(mute_addr)
         data = data | mute_mask
         self.dac_comm.write(mute_addr, data)
 
     def unmute_dac(self):
-        mute_addr = addrConfig["DAC_MUTE"]
+        mute_addr = self.addrConfig["DAC_MUTE"]
         mute_mask = 0b00000011
         data = self.dac_comm.read(mute_addr)
         data = data & ~mute_mask

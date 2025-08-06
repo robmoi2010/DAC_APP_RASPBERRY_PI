@@ -1,18 +1,17 @@
 from pymongo import MongoClient
-from configs import app_config
+from configs.app_config import Config
 from registry.register import register
 from repo.init_data import init_data
 
 
 @register
 class MongoStorage:
-    url = app_config.getConfig()["MONGODB"]["URL"]
 
-    def __init__(self):
+    def __init__(self, config: Config):
         # super().__init__()
         # Connect to MongoDB
+        self.url = config.config["MONGODB"]["URL"]
         self.client = MongoClient("mongodb://" + self.url)
-
         # Access the database (creates it if it doesn't exist)
         self.db = self.client.dac
         self.records = self.db.records

@@ -1,15 +1,15 @@
+import asyncio
 import pigpio
 import time
-import configs.app_config as app_config
+from configs.app_config import Config
 from enum import Enum
-from registry.register import get_instance
 from system.ir_remote_router import IrRemoteRouter
 from system.system_util import BUTTON
 
 """put functionality in a class and create a background thread to listen for ir remote signals during implementaion."""
 """create a function to capture and store ir codes. Put the ir codes in the config buttonhash array in order for the application to be used with any preconfigured remote."""
-ir_remote_router: IrRemoteRouter = get_instance("irremoterouter")
-config = app_config.getConfig()
+ir_remote_router 
+config = Config().config
 irConfig = config["IR_REMOTE"]["BUTTON_HASH"]
 
 # Configuration
@@ -43,7 +43,7 @@ def decode_pulse(pulses):
     return None
 
 
-def ir_callback(gpio, level, tick):
+async def ir_callback(gpio, level, tick, ir_remote_router ):
     """Callback function to handle IR signals."""
     global last_tick, code
 
@@ -52,7 +52,7 @@ def ir_callback(gpio, level, tick):
             decoded = decode_pulse(code)
             if decoded:
                 btn = {k for k, v in irConfig.items() if decoded in v}
-                ir_remote_router.handle_remote_button(map_button_name(btn))
+                await ir_remote_router.handle_remote_button(map_button_name(btn))
                 print(f"Key Pressed: {btn} (Hex: {decoded})")
             code = []
     else:

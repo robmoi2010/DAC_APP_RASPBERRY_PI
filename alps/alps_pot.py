@@ -1,6 +1,7 @@
+import asyncio
 from time import sleep
 from gpiozero import Motor
-import configs.app_config as app_config
+from configs.app_config import Config
 from dac.dac_volume import DacVolume
 from registry.register import register
 from repo.storage import Storage
@@ -17,8 +18,14 @@ from volume.volume_util import (
 
 @register
 class AlpsPot(AbstractVolume):
-    def __init__(self, storage: Storage, connection_manager: WSConnectionManager):
-        self.config = app_config.getConfig()["ALPS"]
+    def __init__(
+        self,
+        storage: Storage,
+        connection_manager: WSConnectionManager,
+        config: Config,
+        volume: DacVolume,
+    ):
+        self.config = config.config["ALPS"]
         self.storage = storage
         # self.motor = Motor(
         #     forward=self.config["FORWARD_GPIO_PIN"],
@@ -59,8 +66,7 @@ class AlpsPot(AbstractVolume):
 
     def mute(self):
         # mute at the dac level
-        volume: DacVolume = register.get_instance("dacvolume")
-        volume.mute()
+        self.volume.mute()
 
     def get_percentage_volume(self, vol):
         return vol

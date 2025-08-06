@@ -1,18 +1,17 @@
-import configs.app_config as app_config
+from configs.app_config import Config
 from registry.register import register
 from util.communication import Comm
-
-config = app_config.getConfig()["DAC"]["ADDR"]
-DAC_I2C_ADDR = config["I2C_ADDR"]
 
 
 @register
 class DacComm:
-    def __init__(self, comm: Comm):
+    def __init__(self, comm: Comm, config: Config):
+        self.config = config.config["DAC"]["ADDR"]
+        self.DAC_I2C_ADDR = self.config["I2C_ADDR"]
         self.comm = comm
 
     def read(self, addr):
-        return self.comm.read(DAC_I2C_ADDR, addr)
+        return self.comm.read(self.DAC_I2C_ADDR, addr)
 
     def write(self, addr, value):
-        return self.comm.write(DAC_I2C_ADDR, addr, value)
+        return self.comm.write(self.DAC_I2C_ADDR, addr, value)
