@@ -35,6 +35,24 @@ The software is **modular and highly extensible**, allowing:
 
 ---
 
+## 🖥️ Hardware Requirements
+
+The DAC control software is lightweight and optimized to run on **Raspberry Pi 3 and above**.  
+This ensures smooth performance for both the on-device UI and remote control interfaces.
+
+### ✅ Recommended Hardware Setup
+- **Raspberry Pi 3, 4, or newer**
+- **ESS9039Q2M DAC chipset** (default supported, others can be adapted)
+- Stable **network connection** (for Web UI and Android app support)
+- **IR remote** (for traditional remote control option)
+
+### 🔧 Commercial Hardware Options
+For commercial deployments, Goglotek LTD provides:
+- **Custom ESS9039Q2M high-performance PCB design**
+- Optional **MUSES72323 hardware volume control**
+- Professional-grade **DAC analog stage and discrete transistor buffer circuits**
+
+
 ## 🚀 Benefits for Manufacturers
 
 - Enhance product value with **flexible control interfaces**  
