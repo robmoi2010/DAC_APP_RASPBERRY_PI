@@ -4,7 +4,6 @@ import DspTabs from './DspTabs';
 import SystemTabs from './SystemTabs';
 import { IconCpu, IconAdjustments, IconSettings, IconArrowLeft } from '@tabler/icons-react';
 import {
-    Box,
     Button,
     Tabs,
 } from '@chakra-ui/react';
@@ -14,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Tab() {
     const navigate = useNavigate();
     return (<div>
-        <Button onClick={() => navigate("/Home")} ><IconArrowLeft /></Button>
+        <Button variant='outline' onClick={() => navigate("/Home")} ><IconArrowLeft /></Button>
             <Tabs.Root lazyMount unmountOnExit defaultValue="DacSettings" fitted={true}>
                 <Tabs.List>
                     <Tabs.Trigger value="DacSettings"><IconCpu />Dac Settings</Tabs.Trigger>

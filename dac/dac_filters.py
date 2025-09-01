@@ -1,5 +1,4 @@
-import configs.app_config as app_config
-from registry.register import get_instance
+from configs.app_config import Config
 from registry.register import register
 from dac.dac_comm import DacComm
 from repo.storage import Storage
@@ -12,19 +11,19 @@ from repo.storage import Storage
 # 5 Minimum phase fast roll-off
 # 6 Minimum phase slow roll-off
 # 7 Minimum phase slow roll-off low dispersion
-config = app_config.getConfig()["DAC"]["ADDR"]
 
 CURRENT_FILTER_ID = "CURRENT_FILTER"
 
 
 @register
 class DacFilters:
-    def __init__(self, storage: Storage, dac_comm: DacComm):
+    def __init__(self, storage: Storage, dac_comm: DacComm, config: Config):
         self.storage = storage
         self.dac_comm = dac_comm
+        self.config = config.getConfig()["DAC"]["ADDR"]
 
     def update_filter(self, filter):
-        filter_shape_addr = config["DAC_FILTER_SHAPE"]
+        filter_shape_addr = self.config["DAC_FILTER_SHAPE"]
         gen_mask = 0b00000111
         msb = "00000"
         # lsb = format(str(filter), "03b")

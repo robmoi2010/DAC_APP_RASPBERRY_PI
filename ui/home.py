@@ -5,7 +5,7 @@ from system.sound_modes import SoundMode, SOUND_MODE
 
 from ui.generics.general_button import GeneralButton
 
-from util.styles import BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE
+from ui.styles import BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE
 
 font = (BUTTON_FONT, BUTTON_FONT_SIZE, BUTTON_FONT_STYLE)
 

@@ -1,21 +1,28 @@
-import configs.app_config as app_config
-from registry.register import register, get_instance
+from configs.app_config import Config
+from registry.register import register
 from dac.dac_comm import DacComm
 from repo.storage import Storage
-
-config2 = app_config.getConfig()["DAC"]
-config = config2["ADDR"]
-DAC_I2C_ADDR = config["I2C_ADDR"]
+from services.utils.ws_connection_manager import WSConnectionManager
 
 
 @register
 class Dac:
-    def __init__(self, dac_comm: DacComm, storage: Storage):
+    def __init__(
+        self,
+        dac_comm: DacComm,
+        storage: Storage,
+        ws_connection: WSConnectionManager,
+        config: Config,
+    ):
+        self.config = config.config["DAC"]
+        self.addr_config = self.config["ADDR"]
+        self.DAC_I2C_ADDR = self.addr_config["I2C_ADDR"]
         self.dac_comm = dac_comm
         self.storage = storage
+        self.ws_connection = ws_connection
 
     def enable_dac_analog_section(self):
-        addr = config["SYS_CONFIG"]
+        addr = self.addr_config["SYS_CONFIG"]
         mask = 0b00000010  # mask to change bit for enabling dac analog section
         data = self.dac_comm.read(addr)  # sys config register values
         data = data | mask
@@ -25,20 +32,20 @@ class Dac:
         self.enable_dac_analog_section()
 
     def set_lj_slave_mode(self):
-        addr = config["TDM_CONFIG_1"]
+        addr = self.addr_config["TDM_CONFIG_1"]
         mask = 0b11000000
         data = self.dac_comm.read(addr)
         data = data | mask
         self.dac_comm.write(addr, data)
 
     def set_i2s_master_mode(self):
-        addr = config["TDM_CONFIG_1"]
+        addr = self.addr_config["TDM_CONFIG_1"]
         mask = 0b10000000
         data = self.dac_comm.read(addr)
         data = data | mask
         self.dac_comm.write(addr, data)
 
-        input_sel_addr = config["INPUT_SELECTION"]
+        input_sel_addr = self.addr_config["INPUT_SELECTION"]
         in_mask = 0b00010000
         data2 = self.dac_comm.read(input_sel_addr)
         data2 = data2 | in_mask
@@ -46,22 +53,22 @@ class Dac:
 
     def set_spdif_mode(self):
         # set input to spdif and auto input data format to auto
-        input_sel_addr = config["INPUT_SELECTION"]
+        input_sel_addr = self.addr_config["INPUT_SELECTION"]
         in_mask = 0b00000111
         data2 = self.dac_comm.read(input_sel_addr)
         data2 = data2 | in_mask
         self.dac_comm.write(input_sel_addr, data2)
 
         # enable spdif decode
-        addr = config["SYS_MODE_CONFIG"]
+        addr = self.addr_config["SYS_MODE_CONFIG"]
         smask = 0b00001000
         data = self.dac_comm.read(addr)
         data = data | smask
         self.dac_comm.write(addr, data)
 
         # set SDB for the spdf gpio pin
-        gpio_pin = config2["GPIO"]["SPDIF_GPIO_PIN"]
-        sdb_addr = config["DAC_GPIO_INPUT_ADDR"]
+        gpio_pin = self.config["GPIO"]["SPDIF_GPIO_PIN"]
+        sdb_addr = self.addr_config["DAC_GPIO_INPUT_ADDR"]
         sdb_mask = 0b00000001
         if gpio_pin > 1:
             sdb_mask = sdb_mask << gpio_pin
@@ -70,7 +77,7 @@ class Dac:
         self.dac_comm.write(sdb_addr, data4)
 
         # set gpio pin for spdif
-        spdf_addr = config["DAC_SPDIF_SEL_ADDR"]
+        spdf_addr = self.addr_config["DAC_SPDIF_SEL_ADDR"]
         pin_value = gpio_pin + 2
         pin_bin = format(pin_value, "04b")
         gen_mask = 0b11110000
@@ -128,11 +135,11 @@ class Dac:
         active = self.is_second_order_compensation_enabled()
         if (selected == 1 and active) or (selected == 0 and not active):
             return
-        reg_1_addr = config["THD_2ND_ORDER_1"]
-        reg_2_addr = config["THD_2ND_ORDER_2"]
-        reg_3_addr = config["THD_2ND_ORDER_3"]
-        reg_4_addr = config["THD_2ND_ORDER_4"]
-        print("abc:" + str(active))
+        reg_1_addr = self.addr_config["THD_2ND_ORDER_1"]
+        reg_2_addr = self.addr_config["THD_2ND_ORDER_2"]
+        reg_3_addr = self.addr_config["THD_2ND_ORDER_3"]
+        reg_4_addr = self.addr_config["THD_2ND_ORDER_4"]
+
         if selected == 0:  # disable
             data = 0b00000000
             # store reg values for enabling the setting if not stored yet
@@ -170,10 +177,10 @@ class Dac:
         active = self.is_third_order_compensation_enabled()
         if (selected == 1 and active) or (selected == 0 and not active):
             return
-        reg_1_addr = config["THD_3RD_ORDER_1"]
-        reg_2_addr = config["THD_3RD_ORDER_2"]
-        reg_3_addr = config["THD_3RD_ORDER_3"]
-        reg_4_addr = config["THD_3RD_ORDER_4"]
+        reg_1_addr = self.addr_config["THD_3RD_ORDER_1"]
+        reg_2_addr = self.addr_config["THD_3RD_ORDER_2"]
+        reg_3_addr = self.addr_config["THD_3RD_ORDER_3"]
+        reg_4_addr = self.addr_config["THD_3RD_ORDER_4"]
         if selected == 0:  # disable
             data = 0b00000000
             # store reg values for enabling the setting if not stored yet
@@ -219,3 +226,15 @@ class Dac:
         else:
             # code for registry access and enabling oversampling here
             self.storage.write("OVERSAMPLING_ENABLED", 1)
+
+    def get_dpll_bandwidth(self):  # Dac digital phase locked loop setting
+        return self.storage.read("DPLL_BANDWIDTH")
+
+    def set_dpll_bandwidth(
+        self, value
+    ):  # The lower the value the better the jitter reduction at stability cost.
+        if value < 1 or value > 15:  # out of range(1-15) 4d
+            return
+        # code for accessing register and setting the dpll bandwidth value here
+
+        self.storage.write("DPLL_BANDWIDTH", value)

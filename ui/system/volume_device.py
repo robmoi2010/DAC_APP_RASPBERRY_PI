@@ -4,7 +4,7 @@ from ui.generics.back_button import BackButton
 from registry.register import get_instance
 from volume.system_volume import VOLUME_DEVICE
 from tkinter import messagebox
-from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
+from ui.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
 volume=get_instance("volume")
 

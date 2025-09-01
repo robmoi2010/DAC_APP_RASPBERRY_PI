@@ -1,16 +1,16 @@
+import asyncio
 import pigpio
 import time
-import configs.app_config as app_config
+from configs.app_config import Config
 from enum import Enum
-from registry.register import get_instance
 from system.ir_remote_router import IrRemoteRouter
+from system.system_util import BUTTON
 
-ir_remote_router: IrRemoteRouter = get_instance("irremoterouter")
-config = app_config.getConfig()
+"""put functionality in a class and create a background thread to listen for ir remote signals during implementaion."""
+"""create a function to capture and store ir codes. Put the ir codes in the config buttonhash array in order for the application to be used with any preconfigured remote."""
+ir_remote_router 
+config = Config().config
 irConfig = config["IR_REMOTE"]["BUTTON_HASH"]
-BUTTON = Enum("BUTTON", irConfig)
-
-buttonHash = [x for x in irConfig]
 
 # Configuration
 IR_GPIO = config["GPIO"]["PIN_MAP"][
@@ -43,7 +43,7 @@ def decode_pulse(pulses):
     return None
 
 
-def ir_callback(gpio, level, tick):
+async def ir_callback(gpio, level, tick, ir_remote_router ):
     """Callback function to handle IR signals."""
     global last_tick, code
 
@@ -51,8 +51,8 @@ def ir_callback(gpio, level, tick):
         if len(code) > 0:
             decoded = decode_pulse(code)
             if decoded:
-                btn = next((k for k, v in irConfig.items() if v == decoded), None)
-                ir_remote_router.handle_remote_button(btn)
+                btn = {k for k, v in irConfig.items() if decoded in v}
+                await ir_remote_router.handle_remote_button(map_button_name(btn))
                 print(f"Key Pressed: {btn} (Hex: {decoded})")
             code = []
     else:
@@ -74,3 +74,24 @@ try:
         time.sleep(1)
 except KeyboardInterrupt:
     print("\nExiting...")
+
+
+def map_button_name(btn: str) -> BUTTON:
+    if btn == "VOLUME_UP":
+        return BUTTON.VOLUME_UP
+    elif btn == "VOLUME_DOWN":
+        return BUTTON.VOLUME_DOWN
+    elif btn == "POWER":
+        return BUTTON.POWER
+    elif btn == "MUTE":
+        return BUTTON.MUTE
+    elif btn == "UP":
+        return BUTTON.UP
+    elif btn == "DOWN":
+        return BUTTON.DOWN
+    elif btn == "LEFT":
+        return BUTTON.LEFT
+    elif btn == "RIGHT":
+        return BUTTON.RIGHT
+    elif btn == "OK":
+        return BUTTON.OK

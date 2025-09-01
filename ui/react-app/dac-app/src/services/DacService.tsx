@@ -42,3 +42,10 @@ export const  getOversamplingStatus = async () => {
 export const updateOversamplingStatus = async (data: string) => {
     return sendPut(Config["BASE_URL"] + "dac/oversampling/status", data);
 }
+
+export const  getDpllBandwidth = async () => {
+    return sendGet(Config["BASE_URL"] + "dac/dpll_bandwidth");
+}
+export const updateDpllBandwidth = async (data: string) => {
+    return sendPut(Config["BASE_URL"] + "dac/dpll_bandwidth", data);
+}

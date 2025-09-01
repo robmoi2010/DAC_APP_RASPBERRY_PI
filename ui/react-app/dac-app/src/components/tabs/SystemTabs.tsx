@@ -3,6 +3,8 @@ import VolumeDevice from '../system/VolumeDevice';
 import VolumeAlgorithm from '../system/VolumeAlgorithm';
 import SoundModes from '../system/SoundModes';
 import { IconFunction, IconGauge, IconSettings } from '@tabler/icons-react';
+import { getVolumeRamp, updateVolumeRamp } from '../../services/SystemService';
+import DynamicSwitch from '../DynamicSwitch';
 const SystemTabs = () => {
     return (
         <Tabs.Root lazyMount unmountOnExit defaultValue="VolumeDevice" orientation="vertical">
@@ -10,6 +12,7 @@ const SystemTabs = () => {
                 <Tabs.Trigger value="VolumeDevice"><IconGauge />Volume Device</Tabs.Trigger>
                 <Tabs.Trigger value="VolumeAlgorithm"><IconFunction />Volume Algorithm</Tabs.Trigger>
                 <Tabs.Trigger value="SoundModes"><IconSettings />Sound Modes</Tabs.Trigger>
+                <Tabs.Trigger value="VolumeRamp"><IconSettings />Volume Ramp</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="VolumeDevice">
                 <Box
@@ -39,6 +42,16 @@ const SystemTabs = () => {
                     p={4}
                 >
                     <SoundModes />
+                </Box>
+            </Tabs.Content>
+            <Tabs.Content value="VolumeRamp">
+                <Box
+                    height="500px"
+                    overflowY="auto"
+                    width="800px"
+                    p={4}
+                >
+                    <DynamicSwitch id={SystemTabs.name + "volumeramp"} dataFunction={getVolumeRamp} updateFunction={updateVolumeRamp} tooltipText="Volume ramp on/off" />
                 </Box>
             </Tabs.Content>
         </Tabs.Root>);

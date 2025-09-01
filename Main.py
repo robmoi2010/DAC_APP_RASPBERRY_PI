@@ -1,9 +1,7 @@
+#!C:\Users\admin\AppData\Local\Programs\Python\Python313 python
 import logging
 
-from repo.mongo_storage import MongoStorage
 from ui.app import App
-import registry.register as register
-from dac.ess_dac import Dac
 import uvicorn
 
 app_window = None
@@ -17,32 +15,5 @@ def get_app_window():
         app_window.mainloop()
     return app_window
 
-
-def main():
-    window = get_app_window()
-    window.mainloop()
-
-
-def initialize_device():
-    try:
-        dac: Dac = register.get_instance("dac")
-        dac.initialize_dac()
-    except Exception as e:
-        logger.error(e)
-    try:
-        storage: MongoStorage = register.get_instance("mongostorage")
-        storage.initialize()
-        pass
-    except Exception as e:
-        logger.error(e)
-    try:
-        muses = register.get_instance("muses72323")
-        muses.initialize_volume_chip()
-    except Exception as e:
-        logger.error(e)
-
-
 if __name__ == "__main__":
-    initialize_device()
-    uvicorn.run("services.root_service:app", host="127.0.0.1", port=8000, reload=True)
-    get_app_window()
+    uvicorn.run("services.root_service:app", host="0.0.0.0", port=8000)

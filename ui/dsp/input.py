@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from registry.register import get_instance
-from util.styles import BUTTON_BG, BUTTON_ONFOCUS_BG, UNSELECTED_COLOR, SELECTED_COLOR
+from ui.styles import BUTTON_BG, BUTTON_ONFOCUS_BG, UNSELECTED_COLOR, SELECTED_COLOR
 from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 from dsp.io import DspIO

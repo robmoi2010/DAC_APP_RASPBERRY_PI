@@ -1,0 +1,24 @@
+package com.goglotek.mydacapp.models;
+
+public enum WebClientType {
+    HOME_DATA,
+    VOLUME,
+    VOLUME_DEVICE,
+    VOLUME_ALGORITHM,
+    SOUND_MODES,
+    VOLUME_UP,
+    VOLUME_DOWN,
+    FILTERS,
+    VOLUME_STATUS,
+    DAC_MODES,
+    VOLUME_MODES,
+    SECOND_ORDER,
+    THIRD_ORDER,
+    OVERSAMPLING,
+    DPLL_BANDWIDTH,
+    DSP_INPUT,
+    MAINS_OUTPUT,
+    SUBWOOFER_OUTPUT,
+    VOLUME_RAMP,
+    VOLUME_UPDATE
+}

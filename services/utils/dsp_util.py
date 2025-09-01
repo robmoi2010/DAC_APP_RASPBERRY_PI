@@ -1,12 +1,8 @@
 from model.model import ResponseModel
 from services.utils.system_util import is_selected
-from registry.register import get_instance
-from dsp.io import DspIO
-
-dsp: DspIO = get_instance("dspio")
 
 
-def create_output_response(type):  # 0 mains 1 subwoofer
+def create_output_response(type, dsp):  # 0 mains 1 subwoofer
     # 0 COAX_OUTPUT
     # 1 I2S_OUTPUT0
     # 2 I2S_OUTPUT1
@@ -57,7 +53,7 @@ def create_output_response(type):  # 0 mains 1 subwoofer
     return list
 
 
-def create_input_response():
+def create_input_response(dsp):
     # 0 TOSLINK
     # 1 I2S_INPUT0
     # 2 I2S_INPUT1
@@ -66,9 +62,10 @@ def create_input_response():
     current_input = dsp.get_current_input()
     list = []
     r0 = ResponseModel(
-        key="0", value="" + is_selected(current_input, 0), 
+        key="0",
+        value="" + is_selected(current_input, 0),
         description="Toslink input",
-        display_name="Toslink"
+        display_name="Toslink",
     )
     list.append(r0)
     r1 = ResponseModel(

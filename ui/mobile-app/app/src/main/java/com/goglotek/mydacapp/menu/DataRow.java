@@ -1,6 +1,8 @@
 package com.goglotek.mydacapp.menu;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 public interface DataRow extends Serializable {
     public Menu getNext();
@@ -28,4 +30,12 @@ public interface DataRow extends Serializable {
     public RowDataType getType();
 
     public boolean equals(Object obj);
+
+    public List<Map<String, String>> getRowOptions();
+
+    public void setRowOptions(List<Map<String, String>> options);
+
+    public String getDescription();
+
+    public void setDescription(String description);
 }

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from registry.register import get_instance
-from util.styles import (
+from ui.styles import (
     RELIEF,
     BUTTON_BG,
     BUTTON_HEIGHT,

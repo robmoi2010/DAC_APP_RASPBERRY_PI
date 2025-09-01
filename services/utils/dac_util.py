@@ -1,13 +1,8 @@
-from registry.register import get_instance
 from model.model import ResponseModel
 from services.utils.system_util import is_selected
 
-dac_filters = get_instance("dacfilters")
-dac = get_instance("dac")
-volume_encoder = get_instance("volumeencoder")
 
-
-def create_filter_response():
+def create_filter_response(dac_filters):
     # 0 Minimum phase
     # 1 Linear phase apodizing fast roll-off
     # 2 Linear phase fast roll-off
@@ -78,7 +73,7 @@ def create_filter_response():
     return list
 
 
-def create_dac_mode_response():
+def create_dac_mode_response(dac):
     # 0 I2S Slave mode
     # 1 LJ Slave mode
     # 2 I2S Master mode
@@ -116,7 +111,7 @@ def create_dac_mode_response():
     return list
 
 
-def create_volume_modes_response():
+def create_volume_modes_response(volume_encoder):
     list = []
     selected = volume_encoder.getButtonKnobMode()
     r0 = ResponseModel(
@@ -134,3 +129,14 @@ def create_volume_modes_response():
     )
     list.append(r1)
     return list
+
+
+def create_dpll_bandwidth_response(dac):
+    bandwidth = dac.get_dpll_bandwidth()
+    r = ResponseModel(
+        key="0",
+        value=str(bandwidth),
+        description="Digital Phase Locked Loop bandwidth setting. The lower the value, the less the jitter but more unstable for sources with bad clocks. Set to the lowest stable value for your source by experiment.",
+        display_name="DPLL Bandwidth",
+    )
+    return r

@@ -9,25 +9,28 @@ from volume.volume_util import (
     CURRENT_MUSES_VOLUME_ID,
     VOLUME_DEVICE,
     get_logarithmic_volume_level,
-    map_value,
+    remap_value,
 )
-import configs.app_config as configuration
+from configs.app_config import Config
 from muses.muses_comm import MusesComm
-
-config = configuration.getConfig()["MUSES72323"]
 
 
 @register
 class Muses72323(AbstractVolume):
 
     def __init__(
-        self, storage: Storage, comm: MusesComm, connection_manager: WSConnectionManager
+        self,
+        storage: Storage,
+        comm: MusesComm,
+        connection_manager: WSConnectionManager,
+        config: Config,
     ):
+        self.config = config.config["MUSES72323"]
         self.storage = storage
         self.comm = comm
-        self.MAX_VOLUME = config["MAX_VOLUME"]
-        self.MIN_VOLUME = config["MIN_VOLUME"]
-        self.STEP = config["STEP"]
+        self.MAX_VOLUME = self.config["MAX_VOLUME"]
+        self.MIN_VOLUME = self.config["MIN_VOLUME"]
+        self.STEP = self.config["STEP"]
         self.connection_manager = connection_manager
 
     def update_volume(self, direction, volume_algorithm: VOLUME_ALGORITHM):
@@ -44,11 +47,7 @@ class Muses72323(AbstractVolume):
             ):  # skip processing if volume is already at Minimum
                 return 0
             curr_volume -= self.STEP
-            print("after step:" + str(curr_volume))
-        self.update_chip_volume(curr_volume, volume_algorithm)
-        self.persist_volume(curr_volume)
-        # return new percentage volume for ui update
-        return self.get_percentage_volume(curr_volume)
+        return self.process_new_volume(curr_volume, volume_algorithm)
 
     def update_chip_volume(self, vol, volume_algorithm: VOLUME_ALGORITHM):
         # if logarithmic is set adjust volume to logarithmic scale
@@ -58,59 +57,56 @@ class Muses72323(AbstractVolume):
             vol = get_logarithmic_volume_level(
                 abs(vol), self.MIN_VOLUME, self.MAX_VOLUME
             )
-        print("prev_val:", str(vol))
         vol = self.map_db_to_reg_binary(vol)
-        print("new val:" + str(vol))
-        master_channel = config["MASTER_CHANNEL"]
+
+        master_channel = self.config["MASTER_CHANNEL"]
         lsb_addr = None
         if master_channel == "R":
-            lsb_addr = config["R_VOLUME_ADDR_REGISTER"]
+            lsb_addr = self.config["R_VOLUME_ADDR_REGISTER"]
         else:
-            lsb_addr = config["L_VOLUME_ADDR_REGISTER"]
+            lsb_addr = self.config["L_VOLUME_ADDR_REGISTER"]
         msb_addr = format(int(vol), "09b")  # Convert to 9 bit binary
-        print("msb:" + msb_addr)
-        print("lsb:" + lsb_addr)
+
         data = msb_addr + lsb_addr
-        print(data)
-        l_pin = config["R_CHANNEL_CS_PIN"]
-        r_pin = config["L_CHANNEL_CS_PIN"]
+
+        l_pin = self.config["R_CHANNEL_CS_PIN"]
+        r_pin = self.config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)
         self.comm.spi_write(l_pin, data)
 
     def initialize_volume_chip(self):
         # link left and right channel volume control, enable zero cross and channels gain
-        link_channels = config["R/L_LINK"]
-        r_gain = config["R_CHANNEL_GAIN"]
-        l_gain = config["L_CHANNEL_GAIN"]
-        z_cross = config["ZERO_CROSS_DETECTION"]
-        lsb_addr = config["SETTINGS_ADDR"]
+        link_channels = self.config["R/L_LINK"]
+        r_gain = self.config["R_CHANNEL_GAIN"]
+        l_gain = self.config["L_CHANNEL_GAIN"]
+        z_cross = self.config["ZERO_CROSS_DETECTION"]
+        lsb_addr = self.config["SETTINGS_ADDR"]
         data = link_channels + l_gain + r_gain + z_cross + lsb_addr
-        print("data:" + data)
-        l_pin = config["R_CHANNEL_CS_PIN"]
-        r_pin = config["L_CHANNEL_CS_PIN"]
+
+        l_pin = self.config["R_CHANNEL_CS_PIN"]
+        r_pin = self.config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)
         self.comm.spi_write(l_pin, data)
 
     def mute(self):
-        master_channel = config["MASTER_CHANNEL"]
+        master_channel = self.config["MASTER_CHANNEL"]
         lsb_addr = None
         if master_channel == "R":
-            lsb_addr = config["R_VOLUME_ADDR_REGISTER"]
+            lsb_addr = self.config["R_VOLUME_ADDR_REGISTER"]
         else:
-            lsb_addr = config["L_VOLUME_ADDR_REGISTER"]
+            lsb_addr = self.config["L_VOLUME_ADDR_REGISTER"]
         msb_addr = "000000000"
-        print("msb:" + msb_addr)
-        print("lsb:" + lsb_addr)
+
         data = msb_addr + lsb_addr
-        print(data)
-        l_pin = config["R_CHANNEL_CS_PIN"]
-        r_pin = config["L_CHANNEL_CS_PIN"]
+
+        l_pin = self.config["R_CHANNEL_CS_PIN"]
+        r_pin = self.config["L_CHANNEL_CS_PIN"]
         self.comm.spi_write(r_pin, data)
         self.comm.spi_write(l_pin, data)
 
     def get_percentage_volume(self, vol):
-        p_vol = map_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
-        return int(p_vol)
+        p_vol = remap_value(vol, self.MIN_VOLUME, self.MAX_VOLUME, 0, 100)
+        return p_vol
 
     def map_db_to_reg_binary(self, vol):
         vol = abs(vol)
@@ -144,3 +140,29 @@ class Muses72323(AbstractVolume):
         return super().update_ui_volume(
             VOLUME_DEVICE.MUSES, self.connection_manager, volume
         )
+
+    def process_new_volume(self, currVol, volume_algorithm: VOLUME_ALGORITHM):
+        self.update_chip_volume(currVol, volume_algorithm)
+        self.persist_volume(currVol)
+        # return new percentage volume for ui update
+        return self.get_percentage_volume(currVol)
+
+    def get_volume_from_percentage(self, percentage):
+        return remap_value(
+            percentage,
+            0,
+            100,
+            self.MIN_VOLUME,
+            self.MAX_VOLUME,
+            float_range=True,
+            decimal_places=2,
+        )
+
+    def get_max_volume(self):
+        return self.MAX_VOLUME
+
+    def get_min_volume(self):
+        return self.MIN_VOLUME
+
+    def is_volume_more_than(self, volume1, volume2):  # higher volume=higher value
+        return volume1 > volume2

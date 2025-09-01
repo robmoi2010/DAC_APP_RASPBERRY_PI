@@ -8,6 +8,8 @@ import dynamicComponentsDataSlice from "./slices/dynamicComponentsDataSlice";
 import selectedIndexSlice from "./slices/selectedIndexSlice";
 import clientTypeSlice from "./slices/clientTypeSlice";
 import switchCheckedSlice from "./slices/switchCheckedSlice";
+import sliderValuesSlice from "./slices/sliderValuesSlice";
+import updateSliderValuesSlice  from "./slices/updateSliderValuesSlice";
 export default configureStore({
     reducer:
     {
@@ -20,6 +22,8 @@ export default configureStore({
         dynamicComponentsData: dynamicComponentsDataSlice,
         selectedIndex: selectedIndexSlice,
         clientType:clientTypeSlice,
-        switchChecked:switchCheckedSlice
+        switchChecked:switchCheckedSlice,
+        sliderValues:sliderValuesSlice,
+        updateSliderValues:updateSliderValuesSlice
     }
 });

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from util.styles import (
+from ui.styles import (
     RELIEF,
     BUTTON_BG,
     BUTTON_HEIGHT,

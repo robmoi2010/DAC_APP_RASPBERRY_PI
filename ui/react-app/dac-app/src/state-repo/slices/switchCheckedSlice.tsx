@@ -1,25 +1,19 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-interface BoolArrayState {
-    items: boolean[];
+interface MapState {
+    items: { [key: string]: boolean };
 }
-const initialState: BoolArrayState = {
-    items: [],
+const initialState: MapState = {
+    items: {},
 };
 export const switchCheckedSlice = createSlice({
     name: "switchChecked",
     initialState,
     reducers: {
-        setSwitchChecked: (state, action) => {
-            state.items = action.payload
-        },
-        updateSwitchChecked: (state, action: PayloadAction<{ index: number; value: boolean }>) => {
-            const { index, value } = action.payload;
-            state.items[index] = value;
-        },
-        addSwitchChecked: (state, action: PayloadAction<boolean>) => {
-            state.items.push(action.payload);
+        updateSwitchChecked: (state, action: PayloadAction<{ key: string; value: boolean }>) => {
+            const { key, value } = action.payload;
+            state.items[key] = value;
         }
     }
 });
-export const { setSwitchChecked, updateSwitchChecked, addSwitchChecked } = switchCheckedSlice.actions;
+export const { updateSwitchChecked } = switchCheckedSlice.actions;
 export default switchCheckedSlice.reducer;

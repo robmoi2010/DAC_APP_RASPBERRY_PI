@@ -1,17 +1,13 @@
 from enum import Enum
 
 from dsp.io import CURRENT_MAIN_OUTPUT_ID
-from registry.register import register, get_instance
+from registry.register import register
 from repo.storage import Storage
 from system.system_util import SOUND_MODE_ID, SUBWOOFER_OUTPUT_SOURCE_ID
 import ui.home as home
 
-import configs.app_config as configuration
+from configs.app_config import Config
 from dsp.dsp_comm import DspComm
-
-
-config = configuration.getConfig()["ADAU1452"]["ADDR"]
-
 
 
 class SOUND_MODE(Enum):
@@ -22,7 +18,8 @@ class SOUND_MODE(Enum):
 
 @register
 class SoundMode:
-    def __init__(self, comm: DspComm, storage: Storage):
+    def __init__(self, comm: DspComm, storage: Storage, config: Config):
+        self.config = config.config["ADAU1452"]["ADDR"]
         self.comm = comm
         self.storage = storage
 
@@ -66,12 +63,12 @@ class SoundMode:
 
         # Get current register value and update parts that need updating
         current_out_name = self.get_output_source_select_name(current_output)
-        current = self.comm.read(config[current_out_name])
+        current = self.comm.read(self.config[current_out_name])
         new_value = current & ~(1 << 2)
         new_value = new_value & ~(1 << 1)
         new_value = new_value | (1 << 0)
 
-        self.comm.write( config[current_out_name], new_value)
+        self.comm.write(self.config[current_out_name], new_value)
 
     def handle_semi_pure_direct(self):
         # set mains to pure direct
@@ -80,7 +77,7 @@ class SoundMode:
         # current sub output port
         current_sub_out = self.storage.read(SUBWOOFER_OUTPUT_SOURCE_ID)
         name = self.get_output_source_select_name(current_sub_out)
-        current_reg = self.comm.read( config[name])
+        current_reg = self.comm.read(self.config[name])
 
         # change required bits to change sub out input to dsp core
         new_reg = current_reg & ~(1 << 2)
@@ -88,7 +85,7 @@ class SoundMode:
         new_reg = new_reg & ~(1 << 0)
 
         # update device reg
-        self.comm.write(config[name], new_reg)
+        self.comm.write(self.config[name], new_reg)
 
     def handle_dsp_mode(self):
         mains_output = self.storage.read(CURRENT_MAIN_OUTPUT_ID)
@@ -96,16 +93,16 @@ class SoundMode:
 
         # update mains reg values for routing mains through dsp core for processing
         mains_name = self.get_output_source_select_name(mains_output)
-        current = self.comm.read( config[mains_name])
+        current = self.comm.read(self.config[mains_name])
         new_value = current & ~(1 << 2)
         new_value = new_value | (1 << 1)
         new_value = new_value & ~(1 << 0)
 
-        self.comm.write(config[mains_name], new_value)
+        self.comm.write(self.config[mains_name], new_value)
 
         # update sub reg values
         sub_name = self.get_output_source_select_name(sub_output)
-        current_reg = self.comm.read( config[sub_name])
+        current_reg = self.comm.read(self.config[sub_name])
 
         # change required bits to change sub out input to dsp core
         new_reg = current_reg & ~(1 << 2)
@@ -113,7 +110,7 @@ class SoundMode:
         new_reg = new_reg & ~(1 << 0)
 
         # update device reg
-        self.comm.write( config[sub_name], new_reg)
+        self.comm.write(self.config[sub_name], new_reg)
 
     def get_output_source_select_name(self, port):
         if port == 0:

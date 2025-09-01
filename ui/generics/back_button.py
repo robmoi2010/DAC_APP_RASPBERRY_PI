@@ -1,4 +1,4 @@
-from util.styles import BACK_BUTTON_WIDTH, BACK_BUTTON_HEIGHT
+from ui.styles import BACK_BUTTON_WIDTH, BACK_BUTTON_HEIGHT
 from ui.generics.general_button import GeneralButton
 
 

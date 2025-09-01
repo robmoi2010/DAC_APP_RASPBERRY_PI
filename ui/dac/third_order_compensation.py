@@ -3,7 +3,7 @@ from ui.generics.general_button import GeneralButton
 from ui.generics.back_button import BackButton
 from registry.register import get_instance
 from tkinter import messagebox
-from util.styles import SELECTED_COLOR, UNSELECTED_COLOR
+from ui.styles import SELECTED_COLOR, UNSELECTED_COLOR
 
 dac = get_instance("dac")
 class ThirdOrderCompensation(tk.Frame):

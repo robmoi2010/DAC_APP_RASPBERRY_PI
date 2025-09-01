@@ -2,29 +2,33 @@ package com.goglotek.mydacapp.fragments;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.SeekBar;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.anastr.speedviewlib.SpeedView;
 import com.goglotek.mydacapp.R;
+import com.goglotek.mydacapp.App;
+import com.goglotek.mydacapp.dataprocessors.GenericDataProcessor;
 import com.goglotek.mydacapp.exceptions.GoglotekException;
+import com.goglotek.mydacapp.exceptions.NullDataException;
 import com.goglotek.mydacapp.menu.Menu;
 import com.goglotek.mydacapp.menu.MenuUtil;
-import com.goglotek.mydacapp.models.Home;
+import com.goglotek.mydacapp.models.Request;
 import com.goglotek.mydacapp.models.Response;
-import com.goglotek.mydacapp.service.SystemService;
+import com.goglotek.mydacapp.models.WebClientType;
 import com.goglotek.mydacapp.util.Config;
 import com.goglotek.mydacapp.util.VolumeDirection;
 import com.goglotek.mydacapp.util.WebSocketClient;
@@ -42,11 +46,18 @@ public class HomeFragment extends Fragment {
     Button settings;
     TextView homeData;
     int previousSliderVolume;
-    boolean updatingSliderVolume = false;
+    boolean isManualSliderChange = false;
     Handler handler = new Handler(Looper.getMainLooper());
     Runnable debouncedRunnable = null;
     int debounceDelayMs = 300;
     boolean isVolumeSliderWsUpdate = false;
+    private AlertDialog dialog;
+    private GenericDataProcessor homeDataProcessor;
+    private GenericDataProcessor volumeUpProcessor;
+    private GenericDataProcessor volumeDownProcessor;
+    private ImageView volumePlus;
+    private ImageView volumeMinus;
+    private final int VOLUME_BTN_STEPS = 1;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -56,23 +67,78 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         View view = inflater.inflate(R.layout.home, container, false);
+        dialog = new AlertDialog.Builder(container.getContext()).create();
         settings = view.findViewById(R.id.settingsBtn);
         settings.setOnClickListener((View) -> handleSettingsOnclick());
         volumeSlider = view.findViewById(R.id.slider);
         previousSliderVolume = (int) volumeSlider.getValue();
-        volumeSlider.addOnChangeListener((slider, newVal, b) -> {
-            if (debouncedRunnable != null) {
-                handler.removeCallbacks(debouncedRunnable);
-            }
-            debouncedRunnable = () -> {
-                handleVolumeSliderOnchange((int) newVal);
-            };
-            handler.postDelayed(debouncedRunnable, debounceDelayMs);
+        volumeSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+                                                  @Override
+                                                  public void onStartTrackingTouch(@NonNull Slider slider) {
+                                                  }
+
+                                                  @Override
+                                                  public void onStopTrackingTouch(@NonNull Slider slider) {
+                                                      handleVolumeSliderOnchange((int) slider.getValue());
+                                                  }
+                                              }
+        );
+        volumePlus = view.findViewById(R.id.volumePlus);
+        volumeMinus = view.findViewById(R.id.volumeMinus);
+
+
+        //initialize data processors
+        homeDataProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.HOME_DATA));
+        volumeUpProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_UP));
+        volumeDownProcessor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_DOWN));
+
+        //set volume buttons event listeners
+        volumePlus.setOnClickListener((v) -> {
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    float current = volumeSlider.getValue();
+                    if (current >= 100) {
+                        return;
+                    }
+                    float ret = Float.parseFloat(volumeUpProcessor.sendGet().getValue());
+                    while (ret < current + VOLUME_BTN_STEPS) {
+                        ret = Float.parseFloat(volumeUpProcessor.sendGet().getValue());
+                    }
+                } catch (GoglotekException e) {
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.setMessage(e.getMessage());
+                        dialog.show();
+                        Timber.e(e, e.getMessage());
+                    });
+                }
+            });
+        });
+        volumeMinus.setOnClickListener((v) -> {
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    float current = volumeSlider.getValue();
+                    if (current <= 0) {
+                        return;
+                    }
+                    float ret = Float.parseFloat(volumeDownProcessor.sendGet().getValue());
+                    while (ret > current - VOLUME_BTN_STEPS) {
+                        ret = Float.parseFloat(volumeDownProcessor.sendGet().getValue());
+                    }
+                } catch (GoglotekException e) {
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.setMessage(e.getMessage());
+                        dialog.show();
+                        Timber.e(e, e.getMessage());
+                    });
+                }
+            });
         });
         //get current volume and other home data from server
         populateHomeData(null, false);
         //creates a web socket to listen for server changes in volume and update the ui.
-        createHomeDataWebSocketListener(view);
+        createHomeDataWebSocketListener();
+
+
         return view;
     }
 
@@ -84,50 +150,106 @@ public class HomeFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         } catch (Exception e) {
+            dialog.setMessage(e.getMessage());
+            dialog.show();
             Timber.e(e, e.getMessage());
         }
     }
 
-    private void populateHomeData(Home home, boolean isWsData) {
+
+    private void populateHomeData(Response[] resp, boolean isWsData) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
-                Home homeLocal = null;
-                if (home == null) {
-                    homeLocal = SystemService.getHomeData();
+                Response[] respLocal = null;
+                if (resp == null) {
+                    respLocal = homeDataProcessor.sendGetArrayResponse();
                 } else {
-                    homeLocal = home;
+                    respLocal = resp;
                 }
-                Home finalHomeLocal = homeLocal;
-                ((Activity) getContext()).runOnUiThread(() -> {
-                    int volume = 0;
+                Response[] finalRespLocal = respLocal;
+                requireActivity().runOnUiThread(() -> {
+                    Float volume = null;
                     StringBuilder sb = new StringBuilder();
-                    Response[] data = finalHomeLocal != null ? finalHomeLocal.getData() : null;
-                    if (data != null) {
-                        for (Response rsp : finalHomeLocal.getData()) {
-                            if (rsp.getKey().equals(Config.getConfig("CURRENT_VOLUME_ID"))) {
-                                volume = Integer.parseInt(rsp.getValue());
-                            } else {
-                                sb.append(" " + rsp.getDisplayName()).append(": ").append(rsp.getValue());
-                            }
+                    if (finalRespLocal == null) {
+                        return;
+                    }
+                    for (Response rsp : finalRespLocal) {
+                        if (rsp.getKey().equals(Config.getConfig("CURRENT_VOLUME_ID"))) {
+                            volume = Float.parseFloat(rsp.getValue());
+                        } else {
+                            sb.append(" " + rsp.getDisplayName().trim()).append(":").append(rsp.getValue().trim()).append("\n");
                         }
                     }
-                    volumeView = volumeView == null ? ((Activity) getContext()).findViewById(R.id.speedView) : volumeView;
+                    volumeView = volumeView == null ? requireActivity().findViewById(R.id.speedView) : volumeView;
                     volumeView.setTrembleData(0, 0);
-                    volumeView.speedTo(volume, 200);
-                    if (!updatingSliderVolume) {
-                        isVolumeSliderWsUpdate = true;
-                        volumeSlider.setValue(volume);
+                    if (volume != null) {
+                        volumeView.speedTo(volume, 200);
                     }
-                    if (!isWsData) {
-                        homeData = homeData == null ? ((Activity) getContext()).findViewById((R.id.home_data)) : homeData;
-                        homeData.setText(sb.toString());
+                    if (!isManualSliderChange) {
+                        if (volume != null) {
+                            isVolumeSliderWsUpdate = true;
+                            volumeSlider.setValue(volume);
+                        }
                     }
+                    homeData = homeData == null ? requireActivity().findViewById((R.id.home_data)) : homeData;
+                    homeData.setText(processHomeText(homeData.getText().toString(), sb.toString()));
+                    isVolumeSliderWsUpdate = false;
                 });
             } catch (GoglotekException e) {
+                requireActivity().runOnUiThread(() -> {
+                    dialog.setMessage(e.getMessage());
+                    dialog.show();
+                });
                 Timber.e(e, e.getMessage());
             }
         });
+    }
+
+    private String processHomeText(String currentText, String serverText) {//updates only fields received from server and keeps current fields not in server payload
+        if (serverText.trim().isEmpty()) {
+            return currentText;
+        }
+        String[] txt = serverText.trim().split("\n");
+        String buffer = "";
+        String processedText = "";
+        while (currentText.length() > 0) {
+            if (!currentText.contains(":")) {
+                break;
+            }
+            buffer = currentText.substring(0, currentText.indexOf(":")).trim();
+            boolean found = false;
+            for (int i = 0; i < txt.length; i++) {
+                if (txt[i] != null) {
+                    if (txt[i].contains(buffer.trim())) {
+                        processedText += txt[i].trim() + " ";
+                        found = true;
+                        txt[i] = null;
+                    }
+                }
+            }
+            currentText = currentText.substring(buffer.length() + 1).trim();
+            String text = "";
+            if (currentText.contains(" ")) {
+                text = currentText.substring(0, currentText.indexOf(" "));
+            } else {
+                text = currentText.substring(0);
+            }
+            if (!found) {
+                processedText += buffer.trim() + ":" + text.trim() + " ";
+            }
+            if (currentText.length() > text.length()) {
+                currentText = currentText.substring(text.length() + 1);
+            } else {
+                currentText = "";
+            }
+        }
+        for (int i = 0; i < txt.length; i++) {
+            if (txt[i] != null) {
+                processedText += txt[i];
+            }
+        }
+        return processedText.trim();
     }
 
     private void handleVolumeSliderOnchange(int newVal) {
@@ -137,57 +259,36 @@ public class HomeFragment extends Fragment {
             return;
         }
         if (newVal != previousSliderVolume) {
-            VolumeDirection direction = null;
-            if (newVal > previousSliderVolume) {
-                direction = VolumeDirection.UP;
-            } else {
-                direction = VolumeDirection.DOWN;
-            }
-            VolumeDirection finalDirection = direction;
-            updatingSliderVolume = true;
+            isManualSliderChange = true;
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 try {
-                    int count = 0;
-                    int volume;
-                    while (true) {
-                        volume = SystemService.updateVolume(finalDirection);
-                        if (finalDirection == VolumeDirection.UP) {
-                            if (volume >= newVal) {
-                                break;
-                            }
-                        } else {
-                            if (volume <= newVal) {
-                                break;
-                            }
-                        }
-                        //just in case there is an issue, the loop wont run forever
-                        count++;
-                        if (count > 2000) {
-                            break;
-                        }
-                    }
-                    ((Activity) getContext()).runOnUiThread(() -> {
-                        updatingSliderVolume = false;
+                    GenericDataProcessor processor = GenericDataProcessor.getInstance(App.webClientMap.get(WebClientType.VOLUME_UPDATE));
+                    Request r = new Request("0", "" + newVal);
+                    processor.sendPut(new ObjectMapper().writeValueAsString(r));
+                    requireActivity().runOnUiThread(() -> {
+                        isManualSliderChange = false;
                     });
                 } catch (GoglotekException e) {
+                    Timber.e(e, e.getMessage());
+                } catch (JsonProcessingException e) {
                     Timber.e(e, e.getMessage());
                 }
             });
         }
         previousSliderVolume = newVal;
-
     }
 
-    private void createHomeDataWebSocketListener(View view) {
+    private void createHomeDataWebSocketListener() {
         WebSocketClient client = new WebSocketClient(Config.getConfig("BASE_URL") + "system/ws", new WebsocketHandler() {
             @Override
             public void handleIncomingMessage(String message) {
                 try {
                     Response[] rsp = new ObjectMapper().readValue(message, Response[].class);
-                    Home home = Home.getInstance(rsp);
-                    populateHomeData(home, true);
+                    populateHomeData(rsp, true);
                 } catch (Exception e) {
+                    dialog.setMessage(e.getMessage());
+                    dialog.show();
                     Timber.e(e, e.getMessage());
                 }
             }
@@ -198,6 +299,8 @@ public class HomeFragment extends Fragment {
                     Thread.sleep(delay);
                     client.connect();
                 } catch (InterruptedException e) {
+                    dialog.setMessage(e.getMessage());
+                    dialog.show();
                     Timber.e(e, e.getMessage());
                 }
             }

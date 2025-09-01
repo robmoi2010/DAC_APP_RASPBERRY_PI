@@ -1,4 +1,4 @@
-from registry.register import register, get_instance
+from registry.register import register
 from services.utils.ws_connection_manager import WS_TYPE, WSConnectionManager
 
 from volume.system_volume import Volume

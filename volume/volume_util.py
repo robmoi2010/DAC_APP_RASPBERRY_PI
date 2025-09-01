@@ -28,10 +28,42 @@ CURRENT_MUSES_VOLUME_ID = "CURRENT_MUSES_VOLUME"
 CURRENT_VOLUME_ID = "CURRENT_VOLUME"
 VOLUME_ALGORITHM_ID = "VOLUME_ALGORITHM"
 CURRENT_ALPS_VOLUME_ID = "CURRENT_ALPS_VOLUME"
+VOLUME_RAMP_ENABLED_ID = "VOLUME_RAMP_ENABLED"
 
 
-def map_value(x, in_min, in_max, out_min, out_max):
-    return ((x - in_min) * (out_max - out_min)) / ((in_max - in_min) + out_min)
+# def map_value(x, in_min, in_max, out_min, out_max):
+#     return ((x - in_min) * (out_max - out_min)) // ((in_max - in_min) + out_min)
+
+
+# for positive or negative ranges only. won't work if min and max are positive and negative values
+def remap_value(
+    value, from_min, from_max, to_min, to_max, float_range=False, decimal_places=2
+):
+    if value == from_max:
+        return to_max
+    if value == from_min:
+        return to_min
+    ratio = (from_max - from_min) / value
+    diff = to_max - to_min
+    if float_range:
+        temp = round(diff / ratio, decimal_places)
+    else:
+        temp = diff // ratio
+    ret = None
+    if ratio < 0 and diff > 0:
+        ret = to_max - abs(temp)
+    elif ratio > 0 and diff < 0:
+        ret = to_min - abs(temp)
+    else:
+        if to_min < 0:
+            ret = to_min + temp
+        else:
+            ret = temp
+
+    if float_range:
+        return round(ret, decimal_places)
+    else:
+        return ret
 
 
 def get_logarithmic_volume_level(vol, minimum, maximum):
@@ -48,18 +80,3 @@ def get_logarithmic_volume_level(vol, minimum, maximum):
     # Convert back to max–min scale, inverted
     adjusted = minimum - int(round(log_scaled * minimum))
     return adjusted
-
-
-async def update_ui_volume(self, device: VOLUME_DEVICE, connection_manager, volume):
-    list = []
-    id = None
-    if device == VOLUME_DEVICE.DAC:
-        id = CURRENT_VOLUME_ID
-    elif device == VOLUME_DEVICE.MUSES:
-        id = CURRENT_MUSES_VOLUME_ID
-    response = ResponseModel(
-        key=id, value=str(volume), display_name=VOLUME_DISPLAY_NAME
-    )
-    list.append(response)
-    data = [dt.model_dump() for dt in list]
-    await self.connection_manager.send_data(WS_TYPE.HOME_DATA, json.dumps(data))

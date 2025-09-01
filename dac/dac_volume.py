@@ -1,5 +1,5 @@
-from registry.register import get_instance
-import configs.app_config as app_config
+
+from configs.app_config import Config
 from registry.register import register
 from dac.dac_comm import DacComm
 from services.utils.ws_connection_manager import WSConnectionManager
@@ -10,16 +10,13 @@ from volume.volume_util import (
     CURRENT_VOLUME_ID,
     VOLUME_DEVICE,
     get_logarithmic_volume_level,
-    map_value,
+    remap_value,
 )
 from repo.storage import Storage
 
 DAC_MIN_VOL = 255
 DAC_MAX_VOL = 0
 LOG_CURVE = 6
-config = app_config.getConfig()
-
-addrConfig = config["DAC"]["ADDR"]
 DISABLE_VOLUME_ID = "DISABLE_VOLUME"
 DAC_MUTED_ID = "DAC_MUTED"
 
@@ -31,7 +28,10 @@ class DacVolume(AbstractVolume):
         dac_comm: DacComm,
         storage: Storage,
         connection_manager: WSConnectionManager,
+        config: Config,
     ):
+        self.config = config.config
+        self.addrConfig = self.config["DAC"]["ADDR"]
         self.dac_comm = dac_comm
         self.storage = storage
         self.connection_manager = connection_manager
@@ -67,17 +67,16 @@ class DacVolume(AbstractVolume):
         # if logarithmic is set adjust volume to logarithmic scale
         if volume_algorithm == VOLUME_ALGORITHM.LOGARITHMIC:
             vol = get_logarithmic_volume_level(vol, DAC_MIN_VOL, DAC_MAX_VOL)
-            print("vol:" + str(vol))
         # hold both channels
-        hold_addr = addrConfig["DAC_SPDIF_SEL_ADDR"]
+        hold_addr = self.addrConfig["DAC_SPDIF_SEL_ADDR"]
         hold_mask = 0b00001000
         data = self.dac_comm.read(hold_addr)
         data = data | hold_mask
         self.dac_comm.write(hold_addr, data)
 
         # update volume of both channels
-        volume_1_addr = addrConfig["VOLUME_CH1"]
-        volume_2_addr = addrConfig["VOLUME_CH2"]
+        volume_1_addr = self.addrConfig["VOLUME_CH1"]
+        volume_2_addr = self.addrConfig["VOLUME_CH2"]
         # volume_data = format(vol, "08b")
         # dac_comm.write(volume_1_addr, volume_data)
         # dac_comm.write(volume_2_addr, volume_data)
@@ -88,7 +87,7 @@ class DacVolume(AbstractVolume):
 
     def update_volume(self, direction, volume_algorithm: VOLUME_ALGORITHM):
         currVol = self.get_current_volume()
-        steps = config["DAC"]["VOLUME"]["VOLUME_STEPS"]  # get volume steps from config
+        steps = self.config["DAC"]["VOLUME"]["VOLUME_STEPS"]  # get volume steps from config
         if direction == VOL_DIRECTION.UP:  # volume increase
             if currVol <= DAC_MAX_VOL:  # skip processing if volume is already at Max
                 return 100
@@ -99,6 +98,9 @@ class DacVolume(AbstractVolume):
             ):  # skip processing if volume is already at Minimum
                 return 0
             currVol += steps  # dacs higher value=decrease
+        return self.process_new_volume(currVol, volume_algorithm)
+
+    def process_new_volume(self, currVol, volume_algorithm: VOLUME_ALGORITHM):
         self.set_volume(currVol, volume_algorithm)
         self.persist_volume(currVol)
         # return new volume as percentage for ui update
@@ -121,14 +123,14 @@ class DacVolume(AbstractVolume):
             return 1  # enabled
 
     def mute_dac(self):
-        mute_addr = addrConfig["DAC_MUTE"]
+        mute_addr = self.addrConfig["DAC_MUTE"]
         mute_mask = 0b00000011
         data = self.dac_comm.read(mute_addr)
         data = data | mute_mask
         self.dac_comm.write(mute_addr, data)
 
     def unmute_dac(self):
-        mute_addr = addrConfig["DAC_MUTE"]
+        mute_addr = self.addrConfig["DAC_MUTE"]
         mute_mask = 0b00000011
         data = self.dac_comm.read(mute_addr)
         data = data & ~mute_mask
@@ -144,8 +146,8 @@ class DacVolume(AbstractVolume):
             self.storage.write(DAC_MUTED_ID, 1)
 
     def get_percentage_volume(self, vol):
-        val = map_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
-        return int(val)
+        val = remap_value(vol, DAC_MIN_VOL, DAC_MAX_VOL, 0, 100)
+        return val
 
     def persist_volume(self, volume):
         self.storage.write(CURRENT_VOLUME_ID, volume)
@@ -157,3 +159,15 @@ class DacVolume(AbstractVolume):
         return super().update_ui_volume(
             VOLUME_DEVICE.DAC, self.connection_manager, volume
         )
+
+    def get_volume_from_percentage(self, percentage):
+        return remap_value(percentage, 0, 100, DAC_MIN_VOL, DAC_MAX_VOL)
+
+    def get_max_volume(self):
+        return DAC_MAX_VOL
+
+    def get_min_volume(self):
+        return DAC_MIN_VOL
+
+    def is_volume_more_than(self, volume1, volume2):  # higher volume=lower value
+        return volume1 < volume2
