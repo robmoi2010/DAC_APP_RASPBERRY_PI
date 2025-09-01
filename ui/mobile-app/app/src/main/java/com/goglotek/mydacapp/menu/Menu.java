@@ -1,23 +1,41 @@
-package com.goglotek.mydacapp.menu;
+/*
+ * Copyright (C) 2025 Robert Moi, Goglotek LTD
+ *
+ *  This file is part of the DAC_APPLICATION System.
+ *
+ *  The DAC_APPLICATION System is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The DAC_APPLICATION is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with the Fraud Detector System. If not, see <https://www.gnu.org/licenses/>
+ */
 
-import android.os.Parcelable;
+package com.goglotek.mydacapp.menu;
 
 import java.io.Serializable;
 import java.util.List;
 
 public interface Menu extends Serializable {
-    public List<DataRow> getRows();
 
-    public void setRows(List<DataRow> rows);
+  public List<DataRow> getRows();
 
-    public void addRow(DataRow row);
+  public void setRows(List<DataRow> rows);
 
-    public MenuDataType getDataType();
+  public void addRow(DataRow row);
 
-    public void setDataType(MenuDataType dataType);
+  public MenuDataType getDataType();
 
-    public DataRow getRoot();
+  public void setDataType(MenuDataType dataType);
 
-    public void setRoot(DataRow root);
+  public DataRow getRoot();
+
+  public void setRoot(DataRow root);
 
 }

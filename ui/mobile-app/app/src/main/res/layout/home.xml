@@ -1,69 +1,87 @@
+<!--
+  ~ Copyright (C) 2025 Robert Moi, Goglotek LTD
+  ~
+  ~  This file is part of the DAC_APPLICATION System.
+  ~
+  ~  The DAC_APPLICATION System is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  The DAC_APPLICATION is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with the Fraud Detector System. If not, see <https://www.gnu.org/licenses/>
+  -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:sv_unit="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:gravity="center"
+  android:orientation="vertical">
+
+  <TextView
+    android:id="@+id/home_data"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:paddingBottom="30dp" />
+
+  <com.github.anastr.speedviewlib.SpeedView
+    android:id="@+id/speedView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:sv_maxSpeed="100"
+    app:sv_minSpeed="0"
+    app:sv_unit="%" />
+
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/home_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:paddingBottom="30dp" />
+    <ImageView
+      android:id="@+id/volumeMinus"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:contentDescription="Reduce volume"
+      android:src="@drawable/minus_small_green" />
 
-    <com.github.anastr.speedviewlib.SpeedView
-        android:id="@+id/speedView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:sv_maxSpeed="100"
-        app:sv_minSpeed="0"
-        app:sv_unit="%" />
+    <com.google.android.material.slider.Slider
+      android:id="@+id/slider"
+      android:layout_width="350dp"
+      android:layout_height="match_parent"
+      android:stepSize="1"
+      android:valueFrom="0"
+      android:valueTo="100"
+      app:labelBehavior="floating" />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
+    <ImageView
+      android:id="@+id/volumePlus"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:contentDescription="Increase volume"
+      android:src="@drawable/plus_small_green" />
+  </LinearLayout>
 
-        <ImageView
-            android:id="@+id/volumeMinus"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:contentDescription="Reduce volume"
-            android:src="@drawable/minus_small_green" />
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/slider"
-            android:layout_width="350dp"
-            android:layout_height="match_parent"
-            android:stepSize="1"
-            android:valueFrom="0"
-            android:valueTo="100"
-            app:labelBehavior="floating" />
-
-        <ImageView
-            android:id="@+id/volumePlus"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:contentDescription="Increase volume"
-            android:src="@drawable/plus_small_green" />
-    </LinearLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/settingsBtn"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/settingsBtn"
-            app:cornerRadius="10dp" />
-    </LinearLayout>
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/settingsBtn"
+      style="@style/Widget.MaterialComponents.Button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/settingsBtn"
+      app:cornerRadius="10dp" />
+  </LinearLayout>
 
 </LinearLayout>

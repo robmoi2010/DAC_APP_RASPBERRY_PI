@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2025 Robert Moi, Goglotek LTD
+ *
+ *  This file is part of the DAC_APPLICATION System.
+ *
+ *  The DAC_APPLICATION System is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The DAC_APPLICATION is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with the Fraud Detector System. If not, see <https://www.gnu.org/licenses/>
+ */
+
 package com.goglotek.mydacapp.menu;
 
 import java.io.Serializable;
@@ -5,37 +24,38 @@ import java.util.List;
 import java.util.Map;
 
 public interface DataRow extends Serializable {
-    public Menu getNext();
 
-    public String getText();
+  public Menu getNext();
 
-    public void setText(String text);
+  public String getText();
 
-    public String getName();
+  public void setText(String text);
 
-    public void setNext(Menu next);
+  public String getName();
 
-    public void setName(String name);
+  public void setNext(Menu next);
 
-    public boolean isSelected();
+  public void setName(String name);
 
-    public void setSelected(Boolean selected);
+  public boolean isSelected();
 
-    public int getIndex();
+  public void setSelected(Boolean selected);
 
-    public void setIndex(int index);
+  public int getIndex();
 
-    public void setType(RowDataType type);
+  public void setIndex(int index);
 
-    public RowDataType getType();
+  public void setType(RowDataType type);
 
-    public boolean equals(Object obj);
+  public RowDataType getType();
 
-    public List<Map<String, String>> getRowOptions();
+  public boolean equals(Object obj);
 
-    public void setRowOptions(List<Map<String, String>> options);
+  public List<Map<String, String>> getRowOptions();
 
-    public String getDescription();
+  public void setRowOptions(List<Map<String, String>> options);
 
-    public void setDescription(String description);
+  public String getDescription();
+
+  public void setDescription(String description);
 }
