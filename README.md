@@ -77,6 +77,6 @@ For partnership inquiries or demo requests, please reach out:
 Contributions to the open-source edition are welcome!  
 Please submit **issues**, **feature requests**, or **pull requests** via GitHub.
 
-## Donation
+## 💰 Donation
 **Support this project:** [💖 Sponsor](https://github.com/sponsors/robmoi2010) · [💸 PayPal](https://www.paypal.com/donate/?hosted_button_id=P4FZ9XQ7K3GY2)
 
