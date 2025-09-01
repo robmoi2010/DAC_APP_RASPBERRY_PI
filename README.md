@@ -62,6 +62,7 @@ For partnership inquiries or demo requests, please reach out:
 **Goglotek Ltd.**  
 📧 Email: [robmoi2010@gmail.com](mailto:robmoi2010@gmail.com)  
 🌐 Website: [www.goglotek.com](http://www.goglotek.com)  
+🕻 Mobile: +254724116115
 
 ---
 
