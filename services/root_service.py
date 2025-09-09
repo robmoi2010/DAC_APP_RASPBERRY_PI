@@ -84,7 +84,7 @@ async def initialize_device():
     except Exception as e:
         logger.error(traceback.format_exc())
     try:
-        storage: SqlStorage = await register.get_instance("sqlstorage")
+        storage: SqlStorage = await register.get_instance("storage")
         storage.initialize()
     except Exception as e:
         logger.error(traceback.format_exc())

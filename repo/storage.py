@@ -35,3 +35,5 @@ class Storage:
 
     def read(self, addr):
         return self.default_storage.read(addr)
+    def initialize(self):
+        self.default_storage.initialize()

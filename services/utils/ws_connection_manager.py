@@ -65,7 +65,7 @@ class WSConnectionManager:
                 self.logger.error(traceback.format_exc())
                 print(f"[ws_connect_consumer ERROR] While creating connection: {e}")
             finally:
-                time.sleep(0.1)
+                time.sleep(0.0001)
 
     def ws_send_data_queue_consumer(self):
         print("[ws_data_send consumer] Thread started")
@@ -77,7 +77,7 @@ class WSConnectionManager:
                 self.logger.error(traceback.format_exc())
                 print(f"[ws_data_send consumer ERROR] While sending data: {e}")
             finally:
-                time.sleep(0.001)
+                time.sleep(0.0001)
 
     def start_consumers(self):
         threading.Thread(target=self.ws_connect_queue_consumer, daemon=True).start()
